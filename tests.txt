@@ -1,0 +1,23 @@
+D:\Temp> bombardier-windows-amd64.exe -c 125 -m GET -n 1000000 http://localhost:60542/getwallets
+Bombarding http://localhost:60542/getwallets with 1000000 request(s) using 125 connection(s)
+ 1000000 / 1000000 [===============================================================================] 100.00% 496/s 33m34s Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec       497.88      55.58    1723.06
+  Latency      251.76ms    43.30ms      2.13s
+  HTTP codes:
+    1xx - 0, 2xx - 1000000, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   340.33KB/s
+
+D:\Temp> bombardier-windows-amd64.exe -c 125 -m GET -n 1000000 http://localhost:60542/simple/getwallets
+Bombarding http://localhost:60542/simple/getwallets with 1000000 request(s) using 125 connection(s)
+ 1000000 / 1000000 [===============================================================================] 100.00% 550/s 30m17s Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec       551.05      60.72    1434.43
+  Latency      227.20ms    41.95ms      2.66s
+  HTTP codes:
+    1xx - 0, 2xx - 1000000, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   385.20KB/s
+
+D:\Temp>

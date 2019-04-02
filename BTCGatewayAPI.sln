@@ -7,6 +7,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI", "BTCGateway
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Tests", "BTCGatewayAPI.Tests\BTCGatewayAPI.Tests.csproj", "{62B9F1B9-20F7-4FCA-8A4F-442DAB7A0721}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Infrastructure", "BTCGatewayAPI.Infrastructure\BTCGatewayAPI.Infrastructure.csproj", "{A936BF56-D4CD-4276-9C8A-95EEBE5017D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Services", "BTCGatewayAPI.Services\BTCGatewayAPI.Services.csproj", "{72C980DD-1CF2-4319-ABB8-926B0444E7B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Models", "BTCGatewayAPI.Models\BTCGatewayAPI.Models.csproj", "{9D7294AD-E682-48B0-B097-288B0690A5E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Bitcoin", "BTCGatewayAPI.Bitcoin\BTCGatewayAPI.Bitcoin.csproj", "{AC914CF3-6254-4A42-A158-383325E946D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Models.Mapping", "BTCGatewayAPI.Models.Mapping\BTCGatewayAPI.Models.Mapping.csproj", "{AAB76468-74E2-4B87-957E-39ED4FD034BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +31,26 @@ Global
 		{62B9F1B9-20F7-4FCA-8A4F-442DAB7A0721}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62B9F1B9-20F7-4FCA-8A4F-442DAB7A0721}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62B9F1B9-20F7-4FCA-8A4F-442DAB7A0721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A936BF56-D4CD-4276-9C8A-95EEBE5017D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A936BF56-D4CD-4276-9C8A-95EEBE5017D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A936BF56-D4CD-4276-9C8A-95EEBE5017D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A936BF56-D4CD-4276-9C8A-95EEBE5017D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72C980DD-1CF2-4319-ABB8-926B0444E7B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72C980DD-1CF2-4319-ABB8-926B0444E7B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72C980DD-1CF2-4319-ABB8-926B0444E7B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72C980DD-1CF2-4319-ABB8-926B0444E7B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D7294AD-E682-48B0-B097-288B0690A5E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D7294AD-E682-48B0-B097-288B0690A5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D7294AD-E682-48B0-B097-288B0690A5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D7294AD-E682-48B0-B097-288B0690A5E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC914CF3-6254-4A42-A158-383325E946D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC914CF3-6254-4A42-A158-383325E946D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC914CF3-6254-4A42-A158-383325E946D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC914CF3-6254-4A42-A158-383325E946D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

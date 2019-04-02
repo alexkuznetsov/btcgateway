@@ -11,7 +11,17 @@ namespace BTCGatewayAPI
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(new Action<HttpConfiguration>((c) =>
+            {
+                var factory = ObjectRegistryConfig.Configure();
+                WebApiConfig.Register(c, factory);
+            }));
         }
+
+        protected void Application_End()
+        {
+            ObjectRegistryConfig.Shutdown();
+        }
+
     }
 }
