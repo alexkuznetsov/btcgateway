@@ -10,7 +10,7 @@ namespace BTCGatewayAPI.Infrastructure.Container
             var ctorArgsArray = ctor.GetParameters();
             var args = new object[ctorArgsArray.Length];
 
-            for (int i = 0; i < ctorArgsArray.Length; i++)
+            for (uint i = 0; i < ctorArgsArray.Length; i++)
             {
                 args[i] = registry.GetService(ctorArgsArray[i].ParameterType);
             }

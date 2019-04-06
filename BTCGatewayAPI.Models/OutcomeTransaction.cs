@@ -1,15 +1,27 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BTCGatewayAPI.Models
 {
-    public class OutcomeTransaction : Entity
+    public class OutcomeTransactionId
     {
-        public int WalletId { get; set; }
+        [Column("id")]
+        public int Id { get; set; }
+    }
 
-        public string TxHash { get; set; }
+    [Table("outcome_tx")]
+    public class OutcomeTransaction : Transaction
+    {
+        public const string WithdrawState = "withdraw";
 
+        public const string CompleteState = "complete";
+
+        [Column("recipient")]
         public string Recipient { get; set; }
 
-        public decimal Amount { get; set; }
+        [Column("state")]
+        public string State { get; set; }
+
+        [Column("fee")]
+        public decimal Fee { get; set; }
     }
 }

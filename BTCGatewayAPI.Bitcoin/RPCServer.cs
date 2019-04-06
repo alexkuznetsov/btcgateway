@@ -9,14 +9,13 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Bitcoin
 {
-    public class RPCServer : IDisposable
+    public class RPCServer
     {
         const string BasicAuth = "Basic";
 
         private readonly Uri _address;
         private readonly string _basicAuthHeader;
         private readonly DelegatingHandler _sharedHandler;
-        private bool _disposed;
 
         public RPCServer(DelegatingHandler sharedHandler, Uri address, string username, string password)
         {
@@ -24,33 +23,6 @@ namespace BTCGatewayAPI.Bitcoin
             _basicAuthHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
             _sharedHandler = sharedHandler;
         }
-
-        #region IDisposable
-
-        ~RPCServer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _sharedHandler.Dispose();
-                _disposed = true;
-            }
-        }
-
-        #endregion
 
         public async Task<List<Unspent>> ListUnspent(string address)
         {
@@ -76,22 +48,17 @@ namespace BTCGatewayAPI.Bitcoin
                 .ConfigureAwait(false);
         }
 
-        public async Task<string> CreateRawtransaction(TXInfo[] inputs, FundRecivier[] outputs)
+        public async Task<string> CreateRawtransaction(TXInfo[] inputs, Dictionary<string, decimal> outputs)
         {
-            return await ExecuteRequest<CreateRawTransaction, CreateRawTransactionResponse, string>(new Requests.CreateRawTransaction(inputs, outputs))
+            return await ExecuteRequest<CreateRawTransaction, CreateRawTransactionResponse, string>(new Requests.CreateRawTransaction(inputs/*AsStr*/, outputs/*AsStr*/))
                 .ConfigureAwait(false);
         }
 
-        public async Task<string> SignTransaction(string transaxtionHash, string[] privateKeys, TxOutput[] outouts)
+        public async Task<SignTransactionResult> SignRawTransactionWithKey(string transaxtionHash, string[] privateKeys, TxOutput[] outouts)
         {
-            var request = new Requests.SignTransactionRequest(transaxtionHash, privateKeys);
+            var request = new Requests.SignTransactionRequest(transaxtionHash, privateKeys, outouts);
 
-            for (uint i = 0; i < outouts.Length; i++)
-            {
-                request.AddOutput(outouts[i]);
-            }
-
-            return await ExecuteRequest<SignTransactionRequest, SignTransactionResponse, string>(request)
+            return await ExecuteRequest<SignTransactionRequest, SignTransactionResponse, SignTransactionResult>(request)
                 .ConfigureAwait(false);
         }
 
@@ -107,20 +74,32 @@ namespace BTCGatewayAPI.Bitcoin
                 .ConfigureAwait(false);
         }
 
-        private async Task<TResponseMessage> ExecuteRequest<TRequest, TResponse, TResponseMessage>(TRequest command)
-            where TRequest : CommandRequest
-            where TResponse : CommandResponse<TResponseMessage>
+        public async Task<List<WalletTransaction>> ListTransactions(string dummy, int count, int skip, bool includeWatchonly)
+        {
+            return await ExecuteRequest<ListTransactionRequest, ListTransactionResponse, List<WalletTransaction>>(
+                new Requests.ListTransactionRequest(dummy, count, skip, includeWatchonly))
+                .ConfigureAwait(false);
+        }
+
+        private async Task<TResponse> ExecuteRequestRaw<TRequest, TResponse>(TRequest command)
         {
             using (var client = GetClient())
             {
                 var response = await client.PostAsJsonAsync(_address, command);
-                var responseObject = await response.Content.ReadAsAsync<TResponse>();
-
-                if (responseObject.Error == null)
-                    return responseObject.Result;
-
-                throw new InvalidOperationException($"Method execution error: {responseObject.Error.Message} [{responseObject.Error.Code}]");
+                return await response.Content.ReadAsAsync<TResponse>();
             }
+        }
+
+        private async Task<TResponseMessage> ExecuteRequest<TRequest, TResponse, TResponseMessage>(TRequest command)
+            where TRequest : CommandRequest
+            where TResponse : CommandResponse<TResponseMessage>
+        {
+
+            var responseObject = await ExecuteRequestRaw<TRequest, TResponse>(command);
+            if (responseObject.Error == null)
+                return responseObject.Result;
+
+            throw new InvalidOperationException($"Method execution error: {responseObject.Error.Message} [{responseObject.Error.Code}]");
         }
 
         private HttpClient GetClient()

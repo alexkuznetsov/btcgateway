@@ -22,5 +22,16 @@ namespace BTCGatewayAPI.Controllers
 
             return Ok(new { status = true });
         }
+
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                paymentService.Dispose();
+            }
+        }
     }
 }

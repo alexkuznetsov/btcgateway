@@ -22,8 +22,8 @@ namespace BTCGatewayAPI.Bitcoin.Models
         //[JsonProperty("scriptPubKey", Order = 5)]
         //public string ScriptPubKey { get; set; }
 
-        [JsonProperty("amount", Order = 6)]
-        public decimal Amount { get; set; }
+        //[JsonProperty("amount", Order = 6)]
+        //public decimal Amount { get; set; }
 
         [JsonProperty("confirmations", Order = 7)]
         public int Confirmations { get; set; }

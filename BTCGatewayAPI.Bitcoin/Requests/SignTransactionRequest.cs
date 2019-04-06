@@ -1,4 +1,5 @@
 ﻿using BTCGatewayAPI.Bitcoin.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,30 +15,17 @@ namespace BTCGatewayAPI.Bitcoin.Requests
     /// </summary>
     internal class SignTransactionRequest : CommandRequest
     {
-        public string Transaction { get; set; }
-        public string[] Keys { get; }
-        public string SigHash { get; }
-        public List<TxOutput> Outputs { get; set; } = new List<TxOutput>();
-
-        public SignTransactionRequest(string txHash, string[] keys, string sigHash = Models.SigHash.ALL) : base(Guid.NewGuid().ToString(), Names.signtransaction)
+        public SignTransactionRequest(string txHash, string[] keys, TxOutput[] outputs, string sigHash = Models.SigHash.ALL) :
+            base(Guid.NewGuid().ToString(), Names.signrawtransactionwithkey)
         {
-            Transaction = txHash;
-            Keys = keys;
-            SigHash = sigHash;
-        }
+            Params = new object[] {
+                txHash,keys, outputs, sigHash
+            };
 
-        public void AddOutput(string txId, int vout, string scriptPubKey, string redeemScript)
-        {
-            Outputs.Add(new TxOutput { Txid = txId, Vout = vout, ScriptPubKey = scriptPubKey, RedeemScript = redeemScript });
-        }
-
-        public void AddOutput(TxOutput txOutput)
-        {
-            Outputs.Add(txOutput);
         }
     }
 
-    public class SignTransactionResponse : CommandResponse<string>
+    public class SignTransactionResponse : CommandResponse<SignTransactionResult>
     {
 
     }

@@ -1,19 +1,22 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BTCGatewayAPI.Models
 {
-    public class IncomeTransaction : Entity
+
+    public class IncomeTransactionId
     {
-        public DateTime Date { get; set; }
+        [Column("id")]
+        public int Id { get; set; }
+    }
 
-        public int WalletId { get; set; }
-
-        public string TxHash { get; set; }
-
+    [Table("income_tx")]
+    public class IncomeTransaction : Transaction
+    {
+        [Column("sender")]
         public string Sender { get; set; }
 
-        public decimal Amount { get; set; }
-
-        public int ConfirmationCount { get; set; }
+        [Column("view_cnt")]
+        public int ViewCount { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace BTCGatewayAPI.Infrastructure.DB
+namespace BTCGatewayAPI.Infrastructure
 {
     internal static class MemberInfoExtensions
     {

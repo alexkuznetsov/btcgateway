@@ -1,5 +1,4 @@
-﻿using BTCGatewayAPI.Infrastructure.DB.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -12,17 +11,24 @@ namespace BTCGatewayAPI.Infrastructure.DB
     {
         public const string DefaultProviderName = "System.Data.SqlClient";
 
+        private static readonly Lazy<Logging.ILogger> LoggerLazy = new Lazy<Logging.ILogger>(Logging.LoggerFactory.GetLogger);
+
+        private static Logging.ILogger Logger => LoggerLazy.Value;
+
         private bool disposed;
         private DbTransaction transaction;
         private readonly DbConnection connection;
         private readonly MapSpecRegistry registry;
+        private readonly IQueryBuilder queryBuilder;
+        private readonly GlobalConf conf;
 
-        public DBContext(MapSpecRegistry registry, DbProviderFactory factory, string connStr)
+        public DBContext(MapSpecRegistry registry, IQueryBuilder queryBuilder, GlobalConf conf, DbProviderFactory factory)
         {
             this.registry = registry;
-
+            this.queryBuilder = queryBuilder;
+            this.conf = conf;
             connection = factory.CreateConnection();
-            connection.ConnectionString = connStr;
+            connection.ConnectionString = conf.ConnectionString.ConnectionString;
         }
 
         #region IDisposable
@@ -54,17 +60,17 @@ namespace BTCGatewayAPI.Infrastructure.DB
 
         #endregion
 
-        public DbTransaction BeginTransaction()
+        public async Task<DbTransaction> BeginTransaction()
         {
-            return BeginTransaction(System.Data.IsolationLevel.Serializable);
+            return await BeginTransaction(System.Data.IsolationLevel.Serializable);
         }
 
-        public DbTransaction BeginTransaction(System.Data.IsolationLevel isolationLevel)
+        public async Task<DbTransaction> BeginTransaction(System.Data.IsolationLevel isolationLevel)
         {
-            if (transaction == null)
-            {
-                transaction = connection.BeginTransaction(isolationLevel);
-            }
+            if (connection.State == System.Data.ConnectionState.Closed)
+                await connection.OpenAsync();
+
+            transaction = connection.BeginTransaction(isolationLevel);
 
             return transaction;
         }
@@ -78,29 +84,32 @@ namespace BTCGatewayAPI.Infrastructure.DB
             if (connection.State == System.Data.ConnectionState.Closed)
                 await connection.OpenAsync();
 
+            if (conf.LogSQL)
+            {
+                Logger.Debug(sql);
+            }
+
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = sql;
                 command.Transaction = transaction;
-
-                foreach (var pValue in parameters)
-                {
-                    var p = command.CreateParameter();
-                    p.ParameterName = pValue.Key;
-                    p.Value = pValue.Value;
-                    command.Parameters.Add(p);
-                }
+                command.FillParameters(parameters);
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
                         var isInvalid = mapSpec.IsInvalid(reader);
+
                         if (isInvalid.Item1)
                         {
-                            var errorColumns = isInvalid.Item2;
-                            continue;
-                            //TODO throw ObjectMapperExeption
+                            var msg = $"Check object mapping. Fail to map: " + string.Join(", ", isInvalid.Item2);
+                            if (conf.LogSQL)
+                            {
+                                Logger.Debug(msg);
+                            }
+
+                            throw new ObjectMapperExeption(msg);
                         }
 
                         readed.Add(mapSpec.Map(reader));
@@ -108,7 +117,7 @@ namespace BTCGatewayAPI.Infrastructure.DB
                 }
             }
 
-            connection.Close();
+            //connection.Close();
 
             return readed;
 
@@ -120,6 +129,7 @@ namespace BTCGatewayAPI.Infrastructure.DB
             var list = await GetMany<TModel>(sql, parameters);
             return list.SingleOrDefault();
         }
+
         /// <summary>
         /// Добавить новую запись
         /// TODO Ускорить выполнение метода, добавив кэширования метаданных
@@ -130,38 +140,11 @@ namespace BTCGatewayAPI.Infrastructure.DB
         public async Task<TModel> Add<TModel>(TModel model)
             where TModel : class, new()
         {
-            var tableName = model.TableName();
             var id = model.GetIdField();
-            var parameters = new List<KeyValuePair<string, object>>();
-            var dictionary = model.AsDictionary();
-            var sql = new StringBuilder("INSERT INTO ");
-            sql.AppendFormat(" [{0}]", tableName);
-            sql.Append('(');
+            var stmt = queryBuilder.BuildInsertStatement(id.Item1, model);
+            var idValue = await ExecuteScalar(stmt.Item1, stmt.Item2.ToArray());
 
-            foreach (var f in dictionary.Where(x => x.Key != id).ToArray())
-            {
-                sql.AppendFormat("{0},", f.Key);
-            }
-
-            sql = sql.Replace(",", "", sql.Length - 1, 1);
-            sql.Append(") VALUES (");
-
-            foreach (var p in dictionary.Where(x => x.Key != id))
-            {
-                var pName = $"p{p.Key}";
-                sql.AppendFormat("@p{1},", p.Key, pName);
-                parameters.Add(new KeyValuePair<string, object>(pName, p.Value));
-            }
-
-            sql = sql.Replace(",", "", sql.Length - 1, 1);
-            sql.AppendFormat("); SELECT SCOPE_IDENTITY()", id, id);
-
-            parameters.Add(new KeyValuePair<string, object>("p" + id, dictionary[id]));
-
-            var idValue = await ExecuteScalar(sql, parameters.ToArray());
-            var idParam = model.GetType().GetProperty(id);
-
-            idParam.SetValue(model, idValue);
+            id.Item2.SetValue(model, idValue);
 
             return model;
         }
@@ -176,87 +159,65 @@ namespace BTCGatewayAPI.Infrastructure.DB
         public async Task<TModel> Update<TModel>(TModel model)
             where TModel : class, new()
         {
-            var tableName = model.TableName();
             var id = model.GetIdField();
-            var parameters = new List<KeyValuePair<string, object>>();
-
-            var updateSQL = new StringBuilder("UPDATE ");
-            updateSQL.AppendFormat(" [{0}] SET", tableName);
-            var dictionary = model.AsDictionary();
-
-            foreach (var p in dictionary.Where(x => x.Key != id))
-            {
-                var pName = $"p{p.Key}";
-                updateSQL.AppendFormat("{0} = @p{1},", p.Key, pName);
-                parameters.Add(new KeyValuePair<string, object>(pName, p.Value));
-            }
-
-            updateSQL = updateSQL.Replace(",", "", updateSQL.Length - 1, 1);
-            updateSQL.AppendFormat(" WHERE {0} = @p{1}", id, id);
-
-            parameters.Add(new KeyValuePair<string, object>("p" + id, dictionary[id]));
-
-            var affected = await ExecuteNonQuery(updateSQL, parameters.ToArray());
+            var stmt = queryBuilder.BuildUpdateStatement(id.Item1, model);
+            var affected = await ExecuteNonQuery(stmt.Item1, stmt.Item2.ToArray());
 
             return model;
         }
 
-        private async Task<int> ExecuteNonQuery(StringBuilder stringBuilder, params KeyValuePair<string, object>[] parameters)
+        public async Task<int> Delete<TModel>(TModel model)
+            where TModel : class, new()
         {
-            if (connection.State == System.Data.ConnectionState.Closed)
-                await connection.OpenAsync();
-
-            var affected = 0;
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = stringBuilder.ToString();
-                command.Transaction = transaction;
-
-                foreach (var pValue in parameters)
-                {
-                    var p = command.CreateParameter();
-                    p.ParameterName = pValue.Key;
-                    p.Value = pValue.Value;
-                    command.Parameters.Add(p);
-                }
-
-                affected = await command.ExecuteNonQueryAsync();
-            }
-
-            connection.Close();
+            var id = model.GetIdField();
+            var idValue = id.Item2.GetValue(model);
+            var stmt = queryBuilder.BuildDeleteStatement(id.Item1, model, idValue);
+            var affected = await ExecuteNonQuery(stmt.Item1, stmt.Item2.ToArray());
 
             return affected;
         }
 
+        private async Task<int> ExecuteNonQuery(StringBuilder stringBuilder, params KeyValuePair<string, object>[] parameters)
+        {
+            return await ExecuteMethod(stringBuilder
+                , async (command) => await command.ExecuteNonQueryAsync().ConfigureAwait(false)
+                , parameters);
+        }
+
         private async Task<int> ExecuteScalar(StringBuilder stringBuilder, params KeyValuePair<string, object>[] parameters)
+        {
+            return await ExecuteMethod(stringBuilder, async (command) =>
+            {
+                var result = await command.ExecuteScalarAsync();
+
+                return Convert.ToInt32(result);
+            }, parameters);
+        }
+
+        private async Task<int> ExecuteMethod(StringBuilder stringBuilder, Func<DbCommand, Task<int>> executor, params KeyValuePair<string, object>[] parameters)
         {
             if (connection.State == System.Data.ConnectionState.Closed)
                 await connection.OpenAsync();
 
-            var value = 0;
+            var returnValue = 0;
 
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = stringBuilder.ToString();
                 command.Transaction = transaction;
+                command.FillParameters(parameters);
 
-                foreach (var pValue in parameters)
+                if (conf.LogSQL)
                 {
-                    var p = command.CreateParameter();
-                    p.ParameterName = pValue.Key;
-                    p.Value = pValue.Value;
-                    command.Parameters.Add(p);
+                    Logger.Debug(command.CommandText);
                 }
 
-                var result = await command.ExecuteScalarAsync();
-
-                value = Convert.ToInt32(result);
+                returnValue = await executor(command);
             }
 
-            connection.Close();
+            //connection.Close();
 
-            return value;
+            return returnValue;
         }
     }
 }

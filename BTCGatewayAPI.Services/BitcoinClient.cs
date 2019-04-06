@@ -5,29 +5,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
-using System.Net.Http;
 
 namespace BTCGatewayAPI.Services
 {
-
-    public class BitcoinClientFactory
-    {
-        private readonly int confTargetForEstimateSmartFee;
-        private readonly DelegatingHandler sharedHadler;
-
-        public BitcoinClientFactory(int confTargetForEstimateSmartFee, DelegatingHandler sharedHadler)
-        {
-            this.confTargetForEstimateSmartFee = confTargetForEstimateSmartFee;
-            this.sharedHadler = sharedHadler;
-        }
-
-        public BitcoinClient Create(Uri uri, string username, string password)
-        {
-            var server = new RPCServer(sharedHadler, uri, username, password);
-            return new BitcoinClient(server, confTargetForEstimateSmartFee);
-        }
-    }
-
     public class BitcoinClient
     {
         private readonly RPCServer rpcServer;
@@ -54,7 +34,7 @@ namespace BTCGatewayAPI.Services
 
             foreach (var u in unspentForWallet)
             {
-                tx.Add(u);
+                tx.Add(new TXInfo { Txid = u.Txid, Vout = u.Vout });
                 spent += u.Amount;
 
                 if (spent >= sendBtcRequest.Amount)
@@ -79,10 +59,15 @@ namespace BTCGatewayAPI.Services
                 });
             }
 
-            return await rpcServer.CreateRawtransaction(tx.ToArray(), reciviers.ToArray());
+            return await rpcServer.CreateRawtransaction(tx.ToArray(), reciviers.ToDictionary(x => x.Address, x => x.Amount));
         }
 
-        public async Task<string> SignTransaction(Unspent[] outputsRaw, string[] privateKeys, string rawTxHash)
+        public async Task<List<WalletTransaction>> ListTransactions(int count = 0, int skip = 0, bool includeWatchOnly = false)
+        {
+            return await rpcServer.ListTransactions("*", count, skip, includeWatchOnly);
+        }
+
+        public async Task<SignTransactionResult> SignRawTransactionWithKey(Unspent[] outputsRaw, string[] privateKeys, string rawTxHash)
         {
             var outputs = new List<TxOutput>();
 
@@ -97,7 +82,7 @@ namespace BTCGatewayAPI.Services
                 });
             }
 
-            return await rpcServer.SignTransaction(rawTxHash, privateKeys, outputs.ToArray());
+            return await rpcServer.SignRawTransactionWithKey(rawTxHash, privateKeys, outputs.ToArray());
         }
 
         public async Task<string> LoadWalletPrivateKeys(string address, string passphrase, int seconds = 10)

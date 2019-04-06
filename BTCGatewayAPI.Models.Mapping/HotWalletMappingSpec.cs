@@ -7,7 +7,7 @@ namespace BTCGatewayAPI.Models.Mapping
         protected override void MapProperties()
         {
             Map(x => x.Address, Transform.GetString/*, false*/);
-            Map(x => x.RPCAddress, Transform.GetUri);
+            Map(x => x.RPCAddress, Transform.GetString);
             Map(x => x.RPCUsername, Transform.GetString);
             Map(x => x.RPCPassword, Transform.GetString);
             Map(x => x.Passphrase, Transform.GetString);

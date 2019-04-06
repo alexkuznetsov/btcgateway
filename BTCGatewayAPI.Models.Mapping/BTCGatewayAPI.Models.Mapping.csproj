@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HotWalletMappingSpec.cs" />
+    <Compile Include="IncomeTransactionIdMappingSpec.cs" />
     <Compile Include="IncomeTransactionMappingSpec.cs" />
     <Compile Include="MappingContainerProfile.cs" />
     <Compile Include="OutcomeTransactionMappingSpec.cs" />
@@ -56,6 +57,9 @@
       <Project>{9d7294ad-e682-48b0-b097-288b0690a5e4}</Project>
       <Name>BTCGatewayAPI.Models</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

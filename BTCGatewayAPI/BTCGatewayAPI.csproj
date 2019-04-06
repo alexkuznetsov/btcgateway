@@ -92,9 +92,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HotWalletsController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
+    <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IncomeTxUpdator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +118,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BTCGatewayAPI.Bitcoin\BTCGatewayAPI.Bitcoin.csproj">
+      <Project>{ac914cf3-6254-4a42-a158-383325e946d0}</Project>
+      <Name>BTCGatewayAPI.Bitcoin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BTCGatewayAPI.Infrastructure\BTCGatewayAPI.Infrastructure.csproj">
       <Project>{a936bf56-d4cd-4276-9c8a-95eebe5017d8}</Project>
       <Name>BTCGatewayAPI.Infrastructure</Name>

@@ -7,14 +7,14 @@ namespace BTCGatewayAPI.Models.Mapping
         protected override void MapProperties()
         {
             Map(x => x.Amount, Transform.GetDecimal/*, false*/);
-            Map(x => x.ConfirmationCount, Transform.GetInt/*, false*/);
+            Map(x => x.Confirmations, Transform.GetInt/*, false*/);
             Map(x => x.CreatedAt, Transform.GetDateTime/*, false*/);
-            Map(x => x.Date, Transform.GetDateTime/*, false*/);
             Map(x => x.Id, Transform.GetInt/*, false*/);
             Map(x => x.Sender, Transform.GetString/*, false*/);
             Map(x => x.TxHash, Transform.GetString/*, false*/);
             Map(x => x.UpdatedAt, Transform.GetDateTimeOrNull);
             Map(x => x.WalletId, Transform.GetInt/*, false*/);
+            Map(x => x.ViewCount, Transform.GetInt);
         }
     }
 }

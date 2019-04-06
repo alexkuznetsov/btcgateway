@@ -53,19 +53,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BticonContainerProfile.cs" />
+    <Compile Include="Models\IncomeTransaction.cs" />
     <Compile Include="Models\SigHash.cs" />
+    <Compile Include="Models\SignTransactionResult.cs" />
     <Compile Include="Models\TxOutput.cs" />
-    <Compile Include="Models\WalletPrivateKey.cs" />
     <Compile Include="Requests\CommandRequest.cs" />
     <Compile Include="Requests\CommandResponseError.cs" />
     <Compile Include="Requests\CommandRespose.cs" />
     <Compile Include="Requests\CreateRawtransaction.cs" />
     <Compile Include="Requests\DumpPrivKeyRequest.cs" />
     <Compile Include="Requests\GetEstimateSmartFeeRequest.cs" />
+    <Compile Include="Requests\ListTransactionRequest.cs" />
     <Compile Include="Requests\ListUnspent.cs" />
     <Compile Include="Models\EstimateSmartFee.cs" />
     <Compile Include="LoggingHandler.cs" />
     <Compile Include="Models\FundRecivier.cs" />
+    <Compile Include="Requests\Names.cs" />
     <Compile Include="Requests\RemovePrunedFundsRequest.cs" />
     <Compile Include="Requests\SendRawTransactionRequest.cs" />
     <Compile Include="Requests\SignTransactionRequest.cs" />
@@ -78,6 +82,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BTCGatewayAPI.Infrastructure\BTCGatewayAPI.Infrastructure.csproj">
+      <Project>{a936bf56-d4cd-4276-9c8a-95eebe5017d8}</Project>
+      <Name>BTCGatewayAPI.Infrastructure</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

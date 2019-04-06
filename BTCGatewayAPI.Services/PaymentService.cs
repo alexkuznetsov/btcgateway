@@ -1,5 +1,4 @@
 ﻿using BTCGatewayAPI.Infrastructure.DB;
-using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;
 using BTCGatewayAPI.Services.Extensions;
 using System;
@@ -10,36 +9,40 @@ namespace BTCGatewayAPI.Services
     public class PaymentService : BaseService
     {
         private readonly BitcoinClientFactory clientFactory;
+        private readonly Infrastructure.GlobalConf conf;
 
-        public PaymentService(DBContext dBContext, BitcoinClientFactory clientFactory) : base(dBContext)
+        public PaymentService(DBContext dBContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dBContext)
         {
             this.clientFactory = clientFactory;
+            this.conf = conf;
         }
 
         public async Task SendAsync(SendBtcRequest sendBtcRequest)
         {
-            var wallet = await GetWallet(sendBtcRequest);
-            var bitcoinClient = clientFactory.Create(wallet.RPCAddress, wallet.RPCUsername, wallet.RPCPassword);
+            var wallet = await DBContext.GetFirstWithBalanceMoreThan(sendBtcRequest.Amount);
+            var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
+            var txHash = await CreateAndSignTransaction(bitcoinClient, wallet.Address, wallet.Passphrase, sendBtcRequest);
             var fee = await bitcoinClient.LoadEstimateSmartFee();
-            var privateKey = await LoadWalletPrivateKeys(bitcoinClient, wallet);
-            var txHash = await CreateAndSignTransaction(bitcoinClient, wallet, new[] { privateKey }, sendBtcRequest);
 
-            using (var tx = DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            var payment = new Models.OutcomeTransaction
+            {
+                Amount = sendBtcRequest.Amount,
+                Recipient = sendBtcRequest.Account,
+                WalletId = wallet.Id,
+                TxHash = txHash,
+                State = Models.OutcomeTransaction.WithdrawState,
+                Fee = fee.Feerate
+            };
+
+            using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
-                    var payment = new Models.OutcomeTransaction
-                    {
-                        Amount = sendBtcRequest.Amount+ fee.Feerate,
-                        Recipient = sendBtcRequest.Account,
-                        WalletId = wallet.Id,
-                        TxHash = txHash
-                    };
+                    //Снимается сумма + комиссия
+                    wallet.Withdraw(sendBtcRequest.Amount + fee.Feerate);
 
-                    wallet.Withdraw(sendBtcRequest.Amount- fee.Feerate);
-
-                    await DBContext.Update(wallet);
-                    await DBContext.Add(payment);
+                    wallet = await DBContext.Update(wallet);
+                    payment = await DBContext.Add(payment);
 
                     tx.Commit();
 
@@ -53,32 +56,32 @@ namespace BTCGatewayAPI.Services
                     throw;
                 }
             }
-        }
 
-        private async Task<string> LoadWalletPrivateKeys(BitcoinClient bitcoinClient, HotWallet wallet)
-        {
-            return await bitcoinClient.LoadWalletPrivateKeys(wallet.Address, wallet.Passphrase);
-        }
-
-        private async Task<HotWallet> GetWallet(SendBtcRequest sendBtcRequest)
-        {
-            var wallet = await DBContext.GetFirstWithBalanceMoreThan(sendBtcRequest.Amount);
-
-            if (wallet != null)
+            using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                return wallet;
-            }
+                try
+                {
+                    payment.State = Models.OutcomeTransaction.CompleteState;
 
-            throw new InvalidOperationException($"No any wallet with the cache balance more or equal {sendBtcRequest.Amount}");
+                    await DBContext.Update(payment);
+                }
+                catch (Exception)
+                {
+                    tx.Rollback();
+                    throw;
+                }
+            }
         }
 
-        private async Task<string> CreateAndSignTransaction(BitcoinClient bitcoinClient, HotWallet w, string[] privateKeys, SendBtcRequest sendBtcRequest)
+        public async Task<string> CreateAndSignTransaction(BitcoinClient bitcoinClient, string address, string passphrase, SendBtcRequest sendBtcRequest)
         {
-            var unspent = await bitcoinClient.GetUnspentTransactionOutputs(w.Address, sendBtcRequest.Amount);
-            var rawTx = await bitcoinClient.CreateTransaction(w.Address, unspent, sendBtcRequest);
-            var signed = await bitcoinClient.SignTransaction(unspent, privateKeys, rawTx);
+            var privateKey = await bitcoinClient.LoadWalletPrivateKeys(address, passphrase, conf.WalletUnlockTime);
+            var fee = await bitcoinClient.LoadEstimateSmartFee();
+            var unspent = await bitcoinClient.GetUnspentTransactionOutputs(address, sendBtcRequest.Amount + fee.Feerate);
+            var rawTx = await bitcoinClient.CreateTransaction(address, unspent, sendBtcRequest);
+            var signed = await bitcoinClient.SignRawTransactionWithKey(unspent, new[] { privateKey }, rawTx);
 
-            return signed;
+            return signed.Hex;
         }
     }
 }

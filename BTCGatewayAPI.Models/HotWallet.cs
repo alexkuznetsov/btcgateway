@@ -21,7 +21,7 @@ namespace BTCGatewayAPI.Models
         public string Address { get; set; }
 
         [Column("rpc_address")]
-        public Uri RPCAddress { get; set; }
+        public string RPCAddress { get; set; }
 
         [Column("rpc_username")]
         public string RPCUsername { get; set; }

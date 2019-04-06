@@ -2,6 +2,7 @@
 using BTCGatewayAPI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BTCGatewayAPI.Services.Extensions;
 
 namespace BTCGatewayAPI.Services
 {
@@ -13,7 +14,7 @@ namespace BTCGatewayAPI.Services
 
         public async Task<IEnumerable<HotWallet>> GetAllWalletsAsync()
         {
-            return await DBContext.GetMany<HotWallet>("select * from [hot_wallets]");
+            return await DBContext.GetAllHotWallets();
         }
     }
 }
