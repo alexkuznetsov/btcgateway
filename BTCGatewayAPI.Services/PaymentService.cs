@@ -21,8 +21,7 @@ namespace BTCGatewayAPI.Services
         {
             var wallet = await DBContext.GetFirstWithBalanceMoreThan(sendBtcRequest.Amount);
             var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var txHash = await CreateAndSignTransaction(bitcoinClient, wallet.Address, wallet.Passphrase, sendBtcRequest);
-            var fee = await bitcoinClient.LoadEstimateSmartFee();
+            (var txHash, var fee) = await CreateTransaction(bitcoinClient, wallet, sendBtcRequest);
 
             var payment = new Models.OutcomeTransaction
             {
@@ -31,7 +30,7 @@ namespace BTCGatewayAPI.Services
                 WalletId = wallet.Id,
                 TxHash = txHash,
                 State = Models.OutcomeTransaction.WithdrawState,
-                Fee = fee.Feerate
+                Fee = fee/*.Feerate*/
             };
 
             using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
@@ -39,7 +38,7 @@ namespace BTCGatewayAPI.Services
                 try
                 {
                     //Снимается сумма + комиссия
-                    wallet.Withdraw(sendBtcRequest.Amount + fee.Feerate);
+                    wallet.Withdraw(sendBtcRequest.Amount + fee/*.Feerate*/);
 
                     wallet = await DBContext.Update(wallet);
                     payment = await DBContext.Add(payment);
@@ -73,15 +72,20 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        public async Task<string> CreateAndSignTransaction(BitcoinClient bitcoinClient, string address, string passphrase, SendBtcRequest sendBtcRequest)
+        public async Task<(string, decimal)> CreateTransaction(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
-            var privateKey = await bitcoinClient.LoadWalletPrivateKeys(address, passphrase, conf.WalletUnlockTime);
-            var fee = await bitcoinClient.LoadEstimateSmartFee();
-            var unspent = await bitcoinClient.GetUnspentTransactionOutputs(address, sendBtcRequest.Amount + fee.Feerate);
-            var rawTx = await bitcoinClient.CreateTransaction(address, unspent, sendBtcRequest);
-            var signed = await bitcoinClient.SignRawTransactionWithKey(unspent, new[] { privateKey }, rawTx);
+            FundTransactionStrategy strategy;
 
-            return signed.Hex;
+            if (conf.UseFundRawTransaction)
+            {
+                strategy = new AutoFundTransactionStrategy(bitcoinClient, conf);
+            }
+            else
+            {
+                strategy = new ManualFundTransactionStrategy(bitcoinClient, conf);
+            }
+
+            return await strategy.CreateAndSignTransaction(hotWallet, sendBtcRequest);
         }
     }
 }

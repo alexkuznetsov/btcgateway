@@ -19,47 +19,9 @@ namespace BTCGatewayAPI.Services
             this.confTargetForEstimateSmartFee = confTargetForEstimateSmartFee;
         }
 
-        public async Task<string> CreateTransaction(string address, Unspent[] unspentForWallet, SendBtcRequest sendBtcRequest)
+        public async Task<string> CreateTransaction(TXInfo[] inputs, Dictionary<string, decimal> outputs)
         {
-            var totalUnspentSum = unspentForWallet.Sum(x => x.Amount);
-            var spentResponse = await LoadEstimateSmartFee();//Т.е. мы уже потратили, это комиссия на транзацкию
-            var spent = spentResponse.Feerate;
-
-            if (totalUnspentSum < (sendBtcRequest.Amount + spent))
-                throw new InvalidOperationException("Operation not allowed, there are not enouth money for transaction");
-
-            var tx = new List<TXInfo>();
-            var reciviers = new List<FundRecivier>();
-            var change = 0M;
-
-            foreach (var u in unspentForWallet)
-            {
-                tx.Add(new TXInfo { Txid = u.Txid, Vout = u.Vout });
-                spent += u.Amount;
-
-                if (spent >= sendBtcRequest.Amount)
-                {
-                    change = spent - sendBtcRequest.Amount;
-                    break;
-                }
-            }
-
-            reciviers.Add(new FundRecivier
-            {
-                Address = sendBtcRequest.Account,
-                Amount = sendBtcRequest.Amount
-            });
-
-            if (change > 0M)
-            {
-                reciviers.Add(new FundRecivier
-                {
-                    Address = address,
-                    Amount = change
-                });
-            }
-
-            return await rpcServer.CreateRawtransaction(tx.ToArray(), reciviers.ToDictionary(x => x.Address, x => x.Amount));
+            return await rpcServer.CreateRawtransaction(inputs, outputs);
         }
 
         public async Task<List<WalletTransaction>> ListTransactions(int count = 0, int skip = 0, bool includeWatchOnly = false)
@@ -111,33 +73,9 @@ namespace BTCGatewayAPI.Services
             return await rpcServer.RemovePrunedFunds(txHash);
         }
 
-        public async Task<Unspent[]> GetUnspentTransactionOutputs(string address, decimal minimalFunds)
+        public async Task<FundRawTransactionResult> FundRawTransaction(string txHash, FundRawTransactionOptions options)
         {
-            var unspentForWallet = await LoadUnspentForAddress(address);
-            var lessers = unspentForWallet.Where(x => x.Amount < minimalFunds);
-            var greaters = unspentForWallet.Where(x => x.Amount >= minimalFunds);
-
-            if (greaters.Any())
-            {
-                return new[]
-                {
-                    greaters.OrderBy(x => x.Amount).First()
-                };
-            }
-
-            var result = new List<Unspent>();
-            var sum = 0M;
-
-            foreach (var u in lessers.OrderByDescending(x => x.Amount))
-            {
-                result.Add(u);
-                sum += u.Amount;
-
-                if (sum >= minimalFunds)
-                    break;
-            }
-
-            return result.ToArray();
+            return await rpcServer.FundRawTransaction(txHash, options);
         }
     }
 }

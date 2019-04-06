@@ -22,6 +22,7 @@ namespace BTCGatewayAPI.Infrastructure
         private int _LogSQL = -1;
         private int _LastTXMinimalConfirmations = -1;
         private int _WalletUnlockTime = -1;
+        private int _UseFundRawTransaction = -1;
 
         public GlobalConf(Func<string, string> settingAccessor, Func<string, CSSettings> connStrAccessor)
         {
@@ -57,6 +58,8 @@ namespace BTCGatewayAPI.Infrastructure
         public bool LogSQL => GetValueAndSetIfNotSet(ref _LogSQL, true);
 
         public int WalletUnlockTime => GetValueAndSetIfNotSet(ref _WalletUnlockTime, 60);
+
+        public bool UseFundRawTransaction => GetValueAndSetIfNotSet(ref _UseFundRawTransaction, true);
 
         private bool GetValueAndSetIfNotSet(ref int target, bool defaultVal, [CallerMemberName]string propName = "")
         {

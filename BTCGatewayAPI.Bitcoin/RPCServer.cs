@@ -81,6 +81,13 @@ namespace BTCGatewayAPI.Bitcoin
                 .ConfigureAwait(false);
         }
 
+        public async Task<FundRawTransactionResult> FundRawTransaction(string txHash, FundRawTransactionOptions options)
+        {
+            return await ExecuteRequest<FundRawTransactionRequest, FundRawTransactionResponse, FundRawTransactionResult>(
+                new Requests.FundRawTransactionRequest(txHash, options))
+                .ConfigureAwait(false);
+        }
+
         private async Task<TResponse> ExecuteRequestRaw<TRequest, TResponse>(TRequest command)
         {
             using (var client = GetClient())

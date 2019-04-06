@@ -54,21 +54,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BticonContainerProfile.cs" />
-    <Compile Include="Models\IncomeTransaction.cs" />
+    <Compile Include="Models\FundRawTransactionOptions.cs" />
+    <Compile Include="Models\FundRawTransactionResult.cs" />
     <Compile Include="Models\SigHash.cs" />
     <Compile Include="Models\SignTransactionResult.cs" />
     <Compile Include="Models\TxOutput.cs" />
+    <Compile Include="Models\WalletTransaction.cs" />
     <Compile Include="Requests\CommandRequest.cs" />
     <Compile Include="Requests\CommandResponseError.cs" />
     <Compile Include="Requests\CommandRespose.cs" />
     <Compile Include="Requests\CreateRawtransaction.cs" />
     <Compile Include="Requests\DumpPrivKeyRequest.cs" />
+    <Compile Include="Requests\FundRawTransactionRequest.cs" />
     <Compile Include="Requests\GetEstimateSmartFeeRequest.cs" />
     <Compile Include="Requests\ListTransactionRequest.cs" />
     <Compile Include="Requests\ListUnspent.cs" />
     <Compile Include="Models\EstimateSmartFee.cs" />
     <Compile Include="LoggingHandler.cs" />
-    <Compile Include="Models\FundRecivier.cs" />
     <Compile Include="Requests\Names.cs" />
     <Compile Include="Requests\RemovePrunedFundsRequest.cs" />
     <Compile Include="Requests\SendRawTransactionRequest.cs" />

@@ -72,7 +72,6 @@
     <Compile Include="DB\DbReaderMappingSpec.Transform.cs" />
     <Compile Include="DB\Extensions\DataRecordExtensions.cs" />
     <Compile Include="DB\Extensions\DbDataReaderExtensions.cs" />
-    <Compile Include="Linq\ProjectorMapping.cs" />
     <Compile Include="Logging\AbstractLogger.cs" />
     <Compile Include="Logging\EventInfoDescriptior.cs" />
     <Compile Include="Logging\ILog.cs" />
@@ -93,15 +92,6 @@
     <Compile Include="GlobalConf.cs" />
     <Compile Include="GlobalExceptionFilterAttribute.cs" />
     <Compile Include="InfrastructureContainerProfile.cs" />
-    <Compile Include="Linq\BaseProjectionMap.cs" />
-    <Compile Include="Linq\BaseProjector.cs" />
-    <Compile Include="Linq\DirectProjection.cs" />
-    <Compile Include="Linq\IProjectionExpression.cs" />
-    <Compile Include="Linq\IQueryableExtensions.cs" />
-    <Compile Include="Linq\MappedProjection.cs" />
-    <Compile Include="Linq\ProjectionExpression.cs" />
-    <Compile Include="Linq\ProjectionMappingAttribute.cs" />
-    <Compile Include="Linq\Projector.cs" />
     <Compile Include="ServiceActivator.cs" />
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="ValidateModelAttribute.cs" />

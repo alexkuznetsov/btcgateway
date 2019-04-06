@@ -83,6 +83,7 @@ namespace BTCGatewayAPI.Tests
         public async Task Test_GetWalletAndMinimunUnspentForAmount()
         {
             var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
+            var conf = _container.Create(typeof(Infrastructure.GlobalConf)) as Infrastructure.GlobalConf;
             var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
@@ -95,7 +96,8 @@ namespace BTCGatewayAPI.Tests
 
             var amountToTransfert = 0.0025M;
             var btcClient = bitcoinClientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var unspents = await btcClient.GetUnspentTransactionOutputs(wallet.Address, amountToTransfert);
+            var strategy = new Services.ManualFundTransactionStrategy(btcClient, conf);
+            var unspents = await strategy.GetUnspentTransactionOutputs(wallet.Address, amountToTransfert);
 
             Assert.IsNotNull(unspents);
             Assert.IsTrue(unspents.Count() > 0);

@@ -41,11 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoFundTransactionStrategy.cs" />
     <Compile Include="BitcoinClient.cs" />
     <Compile Include="BitcoinClientFactory.cs" />
     <Compile Include="Extensions\HotwalletDbContextExtensions.cs" />
     <Compile Include="Extensions\IncomeTransactionDbContextExtensions.cs" />
     <Compile Include="Extensions\OutcomeTransactionDBContextExtensions.cs" />
+    <Compile Include="FundTransactionStrategy.cs" />
+    <Compile Include="ManualFundTransactionStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseService.cs" />
     <Compile Include="HotWalletsService.cs" />

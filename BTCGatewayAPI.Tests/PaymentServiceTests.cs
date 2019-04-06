@@ -51,9 +51,9 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(bitcoinClient);
 
-            var tx = await paymentService.CreateAndSignTransaction(bitcoinClient, wallet.Address, wallet.Passphrase, request);
+            var tx = await paymentService.CreateTransaction(bitcoinClient, wallet, request);
 
-            Assert.IsFalse(string.IsNullOrEmpty(tx));
+            Assert.IsFalse(string.IsNullOrEmpty(tx.Item1));
         }
 
         [TestMethod]
