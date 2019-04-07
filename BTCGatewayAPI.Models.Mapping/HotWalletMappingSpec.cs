@@ -15,6 +15,7 @@ namespace BTCGatewayAPI.Models.Mapping
             Map(x => x.Id, Transform.GetInt/*, false*/);
             Map(x => x.CreatedAt, Transform.GetDateTime/*, false*/);
             Map(x => x.UpdatedAt, Transform.GetDateTimeOrNull);
+            Map(x => x.TxCount, Transform.GetInt);
         }
     }
 }

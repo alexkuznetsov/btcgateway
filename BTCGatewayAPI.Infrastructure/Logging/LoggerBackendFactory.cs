@@ -13,11 +13,7 @@
         /// <returns></returns>
         public static ILoggingBackend Create(string sourceName, string sourceMethod)
         {
-            return new Impl.TraceLoggingBackend(new LoggerBackendActivationContext
-            {
-                SourceMethod = sourceMethod,
-                SourceName = sourceName
-            });
+            return new Impl.TraceLoggingBackend(sourceName, sourceMethod);
         }
     }
 }

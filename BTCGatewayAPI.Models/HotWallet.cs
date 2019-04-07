@@ -4,14 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BTCGatewayAPI.Models
 {
-    [Obsolete]
-    public class HowWalletId
-    {
-        [Column("id")]
-        [Key]
-        public int Id { get; set; }
-    }
-
     [Table("hot_wallets")]
     public class HotWallet : Entity
     {
@@ -19,6 +11,14 @@ namespace BTCGatewayAPI.Models
 
         [Column("address")]
         public string Address { get; set; }
+        
+        [Column("amount")]
+        public decimal Amount { get; set; }
+
+        [Column("tx_count")]
+        public int TxCount { get; set; }
+
+        #region RPC and sec
 
         [Column("rpc_address")]
         public string RPCAddress { get; set; }
@@ -29,11 +29,11 @@ namespace BTCGatewayAPI.Models
         [Column("rpc_password")]
         public string RPCPassword { get; set; }
 
-        [Column("amount")]
-        public decimal Amount { get; set; }
-
         [Column("passphrase")]
         public string Passphrase { get; set; }
+
+        #endregion
+
 
         public void Withdraw(decimal amount)
         {

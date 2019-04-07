@@ -17,7 +17,7 @@ namespace BTCGatewayAPI.Tests
         {
             if (_container == null)
             {
-                _container = BTCGatewayAPI.ObjectRegistryConfig.Configure();
+                _container = ObjectRegistryConfig.Configure();
             }
         }
 
@@ -26,7 +26,7 @@ namespace BTCGatewayAPI.Tests
         {
             if (_container != null)
             {
-                BTCGatewayAPI.ObjectRegistryConfig.Shutdown();
+                ObjectRegistryConfig.Shutdown();
                 _container = null;
             }
         }
@@ -35,14 +35,14 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletAndFeeRate()
         {
-            var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
+            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
             var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
             Assert.IsTrue(wallet.Id == 1);
 
-            var bitcoinClientFactory = _container.Create(typeof(Services.BitcoinClientFactory)) as Services.BitcoinClientFactory;
+            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 
@@ -58,14 +58,14 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletAndAllUnspentForWalletAddress()
         {
-            var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
+            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
             var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
             Assert.IsTrue(wallet.Id == 1);
 
-            var bitcoinClientFactory = _container.Create(typeof(Services.BitcoinClientFactory)) as Services.BitcoinClientFactory;
+            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 
@@ -82,15 +82,15 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletAndMinimunUnspentForAmount()
         {
-            var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
-            var conf = _container.Create(typeof(Infrastructure.GlobalConf)) as Infrastructure.GlobalConf;
+            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
+            var conf = _container.Create<Infrastructure.GlobalConf>();
             var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
             Assert.IsTrue(wallet.Id == 1);
 
-            var bitcoinClientFactory = _container.Create(typeof(Services.BitcoinClientFactory)) as Services.BitcoinClientFactory;
+            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 
@@ -110,14 +110,14 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletPrivateKey()
         {
-            var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
+            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
             var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
             Assert.IsTrue(wallet.Id == 1);
 
-            var bitcoinClientFactory = _container.Create(typeof(Services.BitcoinClientFactory)) as Services.BitcoinClientFactory;
+            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 

@@ -1,9 +1,8 @@
 ﻿using BTCGatewayAPI.Infrastructure.Container;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Tests
 {
@@ -35,8 +34,7 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_CreateFakeHotWallet()
         {
-            var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
-
+            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
             var hotWallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where address=@id",
                 new KeyValuePair<string, object>("id", "fake"));
 

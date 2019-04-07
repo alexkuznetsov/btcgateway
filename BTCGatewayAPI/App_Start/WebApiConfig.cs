@@ -1,11 +1,8 @@
 ﻿using BTCGatewayAPI.Infrastructure;
 using BTCGatewayAPI.Infrastructure.Container;
-using BTCGatewayAPI.Infrastructure.DB;
-using System.Configuration;
-using System.Data.Common;
 using System.Web.Http;
-using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
+using System.Web.Http.ExceptionHandling;
 
 namespace BTCGatewayAPI
 {
@@ -15,9 +12,10 @@ namespace BTCGatewayAPI
         {
             // Web API configuration and services
             config.Filters.Add(new ValidateModelAttribute());
-            config.Filters.Add(new GlobalExceptionFilterAttribute());
 
             config.Services.Replace(typeof(IHttpControllerActivator), new Infrastructure.ServiceActivator(config, objectFactory));
+            config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+            config.Services.Replace(typeof(IExceptionLogger), new UnhandledExceptionLogger());
 
             // Web API routes
             config.MapHttpAttributeRoutes();

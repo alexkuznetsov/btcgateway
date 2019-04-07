@@ -9,17 +9,22 @@ namespace BTCGatewayAPI
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
+        private IncomeTxUpdator updator;
+
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(new Action<HttpConfiguration>((c) =>
+            var factory = ObjectRegistryConfig.Configure();
+            GlobalConfiguration.Configure((c) =>
             {
-                var factory = ObjectRegistryConfig.Configure();
                 WebApiConfig.Register(c, factory);
-            }));
+            });
+            updator = new IncomeTxUpdator(factory);
         }
 
         protected void Application_End()
         {
+            updator.Stop(true);
+            updator.Dispose();
             ObjectRegistryConfig.Shutdown();
         }
 

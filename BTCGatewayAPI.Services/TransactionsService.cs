@@ -15,7 +15,10 @@ namespace BTCGatewayAPI.Services
 
         public async Task<LastTransactionDTO[]> GetLastTransactions()
         {
-            return await DBContext.GetNewIncomeTransactions(conf.MinimalConfirmations).ConfigureAwait(false);
+            using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.ReadUncommitted))
+            {
+                return await DBContext.GetNewIncomeTransactions(conf.MinimalConfirmations);
+            }
         }
     }
 }

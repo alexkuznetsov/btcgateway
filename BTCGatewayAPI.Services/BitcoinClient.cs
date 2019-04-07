@@ -1,35 +1,33 @@
 ﻿using BTCGatewayAPI.Bitcoin;
 using BTCGatewayAPI.Bitcoin.Models;
-using BTCGatewayAPI.Models.Requests;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
 
 namespace BTCGatewayAPI.Services
 {
     public class BitcoinClient
     {
-        private readonly RPCServer rpcServer;
-        private readonly int confTargetForEstimateSmartFee;
+        private readonly RPCServer _rpcServer;
+        private readonly Infrastructure.GlobalConf _conf;
 
-        public BitcoinClient(RPCServer rpcServer, int confTargetForEstimateSmartFee)
+        public BitcoinClient(RPCServer rpcServer, Infrastructure.GlobalConf conf)
         {
-            this.rpcServer = rpcServer;
-            this.confTargetForEstimateSmartFee = confTargetForEstimateSmartFee;
+            _rpcServer = rpcServer;
+            _conf = conf;
         }
 
-        public async Task<string> CreateTransaction(TXInfo[] inputs, Dictionary<string, decimal> outputs)
+        public Task<string> CreateTransaction(TXInfo[] inputs, Dictionary<string, decimal> outputs)
         {
-            return await rpcServer.CreateRawtransaction(inputs, outputs);
+            return _rpcServer.CreateRawtransaction(inputs, outputs);
         }
 
-        public async Task<List<WalletTransaction>> ListTransactions(int count = 0, int skip = 0, bool includeWatchOnly = false)
+        public Task<List<WalletTransaction>> ListTransactions(int count = 0, int skip = 0, bool includeWatchOnly = false)
         {
-            return await rpcServer.ListTransactions("*", count, skip, includeWatchOnly);
+            return _rpcServer.ListTransactions("*", count, skip, includeWatchOnly);
         }
 
-        public async Task<SignTransactionResult> SignRawTransactionWithKey(Unspent[] outputsRaw, string[] privateKeys, string rawTxHash)
+        public Task<SignTransactionResult> SignRawTransactionWithKey(Unspent[] outputsRaw, string[] privateKeys, string rawTxHash)
         {
             var outputs = new List<TxOutput>();
 
@@ -44,38 +42,43 @@ namespace BTCGatewayAPI.Services
                 });
             }
 
-            return await rpcServer.SignRawTransactionWithKey(rawTxHash, privateKeys, outputs.ToArray());
+            return _rpcServer.SignRawTransactionWithKey(rawTxHash, privateKeys, outputs.ToArray());
+        }
+
+        public Task<WalletInfoResult> GetWalletInfo()
+        {
+            return _rpcServer.GetWalletInfo();
         }
 
         public async Task<string> LoadWalletPrivateKeys(string address, string passphrase, int seconds = 10)
         {
-            await rpcServer.WalletPassphrase(passphrase, seconds);
-            return await rpcServer.DumpPrivKey(address);
+            await _rpcServer.WalletPassphrase(passphrase, seconds);
+            return await _rpcServer.DumpPrivKey(address);
         }
 
-        public async Task<string> SendRawTransaction(string txHash)
+        public Task<string> SendRawTransaction(string txHash)
         {
-            return await rpcServer.SendRawTransaction(txHash);
+            return _rpcServer.SendRawTransaction(txHash);
         }
 
-        public async Task<List<Unspent>> LoadUnspentForAddress(string address)
+        public Task<List<Unspent>> LoadUnspentForAddress(string address)
         {
-            return await rpcServer.ListUnspent(address);
+            return _rpcServer.ListUnspent(address);
         }
 
-        public async Task<EstimateSmartFee> LoadEstimateSmartFee()
+        public Task<EstimateSmartFee> LoadEstimateSmartFee()
         {
-            return await rpcServer.EstimateSmartFee(confTargetForEstimateSmartFee);
+            return _rpcServer.EstimateSmartFee(_conf.ConfTargetForEstimateSmartFee);
         }
 
-        public async Task<string> RemovePrunedFunds(string txHash)
+        public Task<string> RemovePrunedFunds(string txHash)
         {
-            return await rpcServer.RemovePrunedFunds(txHash);
+            return _rpcServer.RemovePrunedFunds(txHash);
         }
 
-        public async Task<FundRawTransactionResult> FundRawTransaction(string txHash, FundRawTransactionOptions options)
+        public Task<FundRawTransactionResult> FundRawTransaction(string txHash, FundRawTransactionOptions options)
         {
-            return await rpcServer.FundRawTransaction(txHash, options);
+            return _rpcServer.FundRawTransaction(txHash, options);
         }
     }
 }

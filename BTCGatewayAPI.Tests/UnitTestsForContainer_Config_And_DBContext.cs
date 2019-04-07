@@ -31,7 +31,7 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public void Test_IsConfigurationLoadedSuccessefully()
         {
-            var conf = _container.Create(typeof(Infrastructure.GlobalConf)) as Infrastructure.GlobalConf;
+            var conf = _container.Create<Infrastructure.GlobalConf>();
             Assert.IsNotNull(conf);
             Assert.IsNotNull(conf.ConnectionString);
             Assert.IsFalse(string.IsNullOrEmpty(conf.DefaultSQLCS), "Default connection string name");
@@ -42,7 +42,7 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public void Test_DbContextSucessefullyLoadedAndNotNull()
         {
-            var dbSerice = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
+            var dbSerice = _container.Create<Infrastructure.DB.DBContext>();
             Assert.IsNotNull(dbSerice);
         }
     }

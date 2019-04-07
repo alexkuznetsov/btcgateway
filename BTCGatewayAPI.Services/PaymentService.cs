@@ -1,4 +1,5 @@
-﻿using BTCGatewayAPI.Infrastructure.DB;
+﻿using BTCGatewayAPI.Bitcoin;
+using BTCGatewayAPI.Infrastructure.DB;
 using BTCGatewayAPI.Models.Requests;
 using BTCGatewayAPI.Services.Extensions;
 using System;
@@ -10,6 +11,9 @@ namespace BTCGatewayAPI.Services
     {
         private readonly BitcoinClientFactory clientFactory;
         private readonly Infrastructure.GlobalConf conf;
+
+        private static readonly Lazy<Infrastructure.Logging.ILogger> LoggerLazy = new Lazy<Infrastructure.Logging.ILogger>(Infrastructure.Logging.LoggerFactory.GetLogger);
+        private static Infrastructure.Logging.ILogger Logger => LoggerLazy.Value;
 
         public PaymentService(DBContext dBContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dBContext)
         {
@@ -23,6 +27,7 @@ namespace BTCGatewayAPI.Services
             var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
             (var txHash, var fee) = await CreateTransaction(bitcoinClient, wallet, sendBtcRequest);
 
+            //В целом, это делать не нужно, т.к. синхронизация сделает это за нас, подже.
             var payment = new Models.OutcomeTransaction
             {
                 Amount = sendBtcRequest.Amount,
@@ -33,6 +38,8 @@ namespace BTCGatewayAPI.Services
                 Fee = fee/*.Feerate*/
             };
 
+            var isSuccess = false;
+
             using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 try
@@ -40,17 +47,38 @@ namespace BTCGatewayAPI.Services
                     //Снимается сумма + комиссия
                     wallet.Withdraw(sendBtcRequest.Amount + fee/*.Feerate*/);
 
-                    wallet = await DBContext.Update(wallet);
-                    payment = await DBContext.Add(payment);
+                    (isSuccess, wallet) = await TryToPerform(
+                        action: () => DBContext.Update(wallet),
+                        onError: (ex) => Logger.Error(ex, "Error to update wallet information, trying again. Request: " + sendBtcRequest),
+                        triesCount: 3);
+
+                    if (!isSuccess)
+                    {
+                        Logger.Error("Wallet with id: " + wallet.Id + " can not be updated. Request: " + sendBtcRequest);
+                    }
+
+                    (isSuccess, payment) = await TryToPerform(
+                        action: () => DBContext.Add(payment),
+                        onError: (ex) => Logger.Error(ex, "Error to add output transaction information, trying again. Request: " + sendBtcRequest),
+                        triesCount: 3);
+
+                    if (!isSuccess)
+                    {
+                        Logger.Error("Output transaction fow wallet with id: " + wallet.Id + " can not be saved. Request: " + sendBtcRequest);
+                    }
 
                     tx.Commit();
 
                     await bitcoinClient.SendRawTransaction(txHash);
                 }
-                catch (Exception)
+                catch (RPCServerException)
                 {
                     //removeprunedfunds 
                     await bitcoinClient.RemovePrunedFunds(txHash);
+                    throw;
+                }
+                catch (Exception)
+                {
                     tx.Rollback();
                     throw;
                 }
@@ -62,7 +90,15 @@ namespace BTCGatewayAPI.Services
                 {
                     payment.State = Models.OutcomeTransaction.CompleteState;
 
-                    await DBContext.Update(payment);
+                    (isSuccess, payment) = await TryToPerform(
+                        action: () => DBContext.Update(payment),
+                        onError: (ex) => Logger.Error(ex, "Error to update output transaction with id " + payment.Id + ". Changing state to compleate, trying again..."),
+                        triesCount: 3);
+
+                    if (!isSuccess)
+                    {
+                        Logger.Error("Error to update output transaction with id " + payment.Id + ". Changing state to compleate fails.");
+                    }
                 }
                 catch (Exception)
                 {
@@ -72,7 +108,7 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        public async Task<(string, decimal)> CreateTransaction(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
+        public Task<(string, decimal)> CreateTransaction(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
             FundTransactionStrategy strategy;
 
@@ -85,7 +121,7 @@ namespace BTCGatewayAPI.Services
                 strategy = new ManualFundTransactionStrategy(bitcoinClient, conf);
             }
 
-            return await strategy.CreateAndSignTransaction(hotWallet, sendBtcRequest);
+            return strategy.CreateAndSignTransaction(hotWallet, sendBtcRequest);
         }
     }
 }

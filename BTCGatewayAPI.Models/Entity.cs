@@ -6,8 +6,8 @@ namespace BTCGatewayAPI.Models
 {
     public abstract class Entity
     {
-        [Column("id")]
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
         [Column("created_at")]

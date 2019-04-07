@@ -6,19 +6,16 @@ namespace BTCGatewayAPI.Services
 {
     public class BitcoinClientFactory
     {
-        private readonly int confTargetForEstimateSmartFee;
+        private readonly Infrastructure.GlobalConf conf;
         private readonly DelegatingHandler sharedHadler;
 
-        public BitcoinClientFactory(int confTargetForEstimateSmartFee, DelegatingHandler sharedHadler)
+        public BitcoinClientFactory(Infrastructure.GlobalConf conf, DelegatingHandler sharedHadler)
         {
-            this.confTargetForEstimateSmartFee = confTargetForEstimateSmartFee;
+            this.conf = conf;
             this.sharedHadler = sharedHadler;
         }
 
         public BitcoinClient Create(Uri uri, string username, string password)
-        {
-            var server = new RPCServer(sharedHadler, uri, username, password);
-            return new BitcoinClient(server, confTargetForEstimateSmartFee);
-        }
+            => new BitcoinClient(new RPCServer(sharedHadler, uri, username, password), conf);
     }
 }

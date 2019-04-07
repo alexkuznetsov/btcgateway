@@ -21,28 +21,22 @@ namespace BTCGatewayAPI.Bitcoin
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (conf.LogRequests)
-            {
-                Logger.Info($"Request: {request}");
+            Logger.Trace($"Request: {request}");
 
-                if (request.Content != null)
-                {
-                    var cnt = await request.Content.ReadAsStringAsync();
-                    Logger.Info(cnt);
-                }
+            if (request.Content != null)
+            {
+                var cnt = await request.Content.ReadAsStringAsync();
+                Logger.Trace(cnt);
             }
 
             HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 
-            if (conf.LogRequests)
-            {
-                Logger.Info($"Response: {response}");
+            Logger.Trace($"Response: {response}");
 
-                if (response.Content != null)
-                {
-                    var cnt = await response.Content.ReadAsStringAsync();
-                    Logger.Info(cnt);
-                }
+            if (response.Content != null)
+            {
+                var cnt = await response.Content.ReadAsStringAsync();
+                Logger.Trace(cnt);
             }
 
             return response;

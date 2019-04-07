@@ -7,10 +7,10 @@ namespace BTCGatewayAPI.Infrastructure.Logging.Impl
     {
         private readonly string _sourceMethodName;
 
-        public TraceLoggingBackend(LoggerBackendActivationContext context)
+        public TraceLoggingBackend(string sourceName, string sourceMethod)
         {
-            SourceName = context.SourceName;
-            _sourceMethodName = context.SourceMethod;
+            SourceName = sourceName;
+            _sourceMethodName = sourceMethod;
         }
 
         public string SourceName { get; }
@@ -44,7 +44,6 @@ namespace BTCGatewayAPI.Infrastructure.Logging.Impl
         {
             System.Diagnostics.Trace.WriteLine(FormatMessage(ASource, AMessage, exc, parameters), level.ToString());
         }
-
 
         private StringBuilder FormatMessage(string aSource, string aMessage, Exception exception, object[] parameters)
         {

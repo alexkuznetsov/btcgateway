@@ -35,9 +35,9 @@ SELECT id
             }).ToArray();
         }
 
-        public static async Task<Models.IncomeTransactionId> FindIncomeTxIdByTxid(this DBContext dbContext, string txid)
+        public static Task<Models.IncomeTransactionId> FindIncomeTxIdByTxid(this DBContext dbContext, string txid)
         {
-            return await dbContext.Find<Models.IncomeTransactionId>("select id from [income_tx] where tx_hash=@tx_hash",
+            return dbContext.Find<Models.IncomeTransactionId>("select id from [income_tx] where tx_hash=@tx_hash",
                                 new KeyValuePair<string, object>("tx_hash", txid));
         }
     }

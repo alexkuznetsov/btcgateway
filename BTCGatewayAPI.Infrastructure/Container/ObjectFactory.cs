@@ -6,14 +6,10 @@ namespace BTCGatewayAPI.Infrastructure.Container
     {
         private readonly ObjectRegistry registry;
 
-        public ObjectFactory(ObjectRegistry registry)
-        {
-            this.registry = registry;
-        }
+        public ObjectFactory(ObjectRegistry registry) => this.registry = registry;
 
-        public object Create(Type type)
-        {
-            return registry.GetService(type);
-        }
+        public object Create(Type type) => registry.GetService(type);
+
+        public TService Create<TService>() => (TService)Create(typeof(TService));
     }
 }

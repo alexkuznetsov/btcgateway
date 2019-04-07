@@ -15,7 +15,7 @@ namespace BTCGatewayAPI.Tests
         {
             if (_container == null)
             {
-                _container = BTCGatewayAPI.ObjectRegistryConfig.Configure();
+                _container = ObjectRegistryConfig.Configure();
             }
         }
 
@@ -24,7 +24,7 @@ namespace BTCGatewayAPI.Tests
         {
             if (_container != null)
             {
-                BTCGatewayAPI.ObjectRegistryConfig.Shutdown();
+                ObjectRegistryConfig.Shutdown();
                 _container = null;
             }
         }
@@ -32,8 +32,7 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_DownloadingTransactionsWithoutError()
         {
-            var service = _container.Create(typeof(Services.SyncBTCTransactinsService))
-                 as Services.SyncBTCTransactinsService;
+            var service = _container.Create<Services.SyncBTCTransactinsService>();
 
             Assert.IsNotNull(service);
 
@@ -41,7 +40,7 @@ namespace BTCGatewayAPI.Tests
 
             try
             {
-                await service.Download();
+                await service.DownloadAsync();
                 result = true;
             }
             catch (Exception ex)

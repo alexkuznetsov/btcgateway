@@ -7,6 +7,8 @@ namespace BTCGatewayAPI.Infrastructure.Logging
     /// </summary>
     public interface ILogger : ILog
     {
+        bool CanLog(LogEntryTypeLevel level);
+
         #region Info
 
         void Info(string message);
@@ -19,7 +21,6 @@ namespace BTCGatewayAPI.Infrastructure.Logging
         void InfoSource(string sourceName, string message, params object[] arguments);
 
         #endregion
-
 
         #region Warn
 
@@ -90,6 +91,19 @@ namespace BTCGatewayAPI.Infrastructure.Logging
         void DebugSource(string sourceName, string message, object arg1);
         void DebugSource(string sourceName, string message, object arg1, object arg2);
         void DebugSource(string sourceName, string message, params object[] arguments);
+
+        #endregion
+
+        #region Trace
+
+        void Trace(string message);
+        void Trace(string message, object arg1);
+        void Trace(string message, object arg1, object arg2);
+        void Trace(string message, params object[] arguments);
+        void TraceSource(string sourceName, string message);
+        void TraceSource(string sourceName, string message, object arg1);
+        void TraceSource(string sourceName, string message, object arg1, object arg2);
+        void TraceSource(string sourceName, string message, params object[] arguments);
 
         #endregion
     }

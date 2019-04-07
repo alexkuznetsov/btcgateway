@@ -59,6 +59,7 @@
     <Compile Include="Models\SigHash.cs" />
     <Compile Include="Models\SignTransactionResult.cs" />
     <Compile Include="Models\TxOutput.cs" />
+    <Compile Include="Models\WalletInfoResult.cs" />
     <Compile Include="Models\WalletTransaction.cs" />
     <Compile Include="Requests\CommandRequest.cs" />
     <Compile Include="Requests\CommandResponseError.cs" />
@@ -75,11 +76,13 @@
     <Compile Include="Requests\RemovePrunedFundsRequest.cs" />
     <Compile Include="Requests\SendRawTransactionRequest.cs" />
     <Compile Include="Requests\SignTransactionRequest.cs" />
+    <Compile Include="Requests\WalletInfoRequest.cs" />
     <Compile Include="Requests\WalletPassphraseRequest.cs" />
     <Compile Include="RPCServer.cs" />
     <Compile Include="Models\TXInfo.cs" />
     <Compile Include="Models\Unspent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RPCServerException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

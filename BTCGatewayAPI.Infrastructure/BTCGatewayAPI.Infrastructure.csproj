@@ -72,15 +72,14 @@
     <Compile Include="DB\DbReaderMappingSpec.Transform.cs" />
     <Compile Include="DB\Extensions\DataRecordExtensions.cs" />
     <Compile Include="DB\Extensions\DbDataReaderExtensions.cs" />
+    <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="Logging\AbstractLogger.cs" />
-    <Compile Include="Logging\EventInfoDescriptior.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\ILoggingBackend.cs" />
     <Compile Include="Logging\Impl\TraceLoggingBackend.cs" />
     <Compile Include="Logging\LogEntryTypeLevel.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\LoggerBackendActivationContext.cs" />
     <Compile Include="Logging\LoggerBackendFactory.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="ObjectExtensions.cs" />
@@ -90,10 +89,10 @@
     <Compile Include="DB\MSSQLServerQueryBuilder.cs" />
     <Compile Include="DB\ObjectMapperExeption.cs" />
     <Compile Include="GlobalConf.cs" />
-    <Compile Include="GlobalExceptionFilterAttribute.cs" />
     <Compile Include="InfrastructureContainerProfile.cs" />
     <Compile Include="ServiceActivator.cs" />
     <Compile Include="TypeExtensions.cs" />
+    <Compile Include="UnhandledExceptionLogger.cs" />
     <Compile Include="ValidateModelAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

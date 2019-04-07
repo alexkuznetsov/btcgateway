@@ -5,6 +5,8 @@ namespace BTCGatewayAPI.Infrastructure.Logging
 {
     public class LoggerFactory
     {
+        private const string MSCorLib = "mscorlib.dll";
+
         /// <summary>
         /// Фабрика
         /// </summary>
@@ -32,7 +34,7 @@ namespace BTCGatewayAPI.Infrastructure.Logging
                 framesToSkip++;
                 sourceName = declaringType.FullName;
                 sourceMethod = method.Name;
-            } while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+            } while (declaringType.Module.Name.Equals(MSCorLib, StringComparison.OrdinalIgnoreCase));
 
             var backend = LoggerBackendFactory.Create(sourceName, sourceMethod);
 

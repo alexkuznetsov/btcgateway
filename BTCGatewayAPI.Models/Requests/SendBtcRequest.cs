@@ -11,7 +11,7 @@ namespace BTCGatewayAPI.Models.Requests
         public string Account { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessageResourceName = nameof(Messages.SendBtcRequest_AmountCanNotBeEmpty), ErrorMessageResourceType = typeof(Messages))]
-        [Range(0, double.MaxValue, ErrorMessageResourceName = nameof(Messages.SendBtcRequest_MoneyFormatShouldBeValid), ErrorMessageResourceType = typeof(Messages))]
+        [Range(0.00001D, double.MaxValue, ErrorMessageResourceName = nameof(Messages.SendBtcRequest_MoneyFormatShouldBeValid), ErrorMessageResourceType = typeof(Messages))]
         public decimal Amount { get; set; }
 
         public override string ToString()

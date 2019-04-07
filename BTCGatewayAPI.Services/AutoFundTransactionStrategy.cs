@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BTCGatewayAPI.Infrastructure;
+﻿using BTCGatewayAPI.Infrastructure;
 using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {

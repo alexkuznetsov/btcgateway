@@ -30,13 +30,12 @@ namespace BTCGatewayAPI.Tests
             }
         }
 
-
         [TestMethod]
         public async Task Test_CreateTransaction()
         {
-            var dbContext = _container.Create(typeof(Infrastructure.DB.DBContext)) as Infrastructure.DB.DBContext;
-            var clientFactory = _container.Create(typeof(Services.BitcoinClientFactory)) as Services.BitcoinClientFactory;
-            var paymentService = _container.Create(typeof(Services.PaymentService)) as Services.PaymentService;
+            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
+            var clientFactory = _container.Create<Services.BitcoinClientFactory>();
+            var paymentService = _container.Create<Services.PaymentService>();
 
             Assert.IsNotNull(dbContext);
             Assert.IsNotNull(clientFactory);

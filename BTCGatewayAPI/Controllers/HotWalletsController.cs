@@ -42,6 +42,7 @@ namespace BTCGatewayAPI.Controllers
         {
             var cs = ConfigurationManager.ConnectionStrings["DefaultSQL"].ConnectionString;
             var wallets = new List<Models.HotWallet>();
+
             using (var dbCon = new System.Data.SqlClient.SqlConnection(cs))
             {
                 await dbCon.OpenAsync();

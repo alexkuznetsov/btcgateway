@@ -12,5 +12,6 @@
         public const string dumpprivkey = nameof(dumpprivkey);
         public const string listtransactions = nameof(listtransactions);
         public const string fundrawtransaction = nameof(fundrawtransaction);
+        public const string getwalletinfo = nameof(getwalletinfo);
     }
 }

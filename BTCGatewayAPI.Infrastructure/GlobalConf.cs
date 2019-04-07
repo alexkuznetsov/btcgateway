@@ -14,7 +14,6 @@ namespace BTCGatewayAPI.Infrastructure
         private readonly Func<string, string> _accessor;
         private readonly Func<string, CSSettings> _connStrAccessor;
 
-        private int _logRPCRequests = -1;
         private int _ConfTargetForEstimateSmartFee = -1;
         private CSSettings _ConnectionString;
         private int _MinimalConfirmations = -1;
@@ -46,8 +45,6 @@ namespace BTCGatewayAPI.Infrastructure
         }
 
         public int ConfTargetForEstimateSmartFee => GetValueAndSetIfNotSet(ref _ConfTargetForEstimateSmartFee, 6);
-
-        public bool LogRequests => GetValueAndSetIfNotSet(ref _logRPCRequests, true);
 
         public int MinimalConfirmations => GetValueAndSetIfNotSet(ref _MinimalConfirmations, 6);
 

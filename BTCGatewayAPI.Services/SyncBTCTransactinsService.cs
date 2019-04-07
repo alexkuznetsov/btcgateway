@@ -7,7 +7,8 @@ namespace BTCGatewayAPI.Services
 {
     /// <summary>
     /// Данный класс забирает все транзации с bitcoind и складывает их в базу.
-    /// От данного подохода лучше избавиться и получать информацию по транзакциям через ZMQ
+    /// От данного подохода лучше избавиться и получать информацию по транзакциям через ZMQ, что архитектурно вернее
+    /// и позволит значительно упростить код.
     /// </summary>
     public class SyncBTCTransactinsService : BaseService
     {
@@ -26,11 +27,11 @@ namespace BTCGatewayAPI.Services
             this.globalConf = globalConf;
         }
 
-        public async Task Download()
+        public async Task DownloadAsync()
         {
             var allHotWallets = await DBContext.GetAllHotWallets();
 
-            using (var dbtx = await DBContext.BeginTransaction())
+            using (var dbtx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
@@ -39,26 +40,43 @@ namespace BTCGatewayAPI.Services
                         var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
                         var transactions = await bitcoinClient.ListTransactions();
 
+                        var isSuccess = false;
+
                         foreach (var tx in transactions.Where(x => x.Address == wallet.Address))
                         {
                             if (tx.IsRecive())
                             {
-                                await ProcessRecieveTx(wallet.Id, tx);
+                                isSuccess = await TryToPerform(
+                                    action: () => ProcessRecieveTx(wallet.Id, tx),
+                                    onError: (ex) => Logger.Error(ex, "Error to process income transaction"),
+                                    triesCount: 3);
+
+                                if (!isSuccess)
+                                {
+                                    Logger.Error("Can not to process input tx with txid" + tx.Txid);
+                                }
                             }
                             else if (tx.IsSend())
                             {
-                                await ProcessSendTx(wallet.Id, tx);
+                                isSuccess = await TryToPerform(
+                                    action: () => ProcessSendTx(wallet.Id, tx),
+                                    onError: (ex) => Logger.Error(ex, "Error to process outcome transaction"),
+                                    triesCount: 3);
+
+                                if (!isSuccess)
+                                {
+                                    Logger.Error("Can not to process output tx with txid" + tx.Txid);
+                                }
                             }
                             else
-                                throw new InvalidOperationException("Transaction type without handler");
+                                throw new InvalidOperationException("Transaction type without process handler: " + tx.Category);
                         }
                     }
 
                     dbtx.Commit();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Logger.Error(ex);
                     dbtx.Rollback();
                     throw;
                 }

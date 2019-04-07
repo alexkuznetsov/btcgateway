@@ -11,7 +11,7 @@ namespace BTCGatewayAPI.Services
             {
                 var service = (LoggingHandler)r.GetService(typeof(LoggingHandler));
                 var conf = r.GetService<Infrastructure.GlobalConf>();
-                return new BitcoinClientFactory(conf.ConfTargetForEstimateSmartFee, service);
+                return new BitcoinClientFactory(conf, service);
             });
         }
     }

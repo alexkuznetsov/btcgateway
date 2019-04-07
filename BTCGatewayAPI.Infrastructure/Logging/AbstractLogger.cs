@@ -9,6 +9,8 @@ namespace BTCGatewayAPI.Infrastructure.Logging
     {
         public abstract string SourceName { get; }
 
+        public abstract bool CanLog(LogEntryTypeLevel level);
+
         public abstract void SetParam(string name, string value);
 
         public abstract void Write(string ASource, string AMessage, Exception exc, LogEntryTypeLevel level);
@@ -56,6 +58,50 @@ namespace BTCGatewayAPI.Infrastructure.Logging
         public void DebugSource(string sourceName, string message, params object[] arguments)
         {
             Write(sourceName, message, null, LogEntryTypeLevel.Debug, arguments);
+        }
+
+        #endregion
+
+        #region Trace
+
+        public void Trace(string message)
+        {
+            Write(SourceName, message, null, LogEntryTypeLevel.Trace);
+        }
+
+        public void Trace(string message, object arg1)
+        {
+            Write(SourceName, message, null, LogEntryTypeLevel.Trace, arg1);
+        }
+
+        public void Trace(string message, object arg1, object arg2)
+        {
+            Write(SourceName, message, null, LogEntryTypeLevel.Trace, arg1, arg2);
+        }
+
+        public void Trace(string message, params object[] arguments)
+        {
+            Write(SourceName, message, null, LogEntryTypeLevel.Trace, arguments);
+        }
+
+        public void TraceSource(string sourceName, string message)
+        {
+            Write(sourceName, message, null, LogEntryTypeLevel.Trace);
+        }
+
+        public void TraceSource(string sourceName, string message, object arg1)
+        {
+            Write(sourceName, message, null, LogEntryTypeLevel.Trace, arg1);
+        }
+
+        public void TraceSource(string sourceName, string message, object arg1, object arg2)
+        {
+            Write(sourceName, message, null, LogEntryTypeLevel.Trace, arg1, arg2);
+        }
+
+        public void TraceSource(string sourceName, string message, params object[] arguments)
+        {
+            Write(sourceName, message, null, LogEntryTypeLevel.Trace, arguments);
         }
 
         #endregion
