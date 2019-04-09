@@ -7,11 +7,7 @@ namespace BTCGatewayAPI.Infrastructure.Container
     {
         private bool disposed;
 
-        //private readonly Dictionary<Type, Func<ObjectRegistry, object>> mapping
-        //    = new Dictionary<Type, Func<ObjectRegistry, object>>();
-
-        private readonly Dictionary<Type, RegistryObject> _mapping
-         = new Dictionary<Type, RegistryObject>();
+        private readonly Dictionary<Type, RegistryObject> _mapping = new Dictionary<Type, RegistryObject>();
 
         #region IDisposable
 
@@ -41,21 +37,16 @@ namespace BTCGatewayAPI.Infrastructure.Container
 
         public void Transient(Type type)
         {
-            //mapping[type] = new Func<ObjectRegistry, object>((r) => CreateInstance(type, r));
             _mapping[type] = new TransientRegistryObject(type);
         }
 
         public void Transient(Type type, Func<ObjectRegistry, object> factory)
         {
-            //mapping[type] = factory;
             _mapping[type] = new TransientRegistryObject(factory);
         }
 
         public void Singleton(Type type, Func<ObjectRegistry, object> factory)
         {
-            //var instance = factory(this);
-            //mapping[type] = new Func<ObjectRegistry, object>((r) => instance);
-
             _mapping[type] = new SingletonRegistryObject(factory(this));
         }
 

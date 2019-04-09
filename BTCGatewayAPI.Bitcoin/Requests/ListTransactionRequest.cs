@@ -1,6 +1,4 @@
-﻿using BTCGatewayAPI.Bitcoin.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
@@ -11,10 +9,5 @@ namespace BTCGatewayAPI.Bitcoin.Requests
         {
             Params = new object[] { /*dummy, count, skip, includeWatchOnly*/ };
         }
-    }
-
-    public class ListTransactionResponse : CommandResponse<List<WalletTransaction>>
-    {
-
     }
 }

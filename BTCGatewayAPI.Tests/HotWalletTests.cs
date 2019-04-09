@@ -35,16 +35,16 @@ namespace BTCGatewayAPI.Tests
         public async Task Test_CreateFakeHotWallet()
         {
             var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var hotWallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where address=@id",
+            var hotWallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where address=@id",
                 new KeyValuePair<string, object>("id", "fake"));
 
             if (hotWallet != null)
             {
-                using (var tx = await dbContext.BeginTransaction())
+                using (var tx = await dbContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
                 {
                     try
                     {
-                        await dbContext.Delete(hotWallet);
+                        await dbContext.DeleteAsync(hotWallet);
                         tx.Commit();
                     }
                     catch (Exception)
@@ -70,11 +70,11 @@ namespace BTCGatewayAPI.Tests
 
             Models.HotWallet retVal;
 
-            using (var tx = await dbContext.BeginTransaction())
+            using (var tx = await dbContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
-                    retVal = await dbContext.Add(hotWallet);
+                    retVal = await dbContext.AddAsync(hotWallet);
                     tx.Commit();
                 }
                 catch (Exception)
@@ -90,11 +90,11 @@ namespace BTCGatewayAPI.Tests
 
             int affected;
 
-            using (var tx = await dbContext.BeginTransaction())
+            using (var tx = await dbContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
-                    affected = await dbContext.Delete(hotWallet);
+                    affected = await dbContext.DeleteAsync(hotWallet);
                     tx.Commit();
                 }
                 catch (Exception)

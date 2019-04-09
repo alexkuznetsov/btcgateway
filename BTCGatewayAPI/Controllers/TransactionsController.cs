@@ -4,13 +4,14 @@ using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
+    [Authorize]
     public class TransactionsController : ApiController
     {
-        private readonly TransactionsService transactionsService;
+        private readonly TransactionsService _transactionsService;
 
         public TransactionsController(TransactionsService transactionsService)
         {
-            this.transactionsService = transactionsService;
+            this._transactionsService = transactionsService;
         }
 
         protected override void Dispose(bool disposing)
@@ -19,15 +20,15 @@ namespace BTCGatewayAPI.Controllers
 
             if (disposing)
             {
-                transactionsService.Dispose();
+                _transactionsService.Dispose();
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetLast")]
         public async Task<IHttpActionResult> GetLast()
         {
-            var last = await transactionsService.GetLastTransactions();
+            var last = await _transactionsService.GetLastTransactionsAsync();
 
             return Ok(last);
         }

@@ -29,16 +29,16 @@ namespace BTCGatewayAPI.Services
 
         public async Task DownloadAsync()
         {
-            var allHotWallets = await DBContext.GetAllHotWallets();
+            var allHotWallets = await DBContext.GetAllHotWalletsAsync();
 
-            using (var dbtx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            using (var dbtx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
                     foreach (var wallet in allHotWallets)
                     {
                         var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-                        var transactions = await bitcoinClient.ListTransactions();
+                        var transactions = await bitcoinClient.ListTransactionsAsync();
 
                         var isSuccess = false;
 
@@ -46,8 +46,8 @@ namespace BTCGatewayAPI.Services
                         {
                             if (tx.IsRecive())
                             {
-                                isSuccess = await TryToPerform(
-                                    action: () => ProcessRecieveTx(wallet.Id, tx),
+                                isSuccess = await TryToPerformAsync(
+                                    action: () => ProcessRecieveTxAsync(wallet.Id, tx),
                                     onError: (ex) => Logger.Error(ex, "Error to process income transaction"),
                                     triesCount: 3);
 
@@ -58,8 +58,8 @@ namespace BTCGatewayAPI.Services
                             }
                             else if (tx.IsSend())
                             {
-                                isSuccess = await TryToPerform(
-                                    action: () => ProcessSendTx(wallet.Id, tx),
+                                isSuccess = await TryToPerformAsync(
+                                    action: () => ProcessSendTxAsync(wallet.Id, tx),
                                     onError: (ex) => Logger.Error(ex, "Error to process outcome transaction"),
                                     triesCount: 3);
 
@@ -83,13 +83,13 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        private async Task ProcessSendTx(int walletId, Bitcoin.Models.WalletTransaction tx)
+        private async Task ProcessSendTxAsync(int walletId, Bitcoin.Models.WalletTransaction tx)
         {
-            var outcomeTx = await DBContext.FindOutputTxByTxid(tx.Txid);
+            var outcomeTx = await DBContext.FindOutputTxByTxidAsync(tx.Txid);
 
             if (outcomeTx == null)
             {
-                await DBContext.Add(new Models.OutcomeTransaction
+                await DBContext.AddAsync(new Models.OutcomeTransaction
                 {
                     Amount = tx.Amount,
                     Confirmations = tx.Confirmations,
@@ -107,13 +107,13 @@ namespace BTCGatewayAPI.Services
                 outcomeTx.Confirmations = tx.Confirmations;
                 outcomeTx.UpdatedAt = DateTime.Now;
 
-                await DBContext.Update(outcomeTx);
+                await DBContext.UpdateAsync(outcomeTx);
             }
         }
 
-        private async Task ProcessRecieveTx(int walletId, Bitcoin.Models.WalletTransaction tx)
+        private async Task ProcessRecieveTxAsync(int walletId, Bitcoin.Models.WalletTransaction tx)
         {
-            var txId = await DBContext.FindIncomeTxIdByTxid(tx.Txid);
+            var txId = await DBContext.FindIncomeTxIdByTxidAsync(tx.Txid);
 
             var iTx = new Models.IncomeTransaction
             {
@@ -130,9 +130,9 @@ namespace BTCGatewayAPI.Services
             if (txId == null || tx.Confirmations <= globalConf.MinimalConfirmations)
             {
                 if (txId != null)
-                    await DBContext.Update(iTx);
+                    await DBContext.UpdateAsync(iTx);
                 else
-                    await DBContext.Add(iTx);
+                    await DBContext.AddAsync(iTx);
             }
         }
     }

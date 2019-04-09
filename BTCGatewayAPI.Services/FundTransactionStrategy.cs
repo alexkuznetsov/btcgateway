@@ -15,6 +15,6 @@ namespace BTCGatewayAPI.Services
             this.conf = conf;
         }
 
-        public abstract Task<(string, decimal)> CreateAndSignTransaction(HotWallet hotWallet, SendBtcRequest sendBtcRequest);
+        public abstract Task<(string, decimal)> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest);
     }
 }

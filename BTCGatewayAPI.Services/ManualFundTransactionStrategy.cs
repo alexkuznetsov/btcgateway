@@ -15,23 +15,23 @@ namespace BTCGatewayAPI.Services
         {
         }
 
-        public override async Task<(string, decimal)> CreateAndSignTransaction(HotWallet hotWallet, SendBtcRequest sendBtcRequest)
+        public override async Task<(string, decimal)> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
             string address = hotWallet.Address;
-            var privateKey = await bitcoinClient.LoadWalletPrivateKeys(address
+            var privateKey = await bitcoinClient.LoadWalletPrivateKeysAsync(address
                 , hotWallet.Passphrase, conf.WalletUnlockTime);
-            var fee = await bitcoinClient.LoadEstimateSmartFee();
-            var unspent = await GetUnspentTransactionOutputs(address, sendBtcRequest.Amount + fee.Feerate);
+            var fee = await bitcoinClient.LoadEstimateSmartFeeAsync();
+            var unspent = await GetUnspentTransactionOutputsAsync(address, sendBtcRequest.Amount + fee.Feerate);
             var parameters = CreateInputsAndOutputs(fee.Feerate, hotWallet.Address, unspent, sendBtcRequest);
-            var rawTx = await bitcoinClient.CreateTransaction(parameters.Item1, parameters.Item2);
-            var signed = await bitcoinClient.SignRawTransactionWithKey(unspent, new[] { privateKey }, rawTx);
+            var rawTx = await bitcoinClient.CreateRawtransactionAsync(parameters.Item1, parameters.Item2);
+            var signed = await bitcoinClient.SignRawTransactionWithKeyAsync(unspent, new[] { privateKey }, rawTx);
 
             return (signed.Hex, fee.Feerate);
         }
 
-        public async Task<Unspent[]> GetUnspentTransactionOutputs(string address, decimal minimalFunds)
+        public async Task<Unspent[]> GetUnspentTransactionOutputsAsync(string address, decimal minimalFunds)
         {
-            var unspentForWallet = await bitcoinClient.LoadUnspentForAddress(address);
+            var unspentForWallet = await bitcoinClient.ListUnspentAsync(address);
             var lessers = unspentForWallet.Where(x => x.Amount < minimalFunds);
             var greaters = unspentForWallet.Where(x => x.Amount >= minimalFunds);
 

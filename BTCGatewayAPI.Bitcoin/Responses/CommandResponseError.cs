@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace BTCGatewayAPI.Bitcoin.Requests
+namespace BTCGatewayAPI.Bitcoin.Responses
 {
     public class CommandResponseError
     {

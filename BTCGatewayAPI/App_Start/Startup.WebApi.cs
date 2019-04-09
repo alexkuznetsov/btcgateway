@@ -6,14 +6,14 @@ using System.Web.Http.ExceptionHandling;
 
 namespace BTCGatewayAPI
 {
-    public static class WebApiConfig
+    public partial class Startup
     {
-        public static void Register(HttpConfiguration config, ObjectFactory objectFactory)
+        private void ConfigureWebApi(HttpConfiguration config, ObjectFactory factory)
         {
             // Web API configuration and services
             config.Filters.Add(new ValidateModelAttribute());
 
-            config.Services.Replace(typeof(IHttpControllerActivator), new Infrastructure.ServiceActivator(config, objectFactory));
+            config.Services.Replace(typeof(IHttpControllerActivator), new Infrastructure.ServiceActivator(config, factory));
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
             config.Services.Replace(typeof(IExceptionLogger), new UnhandledExceptionLogger());
 
@@ -26,7 +26,5 @@ namespace BTCGatewayAPI
                 defaults: new { id = RouteParameter.Optional }
             );
         }
-
-
     }
 }

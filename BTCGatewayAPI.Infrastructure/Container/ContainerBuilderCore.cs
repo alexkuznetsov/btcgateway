@@ -9,26 +9,17 @@ namespace BTCGatewayAPI.Infrastructure.Container
 
         public void Singleton(Type type, Func<ObjectRegistry, object> factory)
         {
-            PendingActions.Enqueue(new Action<ObjectRegistry>((r) =>
-            {
-                r.Singleton(type, factory);
-            }));
+            PendingActions.Enqueue((r) => r.Singleton(type, factory));
         }
 
         public void Transient(Type type)
         {
-            PendingActions.Enqueue(new Action<ObjectRegistry>((r) =>
-            {
-                r.Transient(type);
-            }));
+            PendingActions.Enqueue((r) => r.Transient(type));
         }
 
         public void Transient(Type type, Func<ObjectRegistry, object> factory)
         {
-            PendingActions.Enqueue(new Action<ObjectRegistry>((r) =>
-            {
-                r.Transient(type, factory);
-            }));
+            PendingActions.Enqueue((r) => r.Transient(type, factory));
         }
 
         protected void ExecuteActionsOnRegistry(ObjectRegistry registry)

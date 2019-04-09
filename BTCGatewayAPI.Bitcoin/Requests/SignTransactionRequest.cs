@@ -24,9 +24,4 @@ namespace BTCGatewayAPI.Bitcoin.Requests
 
         }
     }
-
-    public class SignTransactionResponse : CommandResponse<SignTransactionResult>
-    {
-
-    }
 }

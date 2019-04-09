@@ -5,6 +5,7 @@ using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
+    [Authorize]
     public class PaymentController : ApiController
     {
         private readonly PaymentService paymentService;

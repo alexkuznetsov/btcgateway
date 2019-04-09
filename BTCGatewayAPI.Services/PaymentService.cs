@@ -23,9 +23,9 @@ namespace BTCGatewayAPI.Services
 
         public async Task SendAsync(SendBtcRequest sendBtcRequest)
         {
-            var wallet = await DBContext.GetFirstWithBalanceMoreThan(sendBtcRequest.Amount);
+            var wallet = await DBContext.GetFirstWithBalanceMoreThanAsync(sendBtcRequest.Amount);
             var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            (var txHash, var fee) = await CreateTransaction(bitcoinClient, wallet, sendBtcRequest);
+            (var txHash, var fee) = await CreateTransactionAsync(bitcoinClient, wallet, sendBtcRequest);
 
             //В целом, это делать не нужно, т.к. синхронизация сделает это за нас, подже.
             var payment = new Models.OutcomeTransaction
@@ -40,27 +40,27 @@ namespace BTCGatewayAPI.Services
 
             var isSuccess = false;
 
-            using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
                     //Снимается сумма + комиссия
                     wallet.Withdraw(sendBtcRequest.Amount + fee/*.Feerate*/);
 
-                    (isSuccess, wallet) = await TryToPerform(
-                        action: () => DBContext.Update(wallet),
+                    (isSuccess, wallet) = await TryToPerformAsync(
+                        action: () => DBContext.UpdateAsync(wallet),
                         onError: (ex) => Logger.Error(ex, "Error to update wallet information, trying again. Request: " + sendBtcRequest),
-                        triesCount: 3);
+                        triesCount: conf.RetryActionCnt);
 
                     if (!isSuccess)
                     {
                         Logger.Error("Wallet with id: " + wallet.Id + " can not be updated. Request: " + sendBtcRequest);
                     }
 
-                    (isSuccess, payment) = await TryToPerform(
-                        action: () => DBContext.Add(payment),
+                    (isSuccess, payment) = await TryToPerformAsync(
+                        action: () => DBContext.AddAsync(payment),
                         onError: (ex) => Logger.Error(ex, "Error to add output transaction information, trying again. Request: " + sendBtcRequest),
-                        triesCount: 3);
+                        triesCount: conf.RetryActionCnt);
 
                     if (!isSuccess)
                     {
@@ -69,12 +69,12 @@ namespace BTCGatewayAPI.Services
 
                     tx.Commit();
 
-                    await bitcoinClient.SendRawTransaction(txHash);
+                    await bitcoinClient.SendRawTransactionAsync(txHash);
                 }
                 catch (RPCServerException)
                 {
                     //removeprunedfunds 
-                    await bitcoinClient.RemovePrunedFunds(txHash);
+                    await bitcoinClient.RemovePrunedFundsAsync(txHash);
                     throw;
                 }
                 catch (Exception)
@@ -84,16 +84,16 @@ namespace BTCGatewayAPI.Services
                 }
             }
 
-            using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
                     payment.State = Models.OutcomeTransaction.CompleteState;
 
-                    (isSuccess, payment) = await TryToPerform(
-                        action: () => DBContext.Update(payment),
+                    (isSuccess, payment) = await TryToPerformAsync(
+                        action: () => DBContext.UpdateAsync(payment),
                         onError: (ex) => Logger.Error(ex, "Error to update output transaction with id " + payment.Id + ". Changing state to compleate, trying again..."),
-                        triesCount: 3);
+                        triesCount: conf.RetryActionCnt);
 
                     if (!isSuccess)
                     {
@@ -108,7 +108,7 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        public Task<(string, decimal)> CreateTransaction(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
+        public Task<(string, decimal)> CreateTransactionAsync(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
             FundTransactionStrategy strategy;
 
@@ -121,7 +121,7 @@ namespace BTCGatewayAPI.Services
                 strategy = new ManualFundTransactionStrategy(bitcoinClient, conf);
             }
 
-            return strategy.CreateAndSignTransaction(hotWallet, sendBtcRequest);
+            return strategy.CreateAndSignTransactionAsync(hotWallet, sendBtcRequest);
         }
     }
 }

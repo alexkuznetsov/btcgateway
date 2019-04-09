@@ -1,5 +1,4 @@
-﻿using BTCGatewayAPI.Bitcoin.Models;
-using System;
+﻿using System;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
@@ -9,10 +8,5 @@ namespace BTCGatewayAPI.Bitcoin.Requests
         {
             Params = new object[] { };
         }
-    }
-
-    public class WalletInfoResponse : CommandResponse<WalletInfoResult>
-    {
-
     }
 }

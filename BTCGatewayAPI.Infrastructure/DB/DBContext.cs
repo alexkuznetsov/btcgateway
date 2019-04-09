@@ -60,12 +60,7 @@ namespace BTCGatewayAPI.Infrastructure.DB
 
         #endregion
 
-        public async Task<DbTransaction> BeginTransaction()
-        {
-            return await BeginTransaction(System.Data.IsolationLevel.Serializable);
-        }
-
-        public async Task<DbTransaction> BeginTransaction(System.Data.IsolationLevel isolationLevel)
+        public async Task<DbTransaction> BeginTransactionAsync(System.Data.IsolationLevel isolationLevel)
         {
             if (connection.State == System.Data.ConnectionState.Closed)
                 await connection.OpenAsync();
@@ -75,7 +70,7 @@ namespace BTCGatewayAPI.Infrastructure.DB
             return transaction;
         }
 
-        public async Task<IEnumerable<TModel>> GetMany<TModel>(string sql, params KeyValuePair<string, object>[] parameters)
+        public async Task<IEnumerable<TModel>> GetManyAsync<TModel>(string sql, params KeyValuePair<string, object>[] parameters)
             where TModel : class, new()
         {
             var readed = new List<TModel>();
@@ -104,12 +99,10 @@ namespace BTCGatewayAPI.Infrastructure.DB
                         if (isInvalid.Item1)
                         {
                             var msg = $"Check object mapping. Fail to map: " + string.Join(", ", isInvalid.Item2);
-                            if (conf.LogSQL)
-                            {
-                                Logger.Debug(msg);
-                            }
 
-                            throw new ObjectMapperExeption(msg);
+                            Logger.Error(msg);
+
+                            throw new ObjectMapperException(msg);
                         }
 
                         readed.Add(mapSpec.Map(reader));
@@ -123,10 +116,11 @@ namespace BTCGatewayAPI.Infrastructure.DB
 
         }
 
-        public async Task<TModel> Find<TModel>(string sql, params KeyValuePair<string, object>[] parameters)
+        public async Task<TModel> FindAsync<TModel>(string sql, params KeyValuePair<string, object>[] parameters)
             where TModel : class, new()
         {
-            var list = await GetMany<TModel>(sql, parameters);
+            var list = await GetManyAsync<TModel>(sql, parameters);
+
             return list.SingleOrDefault();
         }
 
@@ -137,12 +131,12 @@ namespace BTCGatewayAPI.Infrastructure.DB
         /// <typeparam name="TModel"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<TModel> Add<TModel>(TModel model)
+        public async Task<TModel> AddAsync<TModel>(TModel model)
             where TModel : class, new()
         {
             var id = model.GetIdField();
             var stmt = queryBuilder.BuildInsertStatement(id.Item1, model);
-            var idValue = await ExecuteScalar(stmt.Item1, stmt.Item2.ToArray());
+            var idValue = await ExecuteScalarAsync(stmt.Item1, stmt.Item2.ToArray());
 
             id.Item2.SetValue(model, idValue);
 
@@ -156,50 +150,37 @@ namespace BTCGatewayAPI.Infrastructure.DB
         /// <typeparam name="TModel"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<TModel> Update<TModel>(TModel model)
+        public async Task<TModel> UpdateAsync<TModel>(TModel model)
             where TModel : class, new()
         {
             var id = model.GetIdField();
             var stmt = queryBuilder.BuildUpdateStatement(id.Item1, model);
-            var affected = await ExecuteNonQuery(stmt.Item1, stmt.Item2.ToArray());
+            var affected = await ExecuteNonQueryAsync(stmt.Item1, stmt.Item2.ToArray());
 
             return model;
         }
 
-        public async Task<int> Delete<TModel>(TModel model)
+        public async Task<int> DeleteAsync<TModel>(TModel model)
             where TModel : class, new()
         {
             var id = model.GetIdField();
             var idValue = id.Item2.GetValue(model);
             var stmt = queryBuilder.BuildDeleteStatement(id.Item1, model, idValue);
-            var affected = await ExecuteNonQuery(stmt.Item1, stmt.Item2.ToArray());
+            var affected = await ExecuteNonQueryAsync(stmt.Item1, stmt.Item2.ToArray());
 
             return affected;
         }
 
-        private async Task<int> ExecuteNonQuery(StringBuilder stringBuilder, params KeyValuePair<string, object>[] parameters)
-        {
-            return await ExecuteMethod(stringBuilder
-                , async (command) => await command.ExecuteNonQueryAsync().ConfigureAwait(false)
-                , parameters);
-        }
+        private Task<int> ExecuteNonQueryAsync(StringBuilder sqlBuilder, params KeyValuePair<string, object>[] parameters)
+            => ExecuteMethodAsync(sqlBuilder, (command) => command.ExecuteNonQueryAsync(), parameters);
 
-        private async Task<int> ExecuteScalar(StringBuilder stringBuilder, params KeyValuePair<string, object>[] parameters)
-        {
-            return await ExecuteMethod(stringBuilder, async (command) =>
-            {
-                var result = await command.ExecuteScalarAsync();
+        private Task<object> ExecuteScalarAsync(StringBuilder stringBuilder, params KeyValuePair<string, object>[] parameters)
+            => ExecuteMethodAsync(stringBuilder, (command) => command.ExecuteScalarAsync(), parameters);
 
-                return Convert.ToInt32(result);
-            }, parameters);
-        }
-
-        private async Task<int> ExecuteMethod(StringBuilder stringBuilder, Func<DbCommand, Task<int>> executor, params KeyValuePair<string, object>[] parameters)
+        private async Task<T> ExecuteMethodAsync<T>(StringBuilder stringBuilder, Func<DbCommand, Task<T>> executor, params KeyValuePair<string, object>[] parameters)
         {
             if (connection.State == System.Data.ConnectionState.Closed)
                 await connection.OpenAsync();
-
-            var returnValue = 0;
 
             using (var command = connection.CreateCommand())
             {
@@ -212,12 +193,8 @@ namespace BTCGatewayAPI.Infrastructure.DB
                     Logger.Debug(command.CommandText);
                 }
 
-                returnValue = await executor(command);
+                return await executor(command);
             }
-
-            //connection.Close();
-
-            return returnValue;
         }
     }
 }

@@ -9,9 +9,4 @@ namespace BTCGatewayAPI.Bitcoin.Requests
             Params = new object[] { txHash };
         }
     }
-
-    public class SendRawTransactionResponse : CommandResponse<string>
-    {
-
-    }
 }

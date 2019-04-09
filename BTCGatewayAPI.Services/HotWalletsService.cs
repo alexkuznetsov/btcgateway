@@ -11,33 +11,34 @@ namespace BTCGatewayAPI.Services
     public class HotWalletsService : BaseService
     {
         private readonly BitcoinClientFactory clientFactory;
-
+        private readonly Infrastructure.GlobalConf conf;
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
         private static ILogger Logger => LoggerLazy.Value;
 
-        public HotWalletsService(DBContext dbContext, BitcoinClientFactory clientFactory) : base(dbContext)
+        public HotWalletsService(DBContext dbContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dbContext)
         {
             this.clientFactory = clientFactory;
+            this.conf = conf;
         }
 
         public Task<IEnumerable<HotWalletDTO>> GetAllWalletsAsync()
         {
-            return DBContext.GetAllHotWalletDTOs();
+            return DBContext.GetAllHotWalletDTOsAsync();
         }
 
         public async Task SyncWalletsInformationAsync()
         {
-            using (var tx = await DBContext.BeginTransaction(System.Data.IsolationLevel.Serializable))
+            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
             {
                 try
                 {
-                    var allHotWallets = await DBContext.GetAllHotWallets();
+                    var allHotWallets = await DBContext.GetAllHotWalletsAsync();
                     var result = false;
 
                     foreach (var wallet in allHotWallets)
                     {
                         var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-                        var walletInfo = await bitcoinClient.GetWalletInfo();
+                        var walletInfo = await bitcoinClient.GetWalletInfoAsync();
 
                         if ((Math.Abs(wallet.Amount - walletInfo.Balance) > 0.00000001M) || (wallet.TxCount != walletInfo.TxCount))
                         {
@@ -45,10 +46,10 @@ namespace BTCGatewayAPI.Services
                             wallet.UpdatedAt = DateTime.Now;
                             wallet.TxCount = walletInfo.TxCount;
 
-                            (result, _) = await TryToPerform(
-                                action: () => DBContext.Update(wallet),
+                            (result, _) = await TryToPerformAsync(
+                                action: () => DBContext.UpdateAsync(wallet),
                                 onError: (exc) => Logger.Error(exc, "Failed to update wallet informations, trying again."),
-                                triesCount: 3);
+                                triesCount: conf.RetryActionCnt);
 
                             if (!result)
                             {

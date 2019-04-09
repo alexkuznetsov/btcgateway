@@ -1,4 +1,5 @@
-﻿#if USE_TESTAPI
+﻿#define USE_TESTAPI
+#if USE_TESTAPI
 using BTCGatewayAPI.Services;
 using System;
 using System.Collections.Generic;
@@ -8,20 +9,21 @@ using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
+    [Authorize]
     public class HotWalletsController : ApiController
     {
-        private readonly HotWalletsService hotWalletsService;
+        private readonly HotWalletsService _hotWalletsService;
 
         public HotWalletsController(HotWalletsService hotWalletsService)
         {
-            this.hotWalletsService = hotWalletsService;
+            this._hotWalletsService = hotWalletsService;
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                hotWalletsService.Dispose();
+                _hotWalletsService.Dispose();
             }
 
             base.Dispose(disposing);
@@ -31,7 +33,7 @@ namespace BTCGatewayAPI.Controllers
         [Route("getwallets")]
         public async Task<IHttpActionResult> GetWallets()
         {
-            var wallets = await hotWalletsService.GetAllWalletsAsync();
+            var wallets = await _hotWalletsService.GetAllWalletsAsync();
 
             return Json(wallets);
         }

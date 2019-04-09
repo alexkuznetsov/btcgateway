@@ -8,15 +8,14 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services.Extensions
 {
-
     public static class HotwalletDbContextExtensions
     {
         private const string FirstHWWithBalanceMoreThanSQL = @"select * from [hot_wallets] 
 where amount>=@amount and rpc_address is not null and len(rpc_address)>1";
 
-        public static async Task<HotWallet> GetFirstWithBalanceMoreThan(this DBContext dbConetx, decimal balance)
+        public static async Task<HotWallet> GetFirstWithBalanceMoreThanAsync(this DBContext dbConetx, decimal balance)
         {
-            var wallet = await dbConetx.Find<HotWallet>(FirstHWWithBalanceMoreThanSQL,
+            var wallet = await dbConetx.FindAsync<HotWallet>(FirstHWWithBalanceMoreThanSQL,
                 new KeyValuePair<string, object>("amount", balance));
 
             if (wallet != null)
@@ -29,12 +28,12 @@ where amount>=@amount and rpc_address is not null and len(rpc_address)>1";
 
         private const string AllHotWalletsSQL = "select * from [hot_wallets]";
 
-        public static async Task<IEnumerable<HotWallet>> GetAllHotWallets(this DBContext dbConetx)
-            => await dbConetx.GetMany<Models.HotWallet>(AllHotWalletsSQL).ConfigureAwait(false);
+        public static async Task<IEnumerable<HotWallet>> GetAllHotWalletsAsync(this DBContext dbConetx)
+            => await dbConetx.GetManyAsync<Models.HotWallet>(AllHotWalletsSQL).ConfigureAwait(false);
 
-        public static async Task<IEnumerable<HotWalletDTO>> GetAllHotWalletDTOs(this DBContext dbConetx)
+        public static async Task<IEnumerable<HotWalletDTO>> GetAllHotWalletDTOsAsync(this DBContext dbConetx)
         {
-            var wallets = await dbConetx.GetAllHotWallets();
+            var wallets = await dbConetx.GetAllHotWalletsAsync();
 
             return wallets.Select(x => new HotWalletDTO
             {

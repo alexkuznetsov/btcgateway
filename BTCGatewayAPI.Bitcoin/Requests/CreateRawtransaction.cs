@@ -10,9 +10,4 @@ namespace BTCGatewayAPI.Bitcoin.Requests
             Params = new object[] { inputs, reciviers };
         }
     }
-
-    public class CreateRawTransactionResponse : CommandResponse<string>
-    {
-
-    }
 }

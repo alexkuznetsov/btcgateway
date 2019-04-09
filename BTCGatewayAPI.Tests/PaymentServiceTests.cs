@@ -42,7 +42,7 @@ namespace BTCGatewayAPI.Tests
             Assert.IsNotNull(paymentService);
 
             var request = new Models.Requests.SendBtcRequest { Account = "mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt", Amount = 0.01M };
-            var wallet = await dbContext.GetFirstWithBalanceMoreThan(request.Amount);
+            var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(request.Amount);
 
             Assert.IsNotNull(wallet);
 
@@ -50,7 +50,7 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(bitcoinClient);
 
-            var tx = await paymentService.CreateTransaction(bitcoinClient, wallet, request);
+            var tx = await paymentService.CreateTransactionAsync(bitcoinClient, wallet, request);
 
             Assert.IsFalse(string.IsNullOrEmpty(tx.Item1));
         }
@@ -63,7 +63,7 @@ namespace BTCGatewayAPI.Tests
             {
                 var contents = await r.ReadToEndAsync();
 
-                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Bitcoin.Requests.SignTransactionResponse>(contents);
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Bitcoin.Responses.SignTransactionResponse>(contents);
 
                 Assert.IsNotNull(obj);
                 Assert.IsNotNull(obj.Result);

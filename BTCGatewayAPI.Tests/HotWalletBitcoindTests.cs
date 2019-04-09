@@ -36,7 +36,7 @@ namespace BTCGatewayAPI.Tests
         public async Task Test_GetWalletAndFeeRate()
         {
             var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
+            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
@@ -47,7 +47,7 @@ namespace BTCGatewayAPI.Tests
             Assert.IsNotNull(bitcoinClientFactory);
 
             var btcClient = bitcoinClientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var fee = await btcClient.LoadEstimateSmartFee();
+            var fee = await btcClient.LoadEstimateSmartFeeAsync();
 
             Assert.IsNotNull(fee);
             Assert.IsNotNull(fee.Feerate);
@@ -59,7 +59,7 @@ namespace BTCGatewayAPI.Tests
         public async Task Test_GetWalletAndAllUnspentForWalletAddress()
         {
             var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
+            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
@@ -70,7 +70,7 @@ namespace BTCGatewayAPI.Tests
             Assert.IsNotNull(bitcoinClientFactory);
 
             var btcClient = bitcoinClientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var unspents = await btcClient.LoadUnspentForAddress(wallet.Address);
+            var unspents = await btcClient.ListUnspentAsync(wallet.Address);
 
             Assert.IsNotNull(unspents);
             Assert.IsTrue(unspents.Count > 0);
@@ -84,7 +84,7 @@ namespace BTCGatewayAPI.Tests
         {
             var dbContext = _container.Create<Infrastructure.DB.DBContext>();
             var conf = _container.Create<Infrastructure.GlobalConf>();
-            var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
+            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
@@ -97,7 +97,7 @@ namespace BTCGatewayAPI.Tests
             var amountToTransfert = 0.0025M;
             var btcClient = bitcoinClientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
             var strategy = new Services.ManualFundTransactionStrategy(btcClient, conf);
-            var unspents = await strategy.GetUnspentTransactionOutputs(wallet.Address, amountToTransfert);
+            var unspents = await strategy.GetUnspentTransactionOutputsAsync(wallet.Address, amountToTransfert);
 
             Assert.IsNotNull(unspents);
             Assert.IsTrue(unspents.Count() > 0);
@@ -111,7 +111,7 @@ namespace BTCGatewayAPI.Tests
         public async Task Test_GetWalletPrivateKey()
         {
             var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var wallet = await dbContext.Find<Models.HotWallet>("select * from [hot_wallets] where id=@id",
+            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
                 new KeyValuePair<string, object>("id", 1));
 
             Assert.IsNotNull(wallet);
@@ -122,7 +122,7 @@ namespace BTCGatewayAPI.Tests
             Assert.IsNotNull(bitcoinClientFactory);
 
             var btcClient = bitcoinClientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var privateKey = await btcClient.LoadWalletPrivateKeys(wallet.Address, wallet.Passphrase);
+            var privateKey = await btcClient.LoadWalletPrivateKeysAsync(wallet.Address, wallet.Passphrase);
 
             Assert.IsFalse(string.IsNullOrEmpty(privateKey));
             //Assert.IsTrue(string.Compare(privateKey, "cP4BA85Vv5BX9nvuY9oZa4S5xFPaZMwv68tNoAWesYSy8KzG7Ji9") == 0);

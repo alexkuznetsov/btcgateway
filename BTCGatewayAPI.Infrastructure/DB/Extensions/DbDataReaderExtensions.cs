@@ -15,6 +15,7 @@ namespace BTCGatewayAPI.Infrastructure.DB.Extensions
                     value = val;
                     return true;
                 }
+
                 return decimal.TryParse(Convert.ToString(temp), out value);
             }
 

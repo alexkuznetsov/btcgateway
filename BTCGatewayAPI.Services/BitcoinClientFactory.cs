@@ -1,5 +1,4 @@
-﻿using BTCGatewayAPI.Bitcoin;
-using System;
+﻿using System;
 using System.Net.Http;
 
 namespace BTCGatewayAPI.Services
@@ -16,6 +15,6 @@ namespace BTCGatewayAPI.Services
         }
 
         public BitcoinClient Create(Uri uri, string username, string password)
-            => new BitcoinClient(new RPCServer(sharedHadler, uri, username, password), conf);
+            => new BitcoinClient(sharedHadler, conf, uri, username, password);
     }
 }

@@ -1,6 +1,4 @@
-﻿using BTCGatewayAPI.Bitcoin.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
@@ -11,9 +9,5 @@ namespace BTCGatewayAPI.Bitcoin.Requests
         {
             Params = new object[] { from, to, addresses ?? new string[] { } };
         }
-    }
-
-    public class ListUnspentResponse : CommandResponse<List<Unspent>>
-    {
     }
 }

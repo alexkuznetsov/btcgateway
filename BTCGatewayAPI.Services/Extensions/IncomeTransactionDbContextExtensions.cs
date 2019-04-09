@@ -9,22 +9,17 @@ namespace BTCGatewayAPI.Services.Extensions
 {
     public static class IncomeTransactionDbContextExtensions
     {
-        static readonly string TXSql = @"update [income_tx] set view_cnt = view_cnt+1
-SELECT id
-      ,created_at
-      ,updated_at
-      ,wallet_id
-      ,tx_hash
-      ,sender
-      ,amount
-      ,confirmation
-	  ,view_cnt
-  FROM [income_tx]
-  WHERE view_cnt-1<1 or [confirmation]<=@max_cnt";
+        static readonly string TXSql = @"select i.* from [dbo].[income_tx] i
+left join [dbo].[income_tx_hist] ih on i.id = ih.income_tx_id where ih.id is null or i.confirmation<@max_cnt
 
-        public static async Task<LastTransactionDTO[]> GetNewIncomeTransactions(this DBContext dbConetx, int maxCnt)
+INSERT INTO [dbo].[income_tx_hist] ([income_tx_id]) 
+select i.id
+from [dbo].[income_tx] i
+left join [dbo].[income_tx_hist] ih on i.id = ih.income_tx_id where ih.id is null";
+
+        public static async Task<LastTransactionDTO[]> GetNewIncomeTransactionsAsync(this DBContext dbConetx, int maxCnt)
         {
-            var transactiins = await dbConetx.GetMany<IncomeTransaction>(TXSql, new KeyValuePair<string, object>("max_cnt", maxCnt));
+            var transactiins = await dbConetx.GetManyAsync<IncomeTransaction>(TXSql, new KeyValuePair<string, object>("max_cnt", maxCnt));
 
             return transactiins.Select(x => new LastTransactionDTO
             {
@@ -35,9 +30,9 @@ SELECT id
             }).ToArray();
         }
 
-        public static Task<Models.IncomeTransactionId> FindIncomeTxIdByTxid(this DBContext dbContext, string txid)
+        public static Task<Models.IncomeTransactionId> FindIncomeTxIdByTxidAsync(this DBContext dbContext, string txid)
         {
-            return dbContext.Find<Models.IncomeTransactionId>("select id from [income_tx] where tx_hash=@tx_hash",
+            return dbContext.FindAsync<Models.IncomeTransactionId>("select id from [income_tx] where tx_hash=@tx_hash",
                                 new KeyValuePair<string, object>("tx_hash", txid));
         }
     }

@@ -9,9 +9,4 @@ namespace BTCGatewayAPI.Bitcoin.Requests
             Params = new object[] { passphrase, seconds };
         }
     }
-
-    public class WalletPassphraseResponse : CommandResponse<string>
-    {
-
-    }
 }

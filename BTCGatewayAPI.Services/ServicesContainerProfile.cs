@@ -13,6 +13,8 @@ namespace BTCGatewayAPI.Services
                 var conf = r.GetService<Infrastructure.GlobalConf>();
                 return new BitcoinClientFactory(conf, service);
             });
+
+            Singleton(typeof(IPasswordHasher), (r) => new PasswordHasher());
         }
     }
 }

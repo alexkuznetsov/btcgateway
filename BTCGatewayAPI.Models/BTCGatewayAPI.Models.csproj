@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client.cs" />
     <Compile Include="DTO\HotWalletDTO.cs" />
     <Compile Include="DTO\LastTransactionDTO.cs" />
     <Compile Include="Entity.cs" />

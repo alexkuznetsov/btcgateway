@@ -38,7 +38,7 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        protected async Task<bool> TryToPerform(Func<Task> action, Action<Exception> onError, int triesCount)
+        protected async Task<bool> TryToPerformAsync(Func<Task> action, Action<Exception> onError, int triesCount)
         {
             int tryNumber = 0;
             bool isSuccess = false;
@@ -61,7 +61,7 @@ namespace BTCGatewayAPI.Services
             return isSuccess;
         }
 
-        protected async Task<(bool, TResult)> TryToPerform<TResult>(Func<Task<TResult>> action, Action<Exception> onError, int triesCount)
+        protected async Task<(bool, TResult)> TryToPerformAsync<TResult>(Func<Task<TResult>> action, Action<Exception> onError, int triesCount)
         {
             int tryNumber = 0;
             bool isSuccess = false;

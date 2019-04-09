@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BticonContainerProfile.cs" />
+    <Compile Include="BitconContainerProfile.cs" />
     <Compile Include="Models\FundRawTransactionOptions.cs" />
     <Compile Include="Models\FundRawTransactionResult.cs" />
     <Compile Include="Models\SigHash.cs" />
@@ -62,8 +62,19 @@
     <Compile Include="Models\WalletInfoResult.cs" />
     <Compile Include="Models\WalletTransaction.cs" />
     <Compile Include="Requests\CommandRequest.cs" />
-    <Compile Include="Requests\CommandResponseError.cs" />
-    <Compile Include="Requests\CommandRespose.cs" />
+    <Compile Include="Responses\WalletPassphraseResponse.cs" />
+    <Compile Include="Responses\WalletInfoResponse.cs" />
+    <Compile Include="Responses\SignTransactionResponse.cs" />
+    <Compile Include="Responses\SendRawTransactionResponse.cs" />
+    <Compile Include="Responses\RemovePrunedFundsResponse.cs" />
+    <Compile Include="Responses\ListUnspentResponse.cs" />
+    <Compile Include="Responses\ListTransactionResponse.cs" />
+    <Compile Include="Responses\GetEstimateSmartFeeResponce.cs" />
+    <Compile Include="Responses\FundRawTransactionResponse.cs" />
+    <Compile Include="Responses\DumpPrivKeyResponse.cs" />
+    <Compile Include="Responses\CreateRawTransactionResponse.cs" />
+    <Compile Include="Responses\CommandResponseError.cs" />
+    <Compile Include="Responses\CommandRespose.cs" />
     <Compile Include="Requests\CreateRawtransaction.cs" />
     <Compile Include="Requests\DumpPrivKeyRequest.cs" />
     <Compile Include="Requests\FundRawTransactionRequest.cs" />

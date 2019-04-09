@@ -72,6 +72,7 @@
     <Compile Include="DB\DbReaderMappingSpec.Transform.cs" />
     <Compile Include="DB\Extensions\DataRecordExtensions.cs" />
     <Compile Include="DB\Extensions\DbDataReaderExtensions.cs" />
+    <Compile Include="DB\ObjectMapperException.cs" />
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="Logging\AbstractLogger.cs" />
     <Compile Include="Logging\ILog.cs" />
@@ -87,7 +88,6 @@
     <Compile Include="DB\MapSpecRegistry.cs" />
     <Compile Include="MemberInfoExtensions.cs" />
     <Compile Include="DB\MSSQLServerQueryBuilder.cs" />
-    <Compile Include="DB\ObjectMapperExeption.cs" />
     <Compile Include="GlobalConf.cs" />
     <Compile Include="InfrastructureContainerProfile.cs" />
     <Compile Include="ServiceActivator.cs" />

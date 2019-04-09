@@ -1,0 +1,12 @@
+D:\Temp> bombardier-windows-amd64.exe -c 125 -m GET -n 1000000 http://localhost:60542/GetLast
+Bombarding http://localhost:60542/GetLast with 1000000 request(s) using 125 connection(s)
+ 1000000 / 1000000 [===============================================================================] 100.00% 512/s 32m33s Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec       513.29      68.75    1268.54
+  Latency      244.09ms    32.20ms      0.90s
+  HTTP codes:
+    1xx - 0, 2xx - 1000000, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:   281.04KB/s
+
+D:\Temp>

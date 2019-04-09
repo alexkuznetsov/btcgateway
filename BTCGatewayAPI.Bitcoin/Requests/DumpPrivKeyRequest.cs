@@ -9,9 +9,4 @@ namespace BTCGatewayAPI.Bitcoin.Requests
             Params = new object[] { address };
         }
     }
-
-    public class DumpPrivKeyResponse : CommandResponse<string>
-    {
-
-    }
 }
