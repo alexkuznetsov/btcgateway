@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using BTCGatewayAPI.Infrastructure.Container;
 
 namespace BTCGatewayAPI
 {
-    public class ApiContainerProfile : Infrastructure.Container.ContainerProfile
+    public class ApiContainerProfile : ContainerProfile
     {
         public ApiContainerProfile()
         {

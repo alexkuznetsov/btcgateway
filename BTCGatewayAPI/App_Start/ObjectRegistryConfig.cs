@@ -19,12 +19,13 @@ namespace BTCGatewayAPI
                 return new GlobalConf.CSSettings { ConnectionString = cs?.ConnectionString, ProviderName = cs?.ProviderName };
             });
 
-            builder.Singleton(typeof(Infrastructure.GlobalConf), (r) => new GlobalConf(accessor, csAccessor));
+            builder.Singleton(typeof(GlobalConf), (r) => new GlobalConf(accessor, csAccessor));
 
             builder.AddProfile(new ApiContainerProfile());
-            builder.AddProfile(new Infrastructure.InfrastructureContainerProfile());
+            builder.AddProfile(new InfrastructureContainerProfile());
             builder.AddProfile(new Bitcoin.BitconContainerProfile());
             builder.AddProfile(new Services.ServicesContainerProfile());
+            builder.AddProfile(new OAuthServicesProfile());
 
             objectRegisrty = builder.Build();
 

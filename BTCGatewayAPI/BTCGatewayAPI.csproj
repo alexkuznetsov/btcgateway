@@ -111,6 +111,7 @@
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\ApiContainerProfile.cs" />
+    <Compile Include="App_Start\OAuthServicesProfile.cs" />
     <Compile Include="App_Start\Startup.OAuth.cs" />
     <Compile Include="App_Start\Startup.WebApi.cs" />
     <Compile Include="App_Start\ObjectRegistryConfig.cs" />

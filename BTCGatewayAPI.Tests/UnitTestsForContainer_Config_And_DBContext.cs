@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BTCGatewayAPI.Tests
 {
     [TestClass]
-    public class UnitTestsForContainer_Config_And_DBContext
+    public class UnitTestsForContainer_Config_And_CSString
     {
         protected static ObjectFactory _container;
 
