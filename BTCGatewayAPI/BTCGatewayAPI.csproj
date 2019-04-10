@@ -148,10 +148,6 @@
       <Project>{a936bf56-d4cd-4276-9c8a-95eebe5017d8}</Project>
       <Name>BTCGatewayAPI.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BTCGatewayAPI.Models.Mapping\BTCGatewayAPI.Models.Mapping.csproj">
-      <Project>{aab76468-74e2-4b87-957e-39ed4fd034bd}</Project>
-      <Name>BTCGatewayAPI.Models.Mapping</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BTCGatewayAPI.Models\BTCGatewayAPI.Models.csproj">
       <Project>{9d7294ad-e682-48b0-b097-288b0690a5e4}</Project>
       <Name>BTCGatewayAPI.Models</Name>

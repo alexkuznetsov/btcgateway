@@ -1,7 +1,9 @@
 ﻿using BTCGatewayAPI.Infrastructure.Container;
+using BTCGatewayAPI.Services.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,12 +37,10 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletAndFeeRate()
         {
-            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
-                new KeyValuePair<string, object>("id", 1));
+            var dbContext = _container.Create<DbConnection>();
+            var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(0.001M);
 
             Assert.IsNotNull(wallet);
-            Assert.IsTrue(wallet.Id == 1);
 
             var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
@@ -58,12 +58,10 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletAndAllUnspentForWalletAddress()
         {
-            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
-                new KeyValuePair<string, object>("id", 1));
+            var dbContext = _container.Create<DbConnection>();
+            var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(0.001M);
 
             Assert.IsNotNull(wallet);
-            Assert.IsTrue(wallet.Id == 1);
 
             var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
@@ -82,13 +80,11 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletAndMinimunUnspentForAmount()
         {
-            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
             var conf = _container.Create<Infrastructure.GlobalConf>();
-            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
-                new KeyValuePair<string, object>("id", 1));
+            var dbContext = _container.Create<DbConnection>();
+            var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(0.001M);
 
             Assert.IsNotNull(wallet);
-            Assert.IsTrue(wallet.Id == 1);
 
             var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 
@@ -110,12 +106,10 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_GetWalletPrivateKey()
         {
-            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
-            var wallet = await dbContext.FindAsync<Models.HotWallet>("select * from [hot_wallets] where id=@id",
-                new KeyValuePair<string, object>("id", 1));
+            var dbContext = _container.Create<DbConnection>();
+            var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(0.001M);
 
             Assert.IsNotNull(wallet);
-            Assert.IsTrue(wallet.Id == 1);
 
             var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
 

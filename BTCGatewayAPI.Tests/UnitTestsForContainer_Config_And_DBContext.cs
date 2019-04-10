@@ -1,5 +1,4 @@
-﻿using System;
-using BTCGatewayAPI.Infrastructure.Container;
+﻿using BTCGatewayAPI.Infrastructure.Container;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BTCGatewayAPI.Tests
@@ -37,13 +36,6 @@ namespace BTCGatewayAPI.Tests
             Assert.IsFalse(string.IsNullOrEmpty(conf.DefaultSQLCS), "Default connection string name");
             Assert.IsFalse(string.IsNullOrEmpty(conf.ConnectionString.ConnectionString), "Connection string settings");
             Assert.IsTrue(conf.ConfTargetForEstimateSmartFee >= 0);
-        }
-
-        [TestMethod]
-        public void Test_DbContextSucessefullyLoadedAndNotNull()
-        {
-            var dbSerice = _container.Create<Infrastructure.DB.DBContext>();
-            Assert.IsNotNull(dbSerice);
         }
     }
 }

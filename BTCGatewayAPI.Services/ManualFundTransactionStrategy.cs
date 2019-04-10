@@ -18,16 +18,16 @@ namespace BTCGatewayAPI.Services
         public override async Task<FundTransactionStrategyResult> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
             string address = hotWallet.Address;
-            var privateKey = await bitcoinClient.LoadWalletPrivateKeysAsync(address
-                , hotWallet.Passphrase, conf.WalletUnlockTime);
-            var fee = await bitcoinClient.LoadEstimateSmartFeeAsync();
+            var privateKey = await BitcoinClient.LoadWalletPrivateKeysAsync(address
+                , hotWallet.Passphrase, Conf.WalletUnlockTime);
+            var fee = await BitcoinClient.LoadEstimateSmartFeeAsync();
             var unspent = await GetUnspentTransactionOutputsAsync(address, sendBtcRequest.Amount + fee.Feerate);
             var parameters = CreateInputsAndOutputs(fee.Feerate, hotWallet.Address, unspent, sendBtcRequest);
-            var rawTx = await bitcoinClient.CreateRawtransactionAsync(parameters.Item1, parameters.Item2);
-            var signed = await bitcoinClient.SignRawTransactionWithKeyAsync(new Bitcoin.Models.Unspent[] { }
+            var rawTx = await BitcoinClient.CreateRawtransactionAsync(parameters.Item1, parameters.Item2);
+            var signed = await BitcoinClient.SignRawTransactionWithKeyAsync(new Bitcoin.Models.Unspent[] { }
                 , new string[] { privateKey }
                 , rawTx);
-            var txInfo = await bitcoinClient.DecodeRawTransaction(signed.Hex);
+            var txInfo = await BitcoinClient.DecodeRawTransaction((string)signed.Hex);
 
             return new FundTransactionStrategyResult(signed.Hex, fee.Feerate, txInfo.Txid);
         }
@@ -36,7 +36,7 @@ namespace BTCGatewayAPI.Services
         {
             //По хорошему, тут можно применить алгоритм "заполнения рюкзака", 
             //но я решил воспользоваться другоим методом заполнения транзации
-            var unspentForWallet = await bitcoinClient.ListUnspentAsync(address);
+            var unspentForWallet = await BitcoinClient.ListUnspentAsync(address);
             var lessers = unspentForWallet.Where(x => x.Amount < minimalFunds);
             var greaters = unspentForWallet.Where(x => x.Amount >= minimalFunds);
 

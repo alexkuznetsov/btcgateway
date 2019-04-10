@@ -2,6 +2,7 @@
 using BTCGatewayAPI.Services.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Tests
@@ -33,7 +34,7 @@ namespace BTCGatewayAPI.Tests
         [TestMethod]
         public async Task Test_CreateTransaction()
         {
-            var dbContext = _container.Create<Infrastructure.DB.DBContext>();
+            var dbContext = _container.Create<DbConnection>();
             var clientFactory = _container.Create<Services.BitcoinClientFactory>();
             var paymentService = _container.Create<Services.PaymentService>();
 

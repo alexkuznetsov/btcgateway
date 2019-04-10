@@ -59,8 +59,13 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HotWalletBitcoindTests.cs" />
+    <Compile Include="ListTransactionFromBitcoindTests.cs" />
+    <Compile Include="OutputTransactionsSaveTests.cs" />
+    <Compile Include="PaymentServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SyncDataTests.cs" />
+    <Compile Include="UnitTestsForContainer_Config_And_DBContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -75,10 +80,6 @@
     <ProjectReference Include="..\BTCGatewayAPI.Infrastructure\BTCGatewayAPI.Infrastructure.csproj">
       <Project>{a936bf56-d4cd-4276-9c8a-95eebe5017d8}</Project>
       <Name>BTCGatewayAPI.Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BTCGatewayAPI.Models.Mapping\BTCGatewayAPI.Models.Mapping.csproj">
-      <Project>{aab76468-74e2-4b87-957e-39ed4fd034bd}</Project>
-      <Name>BTCGatewayAPI.Models.Mapping</Name>
     </ProjectReference>
     <ProjectReference Include="..\BTCGatewayAPI.Models\BTCGatewayAPI.Models.csproj">
       <Project>{9d7294ad-e682-48b0-b097-288b0690a5e4}</Project>

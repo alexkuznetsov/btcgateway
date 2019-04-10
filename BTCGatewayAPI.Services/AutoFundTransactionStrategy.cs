@@ -21,14 +21,14 @@ namespace BTCGatewayAPI.Services
 
             var inputs = new Bitcoin.Models.TXInfo[] { };
             var options = new Bitcoin.Models.FundRawTransactionOptions { ChangeAddress = hotWallet.Address };
-            var rawTxStage1 = await bitcoinClient.CreateRawtransactionAsync(inputs, outputs);
-            var rawTxStage2 = await bitcoinClient.FundRawTransactionAsync(rawTxStage1, options);
-            var privateKey = await bitcoinClient.LoadWalletPrivateKeysAsync(hotWallet.Address
-                , hotWallet.Passphrase, conf.WalletUnlockTime);
-            var signed = await bitcoinClient.SignRawTransactionWithKeyAsync(new Bitcoin.Models.Unspent[] { }
+            var rawTxStage1 = await BitcoinClient.CreateRawtransactionAsync(inputs, outputs);
+            var rawTxStage2 = await BitcoinClient.FundRawTransactionAsync(rawTxStage1, options);
+            var privateKey = await BitcoinClient.LoadWalletPrivateKeysAsync(hotWallet.Address
+                , hotWallet.Passphrase, Conf.WalletUnlockTime);
+            var signed = await BitcoinClient.SignRawTransactionWithKeyAsync(new Bitcoin.Models.Unspent[] { }
                 , new string[] { privateKey }
                 , rawTxStage2.Hex);
-            var txInfo = await bitcoinClient.DecodeRawTransaction(signed.Hex);
+            var txInfo = await BitcoinClient.DecodeRawTransaction(signed.Hex);
 
             return new FundTransactionStrategyResult(signed.Hex, rawTxStage2.Fee, txInfo.Txid);
         }

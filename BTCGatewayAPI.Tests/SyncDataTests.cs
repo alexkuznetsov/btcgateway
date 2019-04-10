@@ -43,7 +43,7 @@ namespace BTCGatewayAPI.Tests
                 await service.DownloadAsync();
                 result = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -53,28 +53,28 @@ namespace BTCGatewayAPI.Tests
             service.Dispose();
         }
 
-        //[TestMethod]
-        //public async Task Test_DownloadingHotWalletsWithoutError()
-        //{
-        //    var service = _container.Create<Services.HotWalletsService>();
+        [TestMethod]
+        public async Task Test_DownloadingHotWalletsWithoutError()
+        {
+            var service = _container.Create<Services.HotWalletsService>();
 
-        //    Assert.IsNotNull(service);
+            Assert.IsNotNull(service);
 
-        //    var result = false;
+            var result = false;
 
-        //    try
-        //    {
-        //        await service.SyncWalletsInformationAsync();
-        //        result = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
+            try
+            {
+                await service.SyncWalletsInformationAsync();
+                result = true;
+            }
+            catch (Exception)
+            {
 
-        //    }
+            }
 
-        //    Assert.IsTrue(result);
+            Assert.IsTrue(result);
 
-        //    service.Dispose();
-        //}
+            service.Dispose();
+        }
     }
 }

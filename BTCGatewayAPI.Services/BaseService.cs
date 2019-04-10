@@ -1,5 +1,5 @@
-﻿using BTCGatewayAPI.Infrastructure.DB;
-using System;
+﻿using System;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
@@ -8,11 +8,11 @@ namespace BTCGatewayAPI.Services
     {
         private bool _disposed;
 
-        protected DBContext DBContext { get; }
+        protected DbConnection DbCon { get; }
 
-        protected BaseService(DBContext dBContext)
+        protected BaseService(DbConnection dbConnection)
         {
-            DBContext = dBContext;
+            DbCon = dbConnection;
         }
 
         ~BaseService()
@@ -33,15 +33,15 @@ namespace BTCGatewayAPI.Services
 
             if (disposing)
             {
-                DBContext.Dispose();
+                DbCon.Dispose();
                 _disposed = true;
             }
         }
 
         protected async Task<bool> TryToPerformAsync(Func<Task> action, Action<Exception> onError, int triesCount)
         {
-            int tryNumber = 0;
-            bool isSuccess = false;
+            var tryNumber = 0;
+            var isSuccess = false;
 
             while (tryNumber < triesCount - 1)
             {
@@ -63,9 +63,9 @@ namespace BTCGatewayAPI.Services
 
         protected async Task<(bool, TResult)> TryToPerformAsync<TResult>(Func<Task<TResult>> action, Action<Exception> onError, int triesCount)
         {
-            int tryNumber = 0;
-            bool isSuccess = false;
-            TResult result = default(TResult);
+            var tryNumber = 0;
+            var isSuccess = false;
+            var result = default(TResult);
 
             while (tryNumber < triesCount - 1)
             {

@@ -43,6 +43,7 @@ namespace BTCGatewayAPI.Services
         public async Task<string> LoadWalletPrivateKeysAsync(string address, string passphrase, int seconds = 10)
         {
             await WalletPassphraseAsync(passphrase, seconds);
+
             return await DumpPrivKeyAsync(address);
         }
 

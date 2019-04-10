@@ -1,9 +1,10 @@
 ﻿using BTCGatewayAPI.Bitcoin;
 using BTCGatewayAPI.Infrastructure.Container;
+using System.Data.Common;
 
 namespace BTCGatewayAPI.Services
 {
-    public class ServicesContainerProfile : Infrastructure.Container.ContainerProfile
+    public class ServicesContainerProfile : ContainerProfile
     {
         public ServicesContainerProfile()
         {
@@ -15,6 +16,16 @@ namespace BTCGatewayAPI.Services
             });
 
             Singleton(typeof(IPasswordHasher), (r) => new PasswordHasher());
+
+            Transient(typeof(DbConnection), (r) =>
+            {
+                var conf = r.GetService<Infrastructure.GlobalConf>();
+                var dbProviderFactory = r.GetService<DbProviderFactory>();
+                var connection = dbProviderFactory.CreateConnection();
+                connection.ConnectionString = conf.ConnectionString.ConnectionString;
+
+                return connection;
+            });
         }
     }
 }

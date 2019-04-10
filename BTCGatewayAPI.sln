@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Models", "BTC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Bitcoin", "BTCGatewayAPI.Bitcoin\BTCGatewayAPI.Bitcoin.csproj", "{AC914CF3-6254-4A42-A158-383325E946D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTCGatewayAPI.Models.Mapping", "BTCGatewayAPI.Models.Mapping\BTCGatewayAPI.Models.Mapping.csproj", "{AAB76468-74E2-4B87-957E-39ED4FD034BD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{AC914CF3-6254-4A42-A158-383325E946D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC914CF3-6254-4A42-A158-383325E946D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC914CF3-6254-4A42-A158-383325E946D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAB76468-74E2-4B87-957E-39ED4FD034BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

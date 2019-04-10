@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using BTCGatewayAPI.Infrastructure;
 using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;
+using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
@@ -20,13 +21,14 @@ namespace BTCGatewayAPI.Services
             public decimal Fee { get; set; }
         }
 
-        protected readonly BitcoinClient bitcoinClient;
-        protected readonly Infrastructure.GlobalConf conf;
+        protected BitcoinClient BitcoinClient { get; }
+
+        protected GlobalConf Conf { get; }
 
         protected FundTransactionStrategy(BitcoinClient bitcoinClient, Infrastructure.GlobalConf conf)
         {
-            this.bitcoinClient = bitcoinClient;
-            this.conf = conf;
+            BitcoinClient = bitcoinClient;
+            Conf = conf;
         }
 
         public abstract Task<FundTransactionStrategyResult> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest);

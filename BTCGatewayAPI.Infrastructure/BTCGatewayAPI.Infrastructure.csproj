@@ -66,13 +66,6 @@
     <Compile Include="Container\RegistryObject.cs" />
     <Compile Include="Container\SingletonRegistryObject.cs" />
     <Compile Include="Container\TransientRegistryObject.cs" />
-    <Compile Include="DB\DbCommandExtensions.cs" />
-    <Compile Include="DB\DBContext.cs" />
-    <Compile Include="DB\DbReaderMappingSpec.cs" />
-    <Compile Include="DB\DbReaderMappingSpec.Transform.cs" />
-    <Compile Include="DB\Extensions\DataRecordExtensions.cs" />
-    <Compile Include="DB\Extensions\DbDataReaderExtensions.cs" />
-    <Compile Include="DB\ObjectMapperException.cs" />
     <Compile Include="GlobalExceptionHandler.cs" />
     <Compile Include="Logging\AbstractLogger.cs" />
     <Compile Include="Logging\ILog.cs" />
@@ -88,11 +81,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Include="ObjectExtensions.cs" />
-    <Compile Include="DB\IQueryBuilder.cs" />
-    <Compile Include="DB\MapSpecRegistry.cs" />
-    <Compile Include="MemberInfoExtensions.cs" />
-    <Compile Include="DB\MSSQLServerQueryBuilder.cs" />
     <Compile Include="GlobalConf.cs" />
     <Compile Include="InfrastructureContainerProfile.cs" />
     <Compile Include="ServiceActivator.cs" />

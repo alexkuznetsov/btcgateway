@@ -1,8 +1,8 @@
-﻿using BTCGatewayAPI.Infrastructure.DB;
-using BTCGatewayAPI.Models;
+﻿using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.DTO;
-using System;
+using Dapper;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,39 +10,59 @@ namespace BTCGatewayAPI.Services.Extensions
 {
     public static class HotwalletDbContextExtensions
     {
-        private const string FirstHWWithBalanceMoreThanSQL = @"select * from hot_wallets 
+        private const string FirstHWWithBalanceMoreThanSQL = @"select id Id
+  , created_at CreatedAt
+  , updated_at UpdatedAt
+  , address Address
+  , amount Amount
+  , rpc_address RPCAddress
+  , rpc_username RPCUsername
+  , rpc_password RPCPassword
+  , passphrase Passphrase
+  , tx_count TxCount from hot_wallets 
 where amount>=@amount and rpc_address is not null and len(rpc_address)>1";
 
-        public static async Task<HotWallet> GetFirstWithBalanceMoreThanAsync(this DBContext dbConetx, decimal balance)
-        {
-            var wallet = await dbConetx.FindAsync<HotWallet>(FirstHWWithBalanceMoreThanSQL,
-                new KeyValuePair<string, object>("amount", balance));
+        private const string AllHotWalletsSQL = @"select id Id
+  , created_at CreatedAt
+  , updated_at UpdatedAt
+  , address Address
+  , amount Amount
+  , rpc_address RPCAddress
+  , rpc_username RPCUsername
+  , rpc_password RPCPassword
+  , passphrase Passphrase
+  , tx_count TxCount from hot_wallets";
 
-            if (wallet != null)
-            {
-                return wallet;
-            }
+        private const string UpdateWalletSQL = @"UPDATE hot_wallets
+   SET [created_at] = @CreatedAt
+      ,[updated_at] = @UpdatedAt
+      ,[address] = @Address
+      ,[amount] = @Amount
+      ,[rpc_address] = @RPCAddress
+      ,[rpc_username] = @RPCUsername
+      ,[rpc_password] = @RPCPassword
+      ,[passphrase] = @Passphrase
+      ,[tx_count] = @TxCount
+ WHERE id = @Id";
 
-            throw new InvalidOperationException($"No any wallet with the cache balance more or equal {balance}");
-        }
+        public static Task<HotWallet> GetFirstWithBalanceMoreThanAsync(this DbConnection dBContext, decimal balance)
+            => dBContext.QueryFirstAsync<HotWallet>(FirstHWWithBalanceMoreThanSQL, new { amount = balance });
 
-        private const string AllHotWalletsSQL = "select * from hot_wallets";
+        public static Task<IEnumerable<HotWallet>> GetAllHotWalletsAsync(this DbConnection dbConetx, DbTransaction dbtx = null)
+            => dbConetx.QueryAsync<HotWallet>(AllHotWalletsSQL, transaction: dbtx);
 
-        public static async Task<IEnumerable<HotWallet>> GetAllHotWalletsAsync(this DBContext dbConetx)
-            => await dbConetx.GetManyAsync<Models.HotWallet>(AllHotWalletsSQL).ConfigureAwait(false);
+        public static Task<IEnumerable<HotWalletDTO>> GetAllHotWalletDTOsAsync(this DbConnection dbConetx)
+            => dbConetx.GetAllHotWalletsAsync()
+                .ContinueWith((t) => t.Result.Select(x => new HotWalletDTO
+                {
+                    Address = x.Address,
+                    Amount = x.Amount,
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    UpdatedAt = x.UpdatedAt
+                }));
 
-        public static async Task<IEnumerable<HotWalletDTO>> GetAllHotWalletDTOsAsync(this DBContext dbConetx)
-        {
-            var wallets = await dbConetx.GetAllHotWalletsAsync();
-
-            return wallets.Select(x => new HotWalletDTO
-            {
-                Address = x.Address,
-                Amount = x.Amount,
-                CreatedAt = x.CreatedAt,
-                Id = x.Id,
-                UpdatedAt = x.UpdatedAt
-            });
-        }
+        public static Task<int> UpdateWalletAsync(this DbConnection dbConnection, DbTransaction transaction, HotWallet wallet)
+            => dbConnection.ExecuteAsync(UpdateWalletSQL, wallet, transaction);
     }
 }

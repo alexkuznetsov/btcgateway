@@ -23,7 +23,6 @@ namespace BTCGatewayAPI
 
             builder.AddProfile(new ApiContainerProfile());
             builder.AddProfile(new Infrastructure.InfrastructureContainerProfile());
-            builder.AddProfile(new Models.Mapping.MappingContainerProfile());
             builder.AddProfile(new Bitcoin.BitconContainerProfile());
             builder.AddProfile(new Services.ServicesContainerProfile());
 
