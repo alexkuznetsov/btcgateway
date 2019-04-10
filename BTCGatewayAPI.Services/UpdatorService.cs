@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace BTCGatewayAPI.Services
 {
-    public class IncomeTxUpdatorService : IDisposable
+    public class UpdatorService : IDisposable
     {
         private bool _disposed;
         private readonly GlobalConf _conf;
@@ -15,9 +15,12 @@ namespace BTCGatewayAPI.Services
         private readonly HotWalletsService _hotWalletInfoSync;
 
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
+
         private static ILogger Logger => LoggerLazy.Value;
 
-        public IncomeTxUpdatorService(GlobalConf conf, SyncBTCTransactinsService syncBTCTransactinsService, HotWalletsService hotWalletsService)
+        public UpdatorService(GlobalConf conf,
+            SyncBTCTransactinsService syncBTCTransactinsService,
+            HotWalletsService hotWalletsService)
         {
             _conf = conf;
             _txDownloader = syncBTCTransactinsService;
@@ -30,7 +33,7 @@ namespace BTCGatewayAPI.Services
 
         #region descruct and idisposable
 
-        ~IncomeTxUpdatorService()
+        ~UpdatorService()
         {
             Dispose(false);
         }
@@ -52,7 +55,6 @@ namespace BTCGatewayAPI.Services
 
                 _disposed = true;
             }
-
         }
 
         #endregion
@@ -77,11 +79,11 @@ namespace BTCGatewayAPI.Services
             }
             catch (WebException ex)
             {
-                Logger.Error(ex, "Networking error occurs");
+                Logger.Error(ex, Messages.ErrNetworkingExceptionOccurs);
             }
             catch (Exception ex)
             {
-                Logger.Fatal(ex, "Unhandled error occurs");
+                Logger.Fatal(ex, Messages.ErrUnhandledExceptionOccurs);
             }
 
             StartTimer();

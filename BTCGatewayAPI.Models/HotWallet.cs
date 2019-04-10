@@ -43,7 +43,7 @@ namespace BTCGatewayAPI.Models
             }
             else
             {
-                throw new InvalidOperationException("Try to withdraw more than excisting balance");
+                throw new InvalidOperationException(Messages.ErrorTryToWithdrawMoreThanExists);
             }
         }
     }

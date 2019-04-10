@@ -38,7 +38,7 @@ namespace BTCGatewayAPI.Infrastructure.Logging
             return LogEntryTypeLevel.Warn;
         }
 
-        public override bool CanLog(LogEntryTypeLevel level) => level >= _logLevel;
+        public override bool CanLog(LogEntryTypeLevel level) => level <= _logLevel;
 
         #region ILog implementation
 

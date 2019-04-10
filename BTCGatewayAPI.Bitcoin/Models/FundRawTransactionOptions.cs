@@ -18,31 +18,31 @@ namespace BTCGatewayAPI.Bitcoin.Models
 
     public class FundRawTransactionOptions
     {
-        [JsonProperty("changeAddress")]
+        [JsonProperty("changeAddress", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public string ChangeAddress { get; set; }
 
-        [JsonProperty("changePosition")]
+        [JsonProperty("changePosition", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public int? ChangePosition { get; set; }
 
-        [JsonProperty("change_type")]
+        [JsonProperty("change_type", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public string ChangeType { get; set; }
 
-        [JsonProperty("includeWatching")]
+        [JsonProperty("includeWatching", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public bool? IncludeWatching { get; set; }
 
-        [JsonProperty("lockUnspents")]
+        [JsonProperty("lockUnspents", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public bool? LockUnspents { get; set; }
 
-        [JsonProperty("subtractFeeFromOutputs")]
+        [JsonProperty("subtractFeeFromOutputs", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public int[] SubtractFeeFromOutputs { get; set; }
 
-        [JsonProperty("replaceable")]
+        [JsonProperty("replaceable", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public bool? Replaceable { get; set; }
 
-        [JsonProperty("conf_target")]
+        [JsonProperty("conf_target", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public int? ConfTarget { get; set; }
 
-        [JsonProperty("estimate_mode")]
+        [JsonProperty("estimate_mode", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
         public string EstimateMode { get; set; }
     }
 }

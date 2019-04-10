@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="ClientMappingSpec.cs" />
     <Compile Include="HotWalletMappingSpec.cs" />
-    <Compile Include="IncomeTransactionIdMappingSpec.cs" />
     <Compile Include="IncomeTransactionMappingSpec.cs" />
     <Compile Include="MappingContainerProfile.cs" />
     <Compile Include="OutcomeTransactionMappingSpec.cs" />

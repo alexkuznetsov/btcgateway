@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,7 +82,7 @@ namespace BTCGatewayAPI.Infrastructure.DB
 
             if (conf.LogSQL)
             {
-                Logger.Debug(sql);
+                Logger.Debug("QUERY: {0}\r\n\t Params: {1}", sql, string.Join(",", parameters.Select(x => $"{x.Key} => {x.Value}").ToArray()));
             }
 
             using (var command = connection.CreateCommand())
@@ -131,16 +132,14 @@ namespace BTCGatewayAPI.Infrastructure.DB
         /// <typeparam name="TModel"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<TModel> AddAsync<TModel>(TModel model)
+        public async Task<object> AddAsync<TModel>(TModel model)
             where TModel : class, new()
         {
             var id = model.GetIdField();
             var stmt = queryBuilder.BuildInsertStatement(id.Item1, model);
             var idValue = await ExecuteScalarAsync(stmt.Item1, stmt.Item2.ToArray());
 
-            id.Item2.SetValue(model, idValue);
-
-            return model;
+            return await ExecuteScalarAsync(stmt.Item1, stmt.Item2.ToArray());
         }
 
         /// <summary>
@@ -190,7 +189,7 @@ namespace BTCGatewayAPI.Infrastructure.DB
 
                 if (conf.LogSQL)
                 {
-                    Logger.Debug(command.CommandText);
+                    Logger.Debug("QUERY: {0}\r\n\t Params: {1}", command.CommandText, string.Join(",", parameters.Select(x => $"{x.Key} => {x.Value}").ToArray()));
                 }
 
                 return await executor(command);

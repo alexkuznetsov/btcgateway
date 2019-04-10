@@ -17,7 +17,7 @@ namespace BTCGatewayAPI.Services
             _conf = conf;
         }
 
-        public Task<List<WalletTransaction>> ListTransactionsAsync(int count = 0, int skip = 0, bool includeWatchOnly = false)
+        public Task<List<Transaction>> ListTransactionsAsync(int count = 0, int skip = 0, bool includeWatchOnly = false)
         {
             return ListTransactionsAsync("*", count, skip, includeWatchOnly);
         }

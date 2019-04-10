@@ -23,6 +23,7 @@ namespace BTCGatewayAPI.Infrastructure
         private int _WalletUnlockTime = -1;
         private int _UseFundRawTransaction = -1;
         private int _RetryActionCnt = -1;
+        private int _IsTestNet = -1;
 
         public GlobalConf(Func<string, string> settingAccessor, Func<string, CSSettings> connStrAccessor)
         {
@@ -60,6 +61,8 @@ namespace BTCGatewayAPI.Infrastructure
         public bool UseFundRawTransaction => GetValueAndSetIfNotSet(ref _UseFundRawTransaction, true);
 
         public int RetryActionCnt => GetValueAndSetIfNotSet(ref _RetryActionCnt, 3);
+
+        public bool IsTestNet => GetValueAndSetIfNotSet(ref _IsTestNet, true);
 
         private bool GetValueAndSetIfNotSet(ref int target, bool defaultVal, [CallerMemberName]string propName = "")
         {

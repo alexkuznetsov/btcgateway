@@ -44,7 +44,7 @@ namespace BTCGatewayAPI.Infrastructure.DB.Extensions
         {
             value = default(string);
 
-            if (!reader.HasColumn(column) || reader[column] == DBNull.Value)
+            if (/*!reader.HasColumn(column) || */reader[column] == DBNull.Value)
                 return false;
 
             value = Convert.ToString(reader[column]);
@@ -56,7 +56,7 @@ namespace BTCGatewayAPI.Infrastructure.DB.Extensions
         {
             value = null;
 
-            if (!reader.HasColumn(column) || reader[column] == DBNull.Value)
+            if (/*!reader.HasColumn(column) || */reader[column] == DBNull.Value)
                 return false;
 
             return (value = reader[column]) != null;

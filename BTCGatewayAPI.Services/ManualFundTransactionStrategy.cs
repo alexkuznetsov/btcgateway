@@ -15,7 +15,7 @@ namespace BTCGatewayAPI.Services
         {
         }
 
-        public override async Task<(string, decimal)> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest)
+        public override async Task<FundTransactionStrategyResult> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
             string address = hotWallet.Address;
             var privateKey = await bitcoinClient.LoadWalletPrivateKeysAsync(address
@@ -24,13 +24,18 @@ namespace BTCGatewayAPI.Services
             var unspent = await GetUnspentTransactionOutputsAsync(address, sendBtcRequest.Amount + fee.Feerate);
             var parameters = CreateInputsAndOutputs(fee.Feerate, hotWallet.Address, unspent, sendBtcRequest);
             var rawTx = await bitcoinClient.CreateRawtransactionAsync(parameters.Item1, parameters.Item2);
-            var signed = await bitcoinClient.SignRawTransactionWithKeyAsync(unspent, new[] { privateKey }, rawTx);
+            var signed = await bitcoinClient.SignRawTransactionWithKeyAsync(new Bitcoin.Models.Unspent[] { }
+                , new string[] { privateKey }
+                , rawTx);
+            var txInfo = await bitcoinClient.DecodeRawTransaction(signed.Hex);
 
-            return (signed.Hex, fee.Feerate);
+            return new FundTransactionStrategyResult(signed.Hex, fee.Feerate, txInfo.Txid);
         }
 
         public async Task<Unspent[]> GetUnspentTransactionOutputsAsync(string address, decimal minimalFunds)
         {
+            //По хорошему, тут можно применить алгоритм "заполнения рюкзака", 
+            //но я решил воспользоваться другоим методом заполнения транзации
             var unspentForWallet = await bitcoinClient.ListUnspentAsync(address);
             var lessers = unspentForWallet.Where(x => x.Amount < minimalFunds);
             var greaters = unspentForWallet.Where(x => x.Amount >= minimalFunds);
@@ -64,7 +69,7 @@ namespace BTCGatewayAPI.Services
             var spent = feerate;//Т.е. мы уже потратили, это комиссия на транзацкию
 
             if (totalUnspentSum < (sendBtcRequest.Amount + spent))
-                throw new InvalidOperationException("Operation not allowed, there are not enouth money for transaction");
+                throw new InvalidOperationException(Messages.ErrTryToWithdrawMoreThanExcists);
 
             var tx = new List<TXInfo>();
             var reciviers = new Dictionary<string, decimal>();

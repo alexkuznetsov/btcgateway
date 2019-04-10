@@ -4,15 +4,15 @@ using System.Data.Common;
 
 namespace BTCGatewayAPI.Infrastructure
 {
-    public class InfrastructureContainerProfile : Container.ContainerProfile
+    public class InfrastructureContainerProfile : ContainerProfile
     {
         public InfrastructureContainerProfile()
         {
-            Singleton(typeof(DB.IQueryBuilder), (r) => new DB.MSSQLServerQueryBuilder());
+            Singleton(typeof(IQueryBuilder), (r) => new MSSQLServerQueryBuilder());
 
             Singleton(typeof(DbProviderFactory), (r) =>
             {
-                var conf = r.GetService<Infrastructure.GlobalConf>();
+                var conf = r.GetService<GlobalConf>();
                 var providerName = string.IsNullOrEmpty(conf.ConnectionString.ProviderName) ? DBContext.DefaultProviderName : conf.ConnectionString.ProviderName;
                 return DbProviderFactories.GetFactory(providerName);
             });
@@ -20,9 +20,9 @@ namespace BTCGatewayAPI.Infrastructure
             Transient(typeof(DBContext), (r) =>
             {
                 var mappingRegistry = r.GetService<MapSpecRegistry>() ;
-                var conf = r.GetService<Infrastructure.GlobalConf>();
+                var conf = r.GetService<GlobalConf>();
                 var factory = r.GetService<DbProviderFactory>();
-                var queryBuilder = r.GetService<DB.IQueryBuilder>();
+                var queryBuilder = r.GetService<IQueryBuilder>();
 
                 return new DBContext(mappingRegistry, queryBuilder, conf, factory);
             });

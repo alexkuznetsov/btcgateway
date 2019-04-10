@@ -31,46 +31,51 @@ namespace BTCGatewayAPI.Services
         {
             var allHotWallets = await DBContext.GetAllHotWalletsAsync();
 
-            using (var dbtx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
+            foreach (var wallet in allHotWallets)
+            {
+                await ProcessWalletAsync(wallet);
+            }
+        }
+
+        private async Task ProcessWalletAsync(Models.HotWallet wallet)
+        {
+            var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
+            var transactions = await bitcoinClient.ListTransactionsAsync();
+            var addressTransactions = transactions.Where(x => x.Address == wallet.Address).ToArray();
+
+            foreach (var tx in transactions)
+            {
+                string rawHex = string.Empty;
+
+                try
+                {
+                    rawHex = await bitcoinClient.GetRawTransaction(tx.Txid);
+                }
+                catch (Bitcoin.RPCServerException)
+                {
+                    var txInfo = await bitcoinClient.GetTransaction(tx.Txid);
+                    rawHex = txInfo.Hex;
+                }
+
+                await SaveAsync(tx, wallet, rawHex);
+            }
+        }
+
+        private async Task SaveAsync(Bitcoin.Models.Transaction tx, Models.HotWallet wallet, string rawHex)
+        {
+            var isSuccess = false;
+
+            using (var dbtx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted))
             {
                 try
                 {
-                    foreach (var wallet in allHotWallets)
+                    if (tx.IsReceive())
                     {
-                        var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-                        var transactions = await bitcoinClient.ListTransactionsAsync();
-
-                        var isSuccess = false;
-
-                        foreach (var tx in transactions.Where(x => x.Address == wallet.Address))
-                        {
-                            if (tx.IsRecive())
-                            {
-                                isSuccess = await TryToPerformAsync(
-                                    action: () => ProcessRecieveTxAsync(wallet.Id, tx),
-                                    onError: (ex) => Logger.Error(ex, "Error to process income transaction"),
-                                    triesCount: 3);
-
-                                if (!isSuccess)
-                                {
-                                    Logger.Error("Can not to process input tx with txid" + tx.Txid);
-                                }
-                            }
-                            else if (tx.IsSend())
-                            {
-                                isSuccess = await TryToPerformAsync(
-                                    action: () => ProcessSendTxAsync(wallet.Id, tx),
-                                    onError: (ex) => Logger.Error(ex, "Error to process outcome transaction"),
-                                    triesCount: 3);
-
-                                if (!isSuccess)
-                                {
-                                    Logger.Error("Can not to process output tx with txid" + tx.Txid);
-                                }
-                            }
-                            else
-                                throw new InvalidOperationException("Transaction type without process handler: " + tx.Category);
-                        }
+                        await ProcessReceiveTxAsync(wallet.Id, tx, rawHex);
+                    }
+                    else if (tx.IsSend())
+                    {
+                        await ProcessSendTxAsync(wallet.Id, tx, rawHex);
                     }
 
                     dbtx.Commit();
@@ -83,9 +88,9 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        private async Task ProcessSendTxAsync(int walletId, Bitcoin.Models.WalletTransaction tx)
+        private async Task ProcessSendTxAsync(int walletId, Bitcoin.Models.Transaction tx, string rawHex)
         {
-            var outcomeTx = await DBContext.FindOutputTxByTxidAsync(tx.Txid);
+            var outcomeTx = await DBContext.FindSendTransactionByTxidAndAddress(tx.Txid, tx.Address);
 
             if (outcomeTx == null)
             {
@@ -96,10 +101,12 @@ namespace BTCGatewayAPI.Services
                     CreatedAt = TimeUtils.FromUnixTime(tx.Time),
                     Fee = tx.Fee,
                     Id = 0,
-                    Recipient = tx.Address,
+                    Address = tx.Address,
                     State = Models.OutcomeTransaction.CompleteState,
-                    TxHash = tx.Txid,
-                    WalletId = walletId
+                    Txid = tx.Txid,
+                    TxHash = rawHex,
+                    WalletId = walletId,
+                    UpdatedAt = null
                 });
             }
             else if (outcomeTx.Confirmations <= globalConf.MinimalConfirmations)
@@ -111,28 +118,32 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        private async Task ProcessRecieveTxAsync(int walletId, Bitcoin.Models.WalletTransaction tx)
+        private async Task ProcessReceiveTxAsync(int walletId, Bitcoin.Models.Transaction tx, string rawHex)
         {
-            var txId = await DBContext.FindIncomeTxIdByTxidAsync(tx.Txid);
+            var reciveTx = await DBContext.FindReceiveTxIdByTxidAndAddressAsync(tx.Txid, tx.Address);
 
-            var iTx = new Models.IncomeTransaction
+            if (reciveTx == null)
             {
-                Amount = tx.Amount,
-                Confirmations = tx.Confirmations,
-                CreatedAt = TimeUtils.FromUnixTime(tx.Time),
-                Id = txId?.Id ?? 0,
-                Sender = tx.Address,
-                TxHash = tx.Txid,
-                UpdatedAt = null,
-                WalletId = walletId
-            };
+                await DBContext.AddAsync(new Models.IncomeTransaction
+                {
+                    Amount = tx.Amount,
+                    Confirmations = tx.Confirmations,
+                    CreatedAt = TimeUtils.FromUnixTime(tx.Time),
+                    Id = 0,
+                    Address = tx.Address,
+                    Txid = tx.Txid,
+                    TxHash = rawHex,
+                    WalletId = walletId,
+                    ViewCount = 0,
+                    UpdatedAt = null
+                });
+            }
+            else if (reciveTx.Confirmations <= globalConf.MinimalConfirmations)
+            {
+                reciveTx.Confirmations = tx.Confirmations;
+                reciveTx.UpdatedAt = DateTime.Now;
 
-            if (txId == null || tx.Confirmations <= globalConf.MinimalConfirmations)
-            {
-                if (txId != null)
-                    await DBContext.UpdateAsync(iTx);
-                else
-                    await DBContext.AddAsync(iTx);
+                await DBContext.UpdateAsync(reciveTx);
             }
         }
     }

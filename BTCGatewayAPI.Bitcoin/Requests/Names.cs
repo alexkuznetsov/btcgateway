@@ -13,5 +13,8 @@
         public const string listtransactions = nameof(listtransactions);
         public const string fundrawtransaction = nameof(fundrawtransaction);
         public const string getwalletinfo = nameof(getwalletinfo);
+        public const string getrawtransaction = nameof(getrawtransaction);
+        public const string decoderawtransaction = nameof(decoderawtransaction);
+        public const string gettransaction = nameof(gettransaction);
     }
 }

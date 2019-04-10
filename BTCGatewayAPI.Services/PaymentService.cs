@@ -1,5 +1,6 @@
 ﻿using BTCGatewayAPI.Bitcoin;
 using BTCGatewayAPI.Infrastructure.DB;
+using BTCGatewayAPI.Infrastructure.Logging;
 using BTCGatewayAPI.Models.Requests;
 using BTCGatewayAPI.Services.Extensions;
 using System;
@@ -12,8 +13,9 @@ namespace BTCGatewayAPI.Services
         private readonly BitcoinClientFactory clientFactory;
         private readonly Infrastructure.GlobalConf conf;
 
-        private static readonly Lazy<Infrastructure.Logging.ILogger> LoggerLazy = new Lazy<Infrastructure.Logging.ILogger>(Infrastructure.Logging.LoggerFactory.GetLogger);
-        private static Infrastructure.Logging.ILogger Logger => LoggerLazy.Value;
+        private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
+
+        private static ILogger Logger => LoggerLazy.Value;
 
         public PaymentService(DBContext dBContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dBContext)
         {
@@ -25,66 +27,23 @@ namespace BTCGatewayAPI.Services
         {
             var wallet = await DBContext.GetFirstWithBalanceMoreThanAsync(sendBtcRequest.Amount);
             var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            (var txHash, var fee) = await CreateTransactionAsync(bitcoinClient, wallet, sendBtcRequest);
+            var txInfo = await CreateTransactionAsync(bitcoinClient, wallet, sendBtcRequest);
 
-            //В целом, это делать не нужно, т.к. синхронизация сделает это за нас, подже.
-            var payment = new Models.OutcomeTransaction
+            (var isSuccess, var payment) = await SaveWalletAndPaymentAsync(sendBtcRequest, txInfo, wallet
+                , onSuccess: (s) => bitcoinClient.SendRawTransactionAsync(s)
+                , onError: (s) => bitcoinClient.RemovePrunedFundsAsync(s));
+
+            if (isSuccess)
             {
-                Amount = sendBtcRequest.Amount,
-                Recipient = sendBtcRequest.Account,
-                WalletId = wallet.Id,
-                TxHash = txHash,
-                State = Models.OutcomeTransaction.WithdrawState,
-                Fee = fee/*.Feerate*/
-            };
+                await ChangePaymentStatusAsync(payment);
+            }
+        }
 
+        private async Task ChangePaymentStatusAsync(Models.OutcomeTransaction payment)
+        {
             var isSuccess = false;
 
-            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
-            {
-                try
-                {
-                    //Снимается сумма + комиссия
-                    wallet.Withdraw(sendBtcRequest.Amount + fee/*.Feerate*/);
-
-                    (isSuccess, wallet) = await TryToPerformAsync(
-                        action: () => DBContext.UpdateAsync(wallet),
-                        onError: (ex) => Logger.Error(ex, "Error to update wallet information, trying again. Request: " + sendBtcRequest),
-                        triesCount: conf.RetryActionCnt);
-
-                    if (!isSuccess)
-                    {
-                        Logger.Error("Wallet with id: " + wallet.Id + " can not be updated. Request: " + sendBtcRequest);
-                    }
-
-                    (isSuccess, payment) = await TryToPerformAsync(
-                        action: () => DBContext.AddAsync(payment),
-                        onError: (ex) => Logger.Error(ex, "Error to add output transaction information, trying again. Request: " + sendBtcRequest),
-                        triesCount: conf.RetryActionCnt);
-
-                    if (!isSuccess)
-                    {
-                        Logger.Error("Output transaction fow wallet with id: " + wallet.Id + " can not be saved. Request: " + sendBtcRequest);
-                    }
-
-                    tx.Commit();
-
-                    await bitcoinClient.SendRawTransactionAsync(txHash);
-                }
-                catch (RPCServerException)
-                {
-                    //removeprunedfunds 
-                    await bitcoinClient.RemovePrunedFundsAsync(txHash);
-                    throw;
-                }
-                catch (Exception)
-                {
-                    tx.Rollback();
-                    throw;
-                }
-            }
-
-            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
+            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted))
             {
                 try
                 {
@@ -92,12 +51,13 @@ namespace BTCGatewayAPI.Services
 
                     (isSuccess, payment) = await TryToPerformAsync(
                         action: () => DBContext.UpdateAsync(payment),
-                        onError: (ex) => Logger.Error(ex, "Error to update output transaction with id " + payment.Id + ". Changing state to compleate, trying again..."),
+                        onError: (ex) => Logger.Error(ex, Messages.ErrExceptionWhenUpdateOutputTx, payment.Id),
                         triesCount: conf.RetryActionCnt);
 
                     if (!isSuccess)
                     {
-                        Logger.Error("Error to update output transaction with id " + payment.Id + ". Changing state to compleate fails.");
+                        Logger.Error(Messages.ErrExceptionWhenChangingStateForOutputTx, payment.Id);
+                        throw new InvalidOperationException(string.Format(Messages.ErrExceptionWhenChangingStateForOutputTx, payment.Id));
                     }
                 }
                 catch (Exception)
@@ -108,7 +68,86 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        public Task<(string, decimal)> CreateTransactionAsync(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
+        public async Task<(bool, Models.OutcomeTransaction)> SaveWalletAndPaymentAsync(
+            SendBtcRequest sendBtcRequest,
+            FundTransactionStrategy.FundTransactionStrategyResult txInfo,
+            Models.HotWallet wallet,
+            Func<string, Task> onSuccess,
+            Func<string, Task> onError)
+        {
+            var isSuccess = false;
+
+            //В целом, это делать не нужно, т.к. синхронизация сделает это за нас, подже.
+            var payment = new Models.OutcomeTransaction
+            {
+                Amount = sendBtcRequest.Amount,
+                Address = sendBtcRequest.Account,
+                WalletId = wallet.Id,
+                TxHash = txInfo.Hex,
+                Txid = txInfo.Txid,
+                State = Models.OutcomeTransaction.WithdrawState,
+                Fee = txInfo.Fee/*.Feerate*/,
+                CreatedAt = DateTime.Now,
+                Confirmations = 0,
+                Id = 0,
+                UpdatedAt = null
+            };
+
+            using (var tx = await DBContext.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    object paymentId = null;
+                    //Снимается сумма + комиссия
+                    Logger.Debug("Try to withdraw: {0}, exists: {1}", sendBtcRequest.Amount + txInfo.Fee, wallet.Amount);
+                    wallet.Withdraw(sendBtcRequest.Amount + txInfo.Fee/*.Feerate*/);
+
+                    (isSuccess, wallet) = await TryToPerformAsync(
+                        action: () => DBContext.UpdateAsync(wallet),
+                        onError: (ex) => Logger.Error(ex, Messages.ErrUpdateWalletInformation, sendBtcRequest),
+                        triesCount: conf.RetryActionCnt);
+
+                    if (!isSuccess)
+                    {
+                        Logger.Error(Messages.ErrorUpdateWalletFails, wallet.Id, sendBtcRequest);
+                        throw new InvalidOperationException(string.Format(Messages.ErrorUpdateWalletFails, wallet.Id, sendBtcRequest));
+                    }
+
+                    (isSuccess, paymentId) = await TryToPerformAsync(
+                        action: () => DBContext.AddAsync(payment),
+                        onError: (ex) => Logger.Error(ex, Messages.ErrAddOutputTransaction, sendBtcRequest),
+                        triesCount: conf.RetryActionCnt);
+
+                    if (!isSuccess)
+                    {
+                        Logger.Error(Messages.ErrorSaveOutputTransaction, wallet.Id, sendBtcRequest);
+                        throw new InvalidOperationException(string.Format(Messages.ErrorSaveOutputTransaction, wallet.Id, sendBtcRequest));
+                    }
+                    else
+                    {
+                        payment.Id = Convert.ToInt32(paymentId);
+                    }
+
+                    tx.Commit();
+
+                    await onSuccess(txInfo.Hex);
+
+                    return (isSuccess, payment);
+                }
+                catch (RPCServerException)
+                {
+                    await onError(txInfo.Hex);
+                    throw;
+                }
+                catch (Exception)
+                {
+                    tx.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        public Task<FundTransactionStrategy.FundTransactionStrategyResult> CreateTransactionAsync(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
         {
             FundTransactionStrategy strategy;
 

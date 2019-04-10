@@ -27,73 +27,78 @@ namespace BTCGatewayAPI.Bitcoin
 
         public Task<List<Unspent>> ListUnspentAsync(string address)
         {
-            return ExecuteRequestAsync<ListUnspent, ListUnspentResponse, List<Unspent>>(new ListUnspent(addresses: new string[] { address }))
-;
+            return ExecuteRequestAsync<ListUnspent, ListUnspentResponse, List<Unspent>>(new ListUnspent(addresses: new string[] { address }));
         }
 
         public Task<string> RemovePrunedFundsAsync(string txHash)
         {
-            return ExecuteRequestAsync<RemovePrunedFundsRequest, RemovePrunedFundsResponse, string>(new RemovePrunedFundsRequest(txHash))
-;
+            return ExecuteRequestAsync<RemovePrunedFundsRequest, RemovePrunedFundsResponse, string>(new RemovePrunedFundsRequest(txHash));
         }
 
         public Task<string> SendRawTransactionAsync(string txHash)
         {
-            return ExecuteRequestAsync<SendRawTransactionRequest, SendRawTransactionResponse, string>(new SendRawTransactionRequest(txHash))
-;
+            return ExecuteRequestAsync<SendRawTransactionRequest, SendRawTransactionResponse, string>(new SendRawTransactionRequest(txHash));
         }
 
         public Task<EstimateSmartFee> EstimateSmartFeeAsync(int confTarget)
         {
-            return ExecuteRequestAsync<GetEstimateSmartFeeRequest, GetEstimateSmartFeeResponce, EstimateSmartFee>(new GetEstimateSmartFeeRequest(confTarget))
-;
+            return ExecuteRequestAsync<GetEstimateSmartFeeRequest, GetEstimateSmartFeeResponce, EstimateSmartFee>(new GetEstimateSmartFeeRequest(confTarget));
         }
 
         public Task<string> CreateRawtransactionAsync(TXInfo[] inputs, Dictionary<string, decimal> outputs)
         {
-            return ExecuteRequestAsync<CreateRawTransaction, CreateRawTransactionResponse, string>(new CreateRawTransaction(inputs/*AsStr*/, outputs/*AsStr*/))
-;
+            return ExecuteRequestAsync<CreateRawTransaction, CreateRawTransactionResponse, string>(new CreateRawTransaction(inputs/*AsStr*/, outputs/*AsStr*/));
         }
 
         public Task<SignTransactionResult> SignRawTransactionWithKeyAsync(string transaxtionHash, string[] privateKeys, TxOutput[] outouts)
         {
-            var request = new SignTransactionRequest(transaxtionHash, privateKeys, outouts);
-
-            return ExecuteRequestAsync<SignTransactionRequest, SignTransactionResponse, SignTransactionResult>(request)
-;
+            return ExecuteRequestAsync<SignTransactionRequest, SignTransactionResponse, SignTransactionResult>(new SignTransactionRequest(transaxtionHash, privateKeys, outouts));
         }
 
         public Task<string> WalletPassphraseAsync(string passphrase, int seconds)
         {
-            return ExecuteRequestAsync<WalletPassphraseRequest, WalletPassphraseResponse, string>(new WalletPassphraseRequest(passphrase, seconds))
-;
+            return ExecuteRequestAsync<WalletPassphraseRequest, WalletPassphraseResponse, string>(new WalletPassphraseRequest(passphrase, seconds));
         }
 
         public Task<string> DumpPrivKeyAsync(string address)
         {
-            return ExecuteRequestAsync<DumpPrivKeyRequest, DumpPrivKeyResponse, string>(new DumpPrivKeyRequest(address))
-;
+            return ExecuteRequestAsync<DumpPrivKeyRequest, DumpPrivKeyResponse, string>(new DumpPrivKeyRequest(address));
         }
 
-        public Task<List<WalletTransaction>> ListTransactionsAsync(string dummy, int count, int skip, bool includeWatchonly)
+        public Task<List<Transaction>> ListTransactionsAsync(string dummy, int count, int skip, bool includeWatchonly)
         {
-            return ExecuteRequestAsync<ListTransactionRequest, ListTransactionResponse, List<WalletTransaction>>(
-                new ListTransactionRequest(dummy, count, skip, includeWatchonly))
-;
+            return ExecuteRequestAsync<ListTransactionRequest, ListTransactionResponse, List<Transaction>>(
+                new ListTransactionRequest(dummy, count, skip, includeWatchonly));
+        }
+
+        public Task<WalletTransaction> GetTransaction(string txid, bool includeWatchonly = false)
+        {
+            return ExecuteRequestAsync<WalletTransactionRequest, WalletTransactionResponse, WalletTransaction>(
+                new WalletTransactionRequest(txid, includeWatchonly));
         }
 
         public Task<FundRawTransactionResult> FundRawTransactionAsync(string txHash, FundRawTransactionOptions options)
         {
             return ExecuteRequestAsync<FundRawTransactionRequest, FundRawTransactionResponse, FundRawTransactionResult>(
-                new FundRawTransactionRequest(txHash, options))
-;
+                new FundRawTransactionRequest(txHash, options));
         }
 
         public Task<WalletInfoResult> GetWalletInfoAsync()
         {
             return ExecuteRequestAsync<WalletInfoRequest, WalletInfoResponse, WalletInfoResult>(
-                new WalletInfoRequest())
-;
+                new WalletInfoRequest());
+        }
+
+        public Task<string> GetRawTransaction(string txid)
+        {
+            return ExecuteRequestAsync<GetRawTransactionRequest, GetRawTransactionResponse, string>(
+                new GetRawTransactionRequest(txid, false));
+        }
+
+        public Task<RawTransactionInfo> DecodeRawTransaction(string txhash, bool iswitness = false)
+        {
+            return ExecuteRequestAsync<DecodeRawTransactionRequest, DecodeRawTransactionResponse, RawTransactionInfo>(
+                new DecodeRawTransactionRequest(txhash, iswitness));
         }
 
         private async Task<TResponse> ExecuteRequestRawAsync<TRequest, TResponse>(TRequest command)

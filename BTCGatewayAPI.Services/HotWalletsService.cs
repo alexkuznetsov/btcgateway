@@ -12,7 +12,10 @@ namespace BTCGatewayAPI.Services
     {
         private readonly BitcoinClientFactory clientFactory;
         private readonly Infrastructure.GlobalConf conf;
+
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
+        private static readonly decimal Delta = 0.00000001M;
+
         private static ILogger Logger => LoggerLazy.Value;
 
         public HotWalletsService(DBContext dbContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dbContext)
@@ -40,7 +43,7 @@ namespace BTCGatewayAPI.Services
                         var bitcoinClient = clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
                         var walletInfo = await bitcoinClient.GetWalletInfoAsync();
 
-                        if ((Math.Abs(wallet.Amount - walletInfo.Balance) > 0.00000001M) || (wallet.TxCount != walletInfo.TxCount))
+                        if ((Math.Abs(wallet.Amount - walletInfo.Balance) > Delta) || (wallet.TxCount != walletInfo.TxCount))
                         {
                             wallet.Amount = walletInfo.Balance;
                             wallet.UpdatedAt = DateTime.Now;
@@ -48,12 +51,12 @@ namespace BTCGatewayAPI.Services
 
                             (result, _) = await TryToPerformAsync(
                                 action: () => DBContext.UpdateAsync(wallet),
-                                onError: (exc) => Logger.Error(exc, "Failed to update wallet informations, trying again."),
+                                onError: (exc) => Logger.Error(exc, Messages.ErrUpdateWalletInfo),
                                 triesCount: conf.RetryActionCnt);
 
                             if (!result)
                             {
-                                Logger.Error("Can not update wallet with id:" + wallet.Id);
+                                Logger.Error(Messages.ErrUpdateWallet, wallet.Id);
                             }
                         }
                     }

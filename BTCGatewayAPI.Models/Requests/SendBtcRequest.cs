@@ -5,9 +5,11 @@ namespace BTCGatewayAPI.Models.Requests
     public class SendBtcRequest
     {
         const string BitcoinValidationRegex = "^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$";
+        const string BitcoinTestNetValidationRegex = "^[a-km-zA-HJ-NP-Z1-9]{25,34}$";
 
         [Required(AllowEmptyStrings = false, ErrorMessageResourceName = nameof(Messages.SendBtcRequest_AccountCanNotBeEmpty), ErrorMessageResourceType = typeof(Messages))]
-        [RegularExpression(BitcoinValidationRegex, ErrorMessageResourceName = nameof(Messages.SendBtcRequest_AccountFormatShouldBeValid), ErrorMessageResourceType = typeof(Messages))]
+        [MinLength(25)]
+        [MaxLength(35)]
         public string Account { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessageResourceName = nameof(Messages.SendBtcRequest_AmountCanNotBeEmpty), ErrorMessageResourceType = typeof(Messages))]
@@ -16,7 +18,13 @@ namespace BTCGatewayAPI.Models.Requests
 
         public override string ToString()
         {
-            return $"from account {Account} => amount: {Amount}";
+            return $"{Account} => {Amount}";
+        }
+
+        public bool IsValid(bool testNet)
+        {
+            var pattern = testNet ? BitcoinTestNetValidationRegex : BitcoinValidationRegex;
+            return System.Text.RegularExpressions.Regex.IsMatch(Account, pattern);
         }
     }
 }

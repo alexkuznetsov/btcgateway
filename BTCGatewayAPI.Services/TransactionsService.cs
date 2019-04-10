@@ -1,4 +1,5 @@
-﻿using BTCGatewayAPI.Models.DTO;
+﻿using BTCGatewayAPI.Infrastructure.Logging;
+using BTCGatewayAPI.Models.DTO;
 using BTCGatewayAPI.Services.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -9,9 +10,9 @@ namespace BTCGatewayAPI.Services
     {
         private readonly Infrastructure.GlobalConf conf;
 
-        private static readonly Lazy<Infrastructure.Logging.ILogger> LoggerLazy = new Lazy<Infrastructure.Logging.ILogger>(Infrastructure.Logging.LoggerFactory.GetLogger);
+        private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
 
-        private static Infrastructure.Logging.ILogger Logger => LoggerLazy.Value;
+        private static ILogger Logger => LoggerLazy.Value;
 
         public TransactionsService(Infrastructure.DB.DBContext dBContext, Infrastructure.GlobalConf conf) : base(dBContext)
         {
@@ -24,12 +25,13 @@ namespace BTCGatewayAPI.Services
             {
                 (var isSuccess, var result) = await TryToPerformAsync(
                         action: () => DBContext.GetNewIncomeTransactionsAsync(conf.MinimalConfirmations),
-                        onError: (ex) => Logger.Error(ex, "Error to get last updates, trying again..."),
+                        onError: (ex) => Logger.Error(ex, Messages.ErrGetLastUpdatesRetryAgain),
                         triesCount: conf.RetryActionCnt);
 
                 if (!isSuccess)
                 {
-                    Logger.Error("Error to get last updates, something went wrong");
+                    Logger.Error(Messages.ErrGetLastUpdatesGeneralFail);
+                    throw new InvalidOperationException(Messages.ErrGetLastUpdatesGeneralFail);
                 }
 
                 tx.Commit();

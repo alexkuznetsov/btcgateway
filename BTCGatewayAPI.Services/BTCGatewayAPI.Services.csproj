@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,9 +53,13 @@
     <Compile Include="Extensions\IncomeTransactionDbContextExtensions.cs" />
     <Compile Include="Extensions\OutcomeTransactionDBContextExtensions.cs" />
     <Compile Include="FundTransactionStrategy.cs" />
-    <Compile Include="IncomeTxUpdatorService.cs" />
     <Compile Include="IPasswordHasher.cs" />
     <Compile Include="ManualFundTransactionStrategy.cs" />
+    <Compile Include="Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="PasswordHasher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseService.cs" />
@@ -62,6 +69,7 @@
     <Compile Include="SyncBTCTransactinsService.cs" />
     <Compile Include="TimeUtils.cs" />
     <Compile Include="TransactionsService.cs" />
+    <Compile Include="UpdatorService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BTCGatewayAPI.Bitcoin\BTCGatewayAPI.Bitcoin.csproj">
@@ -79,6 +87,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

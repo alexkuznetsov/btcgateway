@@ -25,11 +25,23 @@ namespace BTCGatewayAPI
         {
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
+            if (string.IsNullOrEmpty(context.UserName))
+            {
+                context.SetError("invalid_grant", Resources.Messages.InvalidGrantUserNameIsEmpty);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(context.Password))
+            {
+                context.SetError("invalid_grant", Resources.Messages.InvalidGrantPasswordIsEmpty);
+                return;
+            }
+
             var res = await checkClientService.AuthenticateAsync(context.UserName, context.Password);
 
             if (!res)
             {
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                context.SetError("invalid_grant", Resources.Messages.InvalidGrantUserNameOrPasswordNotFound);
                 return;
             }
 

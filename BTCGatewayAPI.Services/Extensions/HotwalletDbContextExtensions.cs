@@ -10,7 +10,7 @@ namespace BTCGatewayAPI.Services.Extensions
 {
     public static class HotwalletDbContextExtensions
     {
-        private const string FirstHWWithBalanceMoreThanSQL = @"select * from [hot_wallets] 
+        private const string FirstHWWithBalanceMoreThanSQL = @"select * from hot_wallets 
 where amount>=@amount and rpc_address is not null and len(rpc_address)>1";
 
         public static async Task<HotWallet> GetFirstWithBalanceMoreThanAsync(this DBContext dbConetx, decimal balance)
@@ -26,7 +26,7 @@ where amount>=@amount and rpc_address is not null and len(rpc_address)>1";
             throw new InvalidOperationException($"No any wallet with the cache balance more or equal {balance}");
         }
 
-        private const string AllHotWalletsSQL = "select * from [hot_wallets]";
+        private const string AllHotWalletsSQL = "select * from hot_wallets";
 
         public static async Task<IEnumerable<HotWallet>> GetAllHotWalletsAsync(this DBContext dbConetx)
             => await dbConetx.GetManyAsync<Models.HotWallet>(AllHotWalletsSQL).ConfigureAwait(false);

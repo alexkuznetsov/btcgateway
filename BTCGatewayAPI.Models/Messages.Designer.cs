@@ -61,6 +61,15 @@ namespace BTCGatewayAPI.Models {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Попытка снять больше чем есть на балансе.
+        /// </summary>
+        internal static string ErrorTryToWithdrawMoreThanExists {
+            get {
+                return ResourceManager.GetString("ErrorTryToWithdrawMoreThanExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Адрес аккаунта не может быть пустым.
         /// </summary>
         internal static string SendBtcRequest_AccountCanNotBeEmpty {

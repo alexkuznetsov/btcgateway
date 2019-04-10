@@ -30,7 +30,7 @@ namespace BTCGatewayAPI.Services
         {
             if (input == null)
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
 
             return Hash(Encoding.UTF8.GetBytes(input), algorithm);
@@ -40,7 +40,7 @@ namespace BTCGatewayAPI.Services
         {
             if (input == null)
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
 
             using (HashAlgorithm alg = HashAlgorithm.Create(algorithm))
@@ -81,7 +81,7 @@ namespace BTCGatewayAPI.Services
         {
             if (password == null)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             // Produce a version 0 (see comment above) password hash.
@@ -104,11 +104,11 @@ namespace BTCGatewayAPI.Services
         {
             if (hashedPassword == null)
             {
-                throw new ArgumentNullException("hashedPassword");
+                throw new ArgumentNullException(nameof(hashedPassword));
             }
             if (password == null)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             byte[] hashedPasswordBytes = Convert.FromBase64String(hashedPassword);

@@ -117,16 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidGrantPasswordIsEmpty" xml:space="preserve">
-    <value>Не заполнен пароль.</value>
+  <data name="LoggerHelpLnkMsg" xml:space="preserve">
+    <value>Ссылка: </value>
   </data>
-  <data name="InvalidGrantUserNameIsEmpty" xml:space="preserve">
-    <value>Не заполнено имя пользователя.</value>
+  <data name="LoggerInnerExcMsg" xml:space="preserve">
+    <value>Внутреннее исключение: </value>
   </data>
-  <data name="InvalidGrantUserNameOrPasswordNotFound" xml:space="preserve">
-    <value>Имя пользователя или пароль не верны.</value>
+  <data name="LoggerSourceMsg" xml:space="preserve">
+    <value>Источник: </value>
   </data>
-  <data name="InvalidRecieverAddress" xml:space="preserve">
-    <value>Формат адреса получателя не верный.</value>
+  <data name="LoggerStackTrcMsg" xml:space="preserve">
+    <value>Трассировка: </value>
+  </data>
+  <data name="LoggerTargetSiteMsg" xml:space="preserve">
+    <value>TargetSite: </value>
+  </data>
+  <data name="UnhandledMessageStringTpl" xml:space="preserve">
+    <value>Необработанное исключение. Uri: {0}, метод: {1}. Исключение: {2}</value>
   </data>
 </root>

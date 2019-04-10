@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace BTCGatewayAPI.Tests
 {
     [TestClass]
-    public class IncomeTransactinsServiceTests
+    public class SyncDataTests
     {
         protected static ObjectFactory _container;
 
@@ -52,5 +52,29 @@ namespace BTCGatewayAPI.Tests
 
             service.Dispose();
         }
+
+        //[TestMethod]
+        //public async Task Test_DownloadingHotWalletsWithoutError()
+        //{
+        //    var service = _container.Create<Services.HotWalletsService>();
+
+        //    Assert.IsNotNull(service);
+
+        //    var result = false;
+
+        //    try
+        //    {
+        //        await service.SyncWalletsInformationAsync();
+        //        result = true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //    }
+
+        //    Assert.IsTrue(result);
+
+        //    service.Dispose();
+        //}
     }
 }

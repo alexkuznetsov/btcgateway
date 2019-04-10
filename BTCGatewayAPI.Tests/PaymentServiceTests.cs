@@ -52,7 +52,9 @@ namespace BTCGatewayAPI.Tests
 
             var tx = await paymentService.CreateTransactionAsync(bitcoinClient, wallet, request);
 
-            Assert.IsFalse(string.IsNullOrEmpty(tx.Item1));
+            Assert.IsFalse(string.IsNullOrEmpty(tx.Hex));
+            Assert.IsFalse(string.IsNullOrEmpty(tx.Txid));
+            Assert.IsTrue(tx.Fee > 0.000M);
         }
 
         [TestMethod]

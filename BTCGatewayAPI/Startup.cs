@@ -8,7 +8,7 @@ namespace BTCGatewayAPI
 {
     public partial class Startup : IRegisteredObject
     {
-        IncomeTxUpdatorService _updator;
+        UpdatorService _updator;
 
         public Startup()
         {
@@ -19,7 +19,7 @@ namespace BTCGatewayAPI
         {
             var factory = ObjectRegistryConfig.Configure();
             var configuration = new HttpConfiguration();
-            _updator = factory.Create<IncomeTxUpdatorService>();
+            _updator = factory.Create<UpdatorService>();
 
             ConfigureWebApi(configuration, factory);
             ConfigureOauth(configuration, factory, app);

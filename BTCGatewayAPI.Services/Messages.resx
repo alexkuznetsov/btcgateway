@@ -117,16 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidGrantPasswordIsEmpty" xml:space="preserve">
-    <value>Не заполнен пароль.</value>
+  <data name="ErrAddOutputTransaction" xml:space="preserve">
+    <value>Ошибка добавления транзакции на отправку монет. Запрос: {0}</value>
   </data>
-  <data name="InvalidGrantUserNameIsEmpty" xml:space="preserve">
-    <value>Не заполнено имя пользователя.</value>
+  <data name="ErrExceptionWhenChangingStateForOutputTx" xml:space="preserve">
+    <value>Ошибка обновления транзакции на отправку с id {0}.  Установка состояния "Выполнено" провалилась.</value>
   </data>
-  <data name="InvalidGrantUserNameOrPasswordNotFound" xml:space="preserve">
-    <value>Имя пользователя или пароль не верны.</value>
+  <data name="ErrExceptionWhenUpdateOutputTx" xml:space="preserve">
+    <value>Ошибка обновления транзакции на отправку с id {0}.  Переводим в состояние "Выполнено"...</value>
   </data>
-  <data name="InvalidRecieverAddress" xml:space="preserve">
-    <value>Формат адреса получателя не верный.</value>
+  <data name="ErrFailedToProcessIncomeTransactions" xml:space="preserve">
+    <value>Ошибка обработки транзакции на получение монет.</value>
+  </data>
+  <data name="ErrFailedToProcessInputTransactionWithTxId" xml:space="preserve">
+    <value>Ошибка обработки транзакции на получение с txid {0}</value>
+  </data>
+  <data name="ErrFailedToProcessOutputTransaction" xml:space="preserve">
+    <value>Ошибка обработки транзакции на отправку</value>
+  </data>
+  <data name="ErrFailedToProcessOutputTransactionWithTxId" xml:space="preserve">
+    <value>Ошибка обработки транзакции на отправку с txid {0}</value>
+  </data>
+  <data name="ErrNetworkingExceptionOccurs" xml:space="preserve">
+    <value>Сетевая ошибка</value>
+  </data>
+  <data name="ErrorSaveOutputTransaction" xml:space="preserve">
+    <value>Транзакция на отправку для кошелька с id: {0} не сохраняется. Запрос: {1}</value>
+  </data>
+  <data name="ErrorUpdateWalletFails" xml:space="preserve">
+    <value>Кошелек с id: {0} не обновляется. Запрос: {1}</value>
+  </data>
+  <data name="ErrTryToWithdrawMoreThanExcists" xml:space="preserve">
+    <value>Операция не разрешена, попытка снятия несуществующей суммы.</value>
+  </data>
+  <data name="ErrUnhandledExceptionOccurs" xml:space="preserve">
+    <value>Произошла необработанная ошибка</value>
+  </data>
+  <data name="ErrUpdateWallet" xml:space="preserve">
+    <value>Ошибка обработки кошелька с id: {0}</value>
+  </data>
+  <data name="ErrUpdateWalletInfo" xml:space="preserve">
+    <value>Ошибка обновления информации по кошельку, пробуем еще раз...</value>
+  </data>
+  <data name="ErrUpdateWalletInformation" xml:space="preserve">
+    <value>Ошибка обновления информации по кошельку, пробуем еще раз. Запрос: {0}</value>
+  </data>
+  <data name="ErrGetLastUpdatesGeneralFail" xml:space="preserve">
+    <value>Ошибка получения последних обновлений.</value>
+  </data>
+  <data name="ErrGetLastUpdatesRetryAgain" xml:space="preserve">
+    <value>Ошибка получения последних обновлений, пробуем еще раз...</value>
   </data>
 </root>

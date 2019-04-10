@@ -6,6 +6,20 @@ namespace BTCGatewayAPI.Services
 {
     public abstract class FundTransactionStrategy
     {
+        public class FundTransactionStrategyResult
+        {
+            public FundTransactionStrategyResult(string hex, decimal fee, string txid)
+            {
+                Hex = hex;
+                Fee = fee;
+                Txid = txid;
+            }
+
+            public string Hex { get; set; }
+            public string Txid { get; set; }
+            public decimal Fee { get; set; }
+        }
+
         protected readonly BitcoinClient bitcoinClient;
         protected readonly Infrastructure.GlobalConf conf;
 
@@ -15,6 +29,6 @@ namespace BTCGatewayAPI.Services
             this.conf = conf;
         }
 
-        public abstract Task<(string, decimal)> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest);
+        public abstract Task<FundTransactionStrategyResult> CreateAndSignTransactionAsync(HotWallet hotWallet, SendBtcRequest sendBtcRequest);
     }
 }

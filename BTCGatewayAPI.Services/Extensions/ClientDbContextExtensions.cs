@@ -7,7 +7,7 @@ namespace BTCGatewayAPI.Services.Extensions
 {
     public static class ClientDbContextExtensions
     {
-        private const string FindClientByNameSQL = "select * from [clients] where client_id=@clientId";
+        private const string FindClientByNameSQL = "select * from clients where client_id=@clientId";
 
         public static Task<Client> FindClientByUserNameAsync(this DBContext dBContext, string username)
             => dBContext.FindAsync<Client>(FindClientByNameSQL,

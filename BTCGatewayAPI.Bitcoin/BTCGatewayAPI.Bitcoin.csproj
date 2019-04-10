@@ -56,12 +56,20 @@
     <Compile Include="BitconContainerProfile.cs" />
     <Compile Include="Models\FundRawTransactionOptions.cs" />
     <Compile Include="Models\FundRawTransactionResult.cs" />
+    <Compile Include="Models\RawTransactionInfo.cs" />
     <Compile Include="Models\SigHash.cs" />
     <Compile Include="Models\SignTransactionResult.cs" />
+    <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TxOutput.cs" />
     <Compile Include="Models\WalletInfoResult.cs" />
     <Compile Include="Models\WalletTransaction.cs" />
     <Compile Include="Requests\CommandRequest.cs" />
+    <Compile Include="Requests\CreateRawTransaction.cs" />
+    <Compile Include="Requests\DecodeRawTransactionRequest.cs" />
+    <Compile Include="Requests\GetRawTransactionRequest.cs" />
+    <Compile Include="Requests\WalletTransactionRequest.cs" />
+    <Compile Include="Responses\DecodeRawTransactionResponse.cs" />
+    <Compile Include="Responses\GetRawTransactionResponse.cs" />
     <Compile Include="Responses\WalletPassphraseResponse.cs" />
     <Compile Include="Responses\WalletInfoResponse.cs" />
     <Compile Include="Responses\SignTransactionResponse.cs" />
@@ -75,7 +83,6 @@
     <Compile Include="Responses\CreateRawTransactionResponse.cs" />
     <Compile Include="Responses\CommandResponseError.cs" />
     <Compile Include="Responses\CommandRespose.cs" />
-    <Compile Include="Requests\CreateRawtransaction.cs" />
     <Compile Include="Requests\DumpPrivKeyRequest.cs" />
     <Compile Include="Requests\FundRawTransactionRequest.cs" />
     <Compile Include="Requests\GetEstimateSmartFeeRequest.cs" />
@@ -89,6 +96,7 @@
     <Compile Include="Requests\SignTransactionRequest.cs" />
     <Compile Include="Requests\WalletInfoRequest.cs" />
     <Compile Include="Requests\WalletPassphraseRequest.cs" />
+    <Compile Include="Responses\WalletTransactionResponse.cs" />
     <Compile Include="RPCServer.cs" />
     <Compile Include="Models\TXInfo.cs" />
     <Compile Include="Models\Unspent.cs" />
