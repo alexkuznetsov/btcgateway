@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Tests
 {
+
     [TestClass]
     public class HotWalletBitcoindTests
     {
