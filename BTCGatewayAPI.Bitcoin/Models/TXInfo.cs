@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class TXInfo
     {
         [DataMember(Name = "txid", Order = 0)]

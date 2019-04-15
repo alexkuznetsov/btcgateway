@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class ListUnspent : CommandRequest
+    [DataContract]
+    public class ListUnspent : CommandRequest
     {
         public ListUnspent(int from = 0, int to = 9999999, string[] addresses = null)
             : base(Guid.NewGuid().ToString(), Names.listunspent)

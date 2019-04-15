@@ -1,4 +1,5 @@
-﻿using BTCGatewayAPI.Bitcoin.Models;
+﻿using BTCGatewayAPI.Bitcoin;
+using BTCGatewayAPI.Bitcoin.Models;
 using BTCGatewayAPI.Infrastructure;
 using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;

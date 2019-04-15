@@ -39,8 +39,7 @@ namespace BTCGatewayAPI.Tests
 
             if (dbContext.State != System.Data.ConnectionState.Open)
                 await dbContext.OpenAsync();
-
-
+            
             var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(0.000M);
 
             Assert.IsNotNull(wallet);
@@ -79,12 +78,7 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(wallet);
             Assert.IsTrue(wallet.Amount > 0.000M);
-
-            using (var tx = dbContext.BeginTransaction())
-            {
-                await dbContext.UpdateWalletAsync(tx, wallet);
-            }
-
+            
             using (var tx = dbContext.BeginTransaction())
             {
                 wallet.Withdraw(amount);
@@ -92,6 +86,11 @@ namespace BTCGatewayAPI.Tests
             }
 
             wallet.Amount += amount;
+
+            using (var tx = dbContext.BeginTransaction())
+            {
+                await dbContext.UpdateWalletAsync(tx, wallet);
+            }
 
             dbContext.Dispose();
         }

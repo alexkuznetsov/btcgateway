@@ -1,8 +1,8 @@
-﻿using BTCGatewayAPI.Infrastructure.Container;
+﻿using BTCGatewayAPI.Bitcoin;
+using BTCGatewayAPI.Infrastructure.Container;
 using BTCGatewayAPI.Services.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,7 +43,7 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(wallet);
 
-            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
+            var bitcoinClientFactory = _container.Create<BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 
@@ -64,7 +64,7 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(wallet);
 
-            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
+            var bitcoinClientFactory = _container.Create<BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 
@@ -87,7 +87,7 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(wallet);
 
-            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
+            var bitcoinClientFactory = _container.Create<BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 
@@ -112,7 +112,7 @@ namespace BTCGatewayAPI.Tests
 
             Assert.IsNotNull(wallet);
 
-            var bitcoinClientFactory = _container.Create<Services.BitcoinClientFactory>();
+            var bitcoinClientFactory = _container.Create<BitcoinClientFactory>();
 
             Assert.IsNotNull(bitcoinClientFactory);
 

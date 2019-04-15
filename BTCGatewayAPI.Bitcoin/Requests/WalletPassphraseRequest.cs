@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class WalletPassphraseRequest : CommandRequest
+    [DataContract]
+    public class WalletPassphraseRequest : CommandRequest
     {
         public WalletPassphraseRequest(string passphrase, int seconds) : base(Guid.NewGuid().ToString(), Names.walletpassphrase)
         {

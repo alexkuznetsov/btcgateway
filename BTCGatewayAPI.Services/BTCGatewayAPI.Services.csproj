@@ -46,8 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoFundTransactionStrategy.cs" />
-    <Compile Include="BitcoinClient.cs" />
-    <Compile Include="BitcoinClientFactory.cs" />
     <Compile Include="CheckClientService.cs" />
     <Compile Include="Extensions\ClientDbContextExtensions.cs" />
     <Compile Include="Extensions\HotwalletDbContextExtensions.cs" />

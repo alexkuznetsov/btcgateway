@@ -1,4 +1,5 @@
-﻿using BTCGatewayAPI.Infrastructure.Logging;
+﻿using BTCGatewayAPI.Bitcoin;
+using BTCGatewayAPI.Infrastructure.Logging;
 using BTCGatewayAPI.Services.Extensions;
 using System;
 using System.Collections.Generic;
@@ -38,32 +39,23 @@ namespace BTCGatewayAPI.Services
         {
             var allHotWallets = await DbCon.GetAllHotWalletsAsync();
             var tasks = new List<Task>();
+            var status = false;
 
             foreach (var wallet in allHotWallets)
             {
-                tasks.Add(ProcessWalletAsync(wallet));
-            }
+                var bitcoinClient = _clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
+                var transactions = await bitcoinClient.ListTransactionsAsync();
+                //var addressTransactions = transactions.Where(x => x.Address == wallet.Address).ToArray();
 
-            await Task.WhenAll(tasks);
-        }
+                foreach (var tx in transactions)
+                {
+                    status ^= await ProcessTransactionAsync(bitcoinClient, wallet, tx);
+                }
 
-        private async Task ProcessWalletAsync(Models.HotWallet wallet)
-        {
-            var bitcoinClient = _clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var transactions = await bitcoinClient.ListTransactionsAsync();
-            //var addressTransactions = transactions.Where(x => x.Address == wallet.Address).ToArray();
-            var tasks = new List<Task<bool>>();
-
-            foreach (var tx in transactions)
-            {
-                tasks.Add(ProcessTransactionAsync(bitcoinClient, wallet, tx));
-            }
-
-            var statuses = await Task.WhenAll(tasks);
-
-            if (statuses.Any(x => x == true))
-            {
-                _memoryCache.Remove(CacheEntryName);
+                if (status)
+                {
+                    _memoryCache.Remove(CacheEntryName);
+                }
             }
         }
 

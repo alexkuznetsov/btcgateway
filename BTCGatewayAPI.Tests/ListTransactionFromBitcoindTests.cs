@@ -36,7 +36,7 @@ namespace BTCGatewayAPI.Tests
             {
                 var contents = await r.ReadToEndAsync();
 
-                var obj = Jil.JSON.Deserialize<Bitcoin.Responses.ListTransactionResponse>(contents);
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Bitcoin.Responses.ListTransactionResponse>(contents);
 
                 Assert.IsNotNull(obj);
                 Assert.IsNotNull(obj.Result);

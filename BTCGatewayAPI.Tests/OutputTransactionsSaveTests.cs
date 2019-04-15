@@ -39,7 +39,7 @@ namespace BTCGatewayAPI.Tests
                 await dbContext.OpenAsync();
 
             var paymentService = _container.Create<Services.PaymentService>();
-            var sendBtcRequest = new Models.Requests.SendBtcRequest { Account = "123456", Amount = 0.111111M };
+            var sendBtcRequest = new Models.Requests.SendBtcRequest { Account = "123456", Amount = 0.001111M };
             var wallet = await dbContext.GetFirstWithBalanceMoreThanAsync(sendBtcRequest.Amount);
             var walletAmount = wallet.Amount;
             var txHash = "02000000000101f7cf6ef75556555555cecbc117beb31d41f8dba86b47b3d2588926f3bdf0741a6900000017160014ba0d4968a7ac506d39bfb263dbe83a22a27b7161feffffff02c9e772000000000017a9141221c54021858e6726aa98d8028328415957d33287232ea800000000001976a9149f9a7abd600c0caa03983a77c8c3df8e062cb2fa88ac02473044022047bfb63bf33691e74ad313ae4e56f65f4d9ddd5649e7519c84fde24c27ddc6d102200b60df2aa60700ba0a8375da50b9bfc90a0675522b44f4407ab6984e763a8f29012103ac396066cce501a4aadff8370b9b39423fecca6a2f852d33eb0345d699a0cdd700000000";

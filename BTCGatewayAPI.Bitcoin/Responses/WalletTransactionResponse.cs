@@ -1,8 +1,10 @@
 ﻿using BTCGatewayAPI.Bitcoin.Models;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Responses
 {
-    public class WalletTransactionResponse: CommandResponse<WalletTransaction>
+    [DataContract]
+    public class WalletTransactionResponse : CommandResponse<WalletTransaction>
     {
 
     }

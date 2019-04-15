@@ -1,4 +1,5 @@
-﻿using BTCGatewayAPI.Infrastructure.Logging;
+﻿using BTCGatewayAPI.Bitcoin;
+using BTCGatewayAPI.Infrastructure.Logging;
 using BTCGatewayAPI.Models.DTO;
 using BTCGatewayAPI.Services.Extensions;
 using System;

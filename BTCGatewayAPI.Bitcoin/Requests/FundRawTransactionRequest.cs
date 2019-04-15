@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class FundRawTransactionRequest : CommandRequest
+    [DataContract]
+    public class FundRawTransactionRequest : CommandRequest
     {
         public FundRawTransactionRequest(string txHash, Models.FundRawTransactionOptions options)
             : base(Guid.NewGuid().ToString(), Names.fundrawtransaction)

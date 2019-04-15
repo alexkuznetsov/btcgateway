@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class ListTransactionRequest : CommandRequest
+    [DataContract]
+    public class ListTransactionRequest : CommandRequest
     {
         public ListTransactionRequest(string dummy, int count, int skip, bool includeWatchOnly)
             : base(Guid.NewGuid().ToString(), Names.listtransactions)

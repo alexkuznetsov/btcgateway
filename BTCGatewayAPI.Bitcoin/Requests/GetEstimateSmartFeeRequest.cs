@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class GetEstimateSmartFeeRequest : CommandRequest
+    [DataContract]
+    public class GetEstimateSmartFeeRequest : CommandRequest
     {
         public GetEstimateSmartFeeRequest(int confTarget) :
             base(Guid.NewGuid().ToString(), Names.estimatesmartfee)

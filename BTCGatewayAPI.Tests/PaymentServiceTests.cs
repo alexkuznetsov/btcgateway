@@ -1,4 +1,5 @@
-﻿using BTCGatewayAPI.Infrastructure.Container;
+﻿using BTCGatewayAPI.Bitcoin;
+using BTCGatewayAPI.Infrastructure.Container;
 using BTCGatewayAPI.Services.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -35,7 +36,7 @@ namespace BTCGatewayAPI.Tests
         public async Task Test_CreateTransaction()
         {
             var dbContext = _container.Create<DbConnection>();
-            var clientFactory = _container.Create<Services.BitcoinClientFactory>();
+            var clientFactory = _container.Create<BitcoinClientFactory>();
             var paymentService = _container.Create<Services.PaymentService>();
 
             Assert.IsNotNull(dbContext);
@@ -66,7 +67,7 @@ namespace BTCGatewayAPI.Tests
             {
                 var contents = await r.ReadToEndAsync();
 
-                var obj = Jil.JSON.Deserialize<Bitcoin.Responses.SignTransactionResponse>(contents);
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Bitcoin.Responses.SignTransactionResponse>(contents);
 
                 Assert.IsNotNull(obj);
                 Assert.IsNotNull(obj.Result);

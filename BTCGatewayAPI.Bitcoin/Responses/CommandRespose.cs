@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Responses
 {
+    [DataContract]
     public class CommandResponse<T>
     {
         [DataMember(Name = "result", Order = 0)]

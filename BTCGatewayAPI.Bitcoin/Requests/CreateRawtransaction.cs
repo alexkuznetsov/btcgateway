@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class CreateRawTransaction : CommandRequest
+    [DataContract]
+    public class CreateRawTransaction : CommandRequest
     {
         public CreateRawTransaction(Models.TXInfo[] inputs, System.Collections.Generic.Dictionary<string, decimal> reciviers)
             : base(Guid.NewGuid().ToString(), Names.createrawtransaction)

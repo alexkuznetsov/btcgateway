@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class SendRawTransactionRequest : CommandRequest
+    [DataContract]
+    public class SendRawTransactionRequest : CommandRequest
     {
         public SendRawTransactionRequest(string txHash) : base(Guid.NewGuid().ToString(), Names.sendrawtransaction)
         {

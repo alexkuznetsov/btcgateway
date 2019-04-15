@@ -8,13 +8,6 @@ namespace BTCGatewayAPI.Services
     {
         public ServicesContainerProfile()
         {
-            Singleton(typeof(BitcoinClientFactory), (r) =>
-            {
-                var service = (LoggingHandler)r.GetService(typeof(LoggingHandler));
-                var conf = r.GetService<Infrastructure.GlobalConf>();
-                return new BitcoinClientFactory(conf, service);
-            });
-
             Singleton(typeof(IPasswordHasher), (r) => new PasswordHasher());
 
             Transient(typeof(DbConnection), (r) =>

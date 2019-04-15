@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class TxOutput : TXInfo
     {
         [DataMember(Name = "scriptPubKey", Order = 2)]

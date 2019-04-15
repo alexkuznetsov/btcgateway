@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
-    internal class GetRawTransactionRequest : CommandRequest
+    [DataContract]
+    public class GetRawTransactionRequest : CommandRequest
     {
         public GetRawTransactionRequest(string txid, bool verbose) : base(Guid.NewGuid().ToString(), Names.getrawtransaction)
         {

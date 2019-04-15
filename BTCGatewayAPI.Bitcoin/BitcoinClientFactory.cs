@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Bitcoin
 {
     public class BitcoinClientFactory
     {

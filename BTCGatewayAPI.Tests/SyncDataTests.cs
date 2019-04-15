@@ -43,9 +43,9 @@ namespace BTCGatewayAPI.Tests
                 await service.DownloadAsync();
                 result = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                System.Diagnostics.Debug.WriteLine(e.ToString());
             }
 
             Assert.IsTrue(result);

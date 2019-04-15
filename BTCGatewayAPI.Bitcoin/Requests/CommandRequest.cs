@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Requests
 {
+    [DataContract]
     public abstract class CommandRequest
     {
         [DataMember(Name = "jsonrpc", Order = 0)]
