@@ -26,6 +26,9 @@ namespace BTCGatewayAPI.Services
 
                 return connection;
             });
+
+            Singleton(typeof(System.Runtime.Caching.MemoryCache),
+                (_) => System.Runtime.Caching.MemoryCache.Default);
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
     public class FundRawTransactionResult
     {
-        [JsonProperty("hex")]
+        [DataMember(Name = "hex")]
         public string Hex { get; set; }
 
-        [JsonProperty("fee")]
+        [DataMember(Name = "fee")]
         public decimal Fee { get; set; }
 
-        [JsonProperty("changepos")]
+        [DataMember(Name = "changepos")]
         public int ChangePos { get; set; }
     }
 }

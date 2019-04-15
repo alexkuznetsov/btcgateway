@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
     public class EstimateSmartFee
     {
-        [JsonProperty("feerate", Order = 0)]
+        [DataMember(Name = "feerate", Order = 0)]
         public decimal Feerate { get; set; }
 
-        [JsonProperty("blocks", Order = 1)]
+        [DataMember(Name = "blocks", Order = 1)]
         public int Blocks { get; set; }
     }
 }

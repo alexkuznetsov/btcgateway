@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
     public class SignTransactionResult
     {
-        [JsonProperty("hex")]
+        [DataMember(Name = "hex")]
         public string Hex { get; set; }
 
-        [JsonProperty("complete")]
+        [DataMember(Name = "complete")]
         public bool Complete { get; set; }
     }
 }

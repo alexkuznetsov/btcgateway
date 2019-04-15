@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
     public class TXInfo
     {
-        [JsonProperty("txid", Order = 0)]
+        [DataMember(Name = "txid", Order = 0)]
         public string Txid { get; set; }
 
-        [JsonProperty("vout", Order = 1)]
+        [DataMember(Name = "vout", Order = 1)]
         public int Vout { get; set; }
     }
 }

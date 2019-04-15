@@ -110,15 +110,20 @@ namespace BTCGatewayAPI.Bitcoin
             }
         }
 
-        private async Task<TResponseMessage> ExecuteRequestAsync<TRequest, TResponse, TResponseMessage>(TRequest command)
+        private Task<TResponseMessage> ExecuteRequestAsync<TRequest, TResponse, TResponseMessage>(TRequest command)
             where TRequest : CommandRequest
             where TResponse : CommandResponse<TResponseMessage>
         {
-            var responseObject = await ExecuteRequestRawAsync<TRequest, TResponse>(command);
-            if (responseObject.Error == null)
-                return responseObject.Result;
+            return ExecuteRequestRawAsync<TRequest, TResponse>(command)
+                .ContinueWith((t) =>
+                {
+                    var responseObject = t.Result;
 
-            throw new RPCServerException($"Method execution error: {responseObject.Error.Message} [{responseObject.Error.Code}]");
+                    if (responseObject.Error == null)
+                        return responseObject.Result;
+
+                    throw new RPCServerException($"Method execution error: {responseObject.Error.Message} [{responseObject.Error.Code}]");
+                });
         }
 
         private HttpClient GetClient()

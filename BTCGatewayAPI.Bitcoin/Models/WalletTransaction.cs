@@ -1,61 +1,61 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
     public class WalletTransaction
     {
-        [JsonProperty("amount")]
+        [DataMember(Name = "amount")]
         public decimal Amount { get; set; }
 
-        [JsonProperty("confirmations")]
+        [DataMember(Name = "confirmations")]
         public int Confirmations { get; set; }
 
-        [JsonProperty("blockhash")]
+        [DataMember(Name = "blockhash")]
         public string Blockhash { get; set; }
 
-        [JsonProperty("blockindex")]
+        [DataMember(Name = "blockindex")]
         public int Blockindex { get; set; }
 
-        [JsonProperty("blocktime")]
+        [DataMember(Name = "blocktime")]
         public int Blocktime { get; set; }
 
-        [JsonProperty("txid")]
+        [DataMember(Name = "txid")]
         public string Txid { get; set; }
 
-        [JsonProperty("walletconflicts")]
+        [DataMember(Name = "walletconflicts")]
         public string[] Walletconflicts { get; set; }
 
-        [JsonProperty("time")]
+        [DataMember(Name = "time")]
         public int Time { get; set; }
 
-        [JsonProperty("timereceived")]
+        [DataMember(Name = "timereceived")]
         public int Timereceived { get; set; }
 
-        [JsonProperty("bip125-replaceable")]
+        [DataMember(Name = "bip125-replaceable")]
         public string Bip125Replaceable { get; set; }
 
-        [JsonProperty("details")]
+        [DataMember(Name = "details")]
         public WalletTransactionDetails[] Details { get; set; }
 
-        [JsonProperty("hex")]
+        [DataMember(Name = "hex")]
         public string Hex { get; set; }
     }
 
     public class WalletTransactionDetails
     {
-        [JsonProperty("address")]
+        [DataMember(Name = "address")]
         public string Address { get; set; }
 
-        [JsonProperty("category")]
+        [DataMember(Name = "category")]
         public string Category { get; set; }
 
-        [JsonProperty("amount")]
+        [DataMember(Name = "amount")]
         public decimal Amount { get; set; }
 
-        [JsonProperty("label")]
+        [DataMember(Name = "label")]
         public string Label { get; set; }
 
-        [JsonProperty("vout")]
+        [DataMember(Name = "vout")]
         public int VOut { get; set; }
     }
 }

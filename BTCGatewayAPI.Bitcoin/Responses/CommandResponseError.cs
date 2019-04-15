@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Responses
 {
     public class CommandResponseError
     {
-        [JsonProperty("code", Order = 0)]
+        [DataMember(Name = "code", Order = 0)]
         public int Code { get; set; }
 
-        [JsonProperty("message", Order = 1)]
+        [DataMember(Name = "message", Order = 1)]
         public string Message { get; set; }
     }
 }

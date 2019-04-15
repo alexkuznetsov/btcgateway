@@ -1,91 +1,91 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
     public class RawTransactionInfo
     {
-        [JsonProperty("txid")]
+        [DataMember(Name = "txid")]
         public string Txid { get; set; }
 
-        [JsonProperty("hash")]
+        [DataMember(Name = "hash")]
         public string Hash { get; set; }
 
-        [JsonProperty("version")]
+        [DataMember(Name = "version")]
         public int Version { get; set; }
 
-        [JsonProperty("size")]
+        [DataMember(Name = "size")]
         public int Size { get; set; }
 
-        [JsonProperty("vsize")]
+        [DataMember(Name = "vsize")]
         public int VSize { get; set; }
 
-        [JsonProperty("weight")]
+        [DataMember(Name = "weight")]
         public int Weight { get; set; }
 
-        [JsonProperty("locktime")]
+        [DataMember(Name = "locktime")]
         public int Locktime { get; set; }
 
-        [JsonProperty("vin")]
+        [DataMember(Name = "vin")]
         public VIn[] VIn { get; set; }
 
-        [JsonProperty("vout")]
+        [DataMember(Name = "vout")]
         public VOut[] VOut { get; set; }
     }
 
     public class VOut
     {
-        [JsonProperty("value")]
+        [DataMember(Name = "value")]
         public decimal Value { get; set; }
 
-        [JsonProperty("n")]
+        [DataMember(Name = "n")]
         public int Num { get; set; }
 
-        [JsonProperty("scriptPubKey")]
+        [DataMember(Name = "scriptPubKey")]
         public ScriptPubKey ScriptPubKey { get; set; }
     }
 
     public class ScriptPubKey
     {
-        [JsonProperty("asm")]
+        [DataMember(Name = "asm")]
         public string Asm { get; set; }
 
-        [JsonProperty("hex")]
+        [DataMember(Name = "hex")]
         public string Hex { get; set; }
 
-        [JsonProperty("reqSigs")]
+        [DataMember(Name = "reqSigs")]
         public int ReqSigs { get; set; }
 
-        [JsonProperty("type")]
+        [DataMember(Name = "type")]
         public string Type { get; set; }
 
-        [JsonProperty("addresses")]
+        [DataMember(Name = "addresses")]
         public string[] Addresses { get; set; }
     }
 
     public class VIn
     {
-        [JsonProperty("txid")]
+        [DataMember(Name = "txid")]
         public string Txid { get; set; }
 
-        [JsonProperty("vout")]
+        [DataMember(Name = "vout")]
         public int VOut { get; set; }
 
-        [JsonProperty("scriptSig")]
+        [DataMember(Name = "scriptSig")]
         public ScriptSig ScriptSig { get; set; }
     }
 
     public class ScriptSig
     {
-        [JsonProperty("asm")]
+        [DataMember(Name = "asm")]
         public string Asm { get; set; }
 
-        [JsonProperty("hex")]
+        [DataMember(Name = "hex")]
         public string Hex { get; set; }
 
-        [JsonProperty("txinwitness")]
+        [DataMember(Name = "txinwitness")]
         public string[] Txinwitness { get; set; }
 
-        [JsonProperty("sequence")]
+        [DataMember(Name = "sequence")]
         public long Sequence { get; set; }
     }
 }

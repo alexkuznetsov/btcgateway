@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
@@ -18,31 +18,31 @@ namespace BTCGatewayAPI.Bitcoin.Models
 
     public class FundRawTransactionOptions
     {
-        [JsonProperty("changeAddress", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "changeAddress", IsRequired =false, EmitDefaultValue =false)]
         public string ChangeAddress { get; set; }
 
-        [JsonProperty("changePosition", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "changePosition", IsRequired =false, EmitDefaultValue =false)]
         public int? ChangePosition { get; set; }
 
-        [JsonProperty("change_type", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "change_type", IsRequired =false, EmitDefaultValue =false)]
         public string ChangeType { get; set; }
 
-        [JsonProperty("includeWatching", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "includeWatching", IsRequired =false, EmitDefaultValue =false)]
         public bool? IncludeWatching { get; set; }
 
-        [JsonProperty("lockUnspents", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "lockUnspents", IsRequired =false, EmitDefaultValue =false)]
         public bool? LockUnspents { get; set; }
 
-        [JsonProperty("subtractFeeFromOutputs", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "subtractFeeFromOutputs", IsRequired =false, EmitDefaultValue =false)]
         public int[] SubtractFeeFromOutputs { get; set; }
 
-        [JsonProperty("replaceable", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "replaceable", IsRequired =false, EmitDefaultValue =false)]
         public bool? Replaceable { get; set; }
 
-        [JsonProperty("conf_target", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "conf_target", IsRequired =false, EmitDefaultValue =false)]
         public int? ConfTarget { get; set; }
 
-        [JsonProperty("estimate_mode", NullValueHandling = NullValueHandling.Ignore, Required = Required.AllowNull)]
+        [DataMember(Name = "estimate_mode", IsRequired =false, EmitDefaultValue =false)]
         public string EstimateMode { get; set; }
     }
 }

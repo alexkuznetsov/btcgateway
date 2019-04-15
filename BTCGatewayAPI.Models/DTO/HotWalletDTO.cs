@@ -1,23 +1,23 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Models.DTO
 {
     public class HotWalletDTO
     {
-        [JsonProperty("id")]
+        [DataMember(Name = "id")]
         public int Id { get; set; }
 
-        [JsonProperty("created_at")]
+        [DataMember(Name = "created_at")]
         public DateTime CreatedAt { get; set; }
 
-        [JsonProperty("updated_at")]
+        [DataMember(Name = "updated_at")]
         public DateTime? UpdatedAt { get; set; }
 
-        [JsonProperty("address")]
+        [DataMember(Name = "address")]
         public string Address { get; set; }
 
-        [JsonProperty("amount")]
+        [DataMember(Name = "amount")]
         public decimal Amount { get; set; }
     }
 }

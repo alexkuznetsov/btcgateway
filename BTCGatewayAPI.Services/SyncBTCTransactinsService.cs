@@ -1,6 +1,7 @@
 ﻿using BTCGatewayAPI.Infrastructure.Logging;
 using BTCGatewayAPI.Services.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,27 +17,34 @@ namespace BTCGatewayAPI.Services
     {
         private readonly BitcoinClientFactory _clientFactory;
         private readonly Infrastructure.GlobalConf _сonf;
+        private readonly System.Runtime.Caching.MemoryCache _memoryCache;
 
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
+        private static readonly string CacheEntryName = "lasttx";
 
         private static ILogger Logger => LoggerLazy.Value;
 
         public SyncBTCTransactinsService(DbConnection dbContext
             , BitcoinClientFactory clientFactory
-            , Infrastructure.GlobalConf globalConf) : base(dbContext)
+            , Infrastructure.GlobalConf globalConf
+            , System.Runtime.Caching.MemoryCache memoryCache) : base(dbContext)
         {
             _clientFactory = clientFactory;
             _сonf = globalConf;
+            _memoryCache = memoryCache;
         }
 
         public async Task DownloadAsync()
         {
             var allHotWallets = await DbCon.GetAllHotWalletsAsync();
+            var tasks = new List<Task>();
 
             foreach (var wallet in allHotWallets)
             {
-                await ProcessWalletAsync(wallet);
+                tasks.Add(ProcessWalletAsync(wallet));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         private async Task ProcessWalletAsync(Models.HotWallet wallet)
@@ -44,26 +52,39 @@ namespace BTCGatewayAPI.Services
             var bitcoinClient = _clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
             var transactions = await bitcoinClient.ListTransactionsAsync();
             //var addressTransactions = transactions.Where(x => x.Address == wallet.Address).ToArray();
+            var tasks = new List<Task<bool>>();
 
             foreach (var tx in transactions)
             {
-                string rawHex = string.Empty;
+                tasks.Add(ProcessTransactionAsync(bitcoinClient, wallet, tx));
+            }
 
-                try
-                {
-                    rawHex = await bitcoinClient.GetRawTransaction(tx.Txid);
-                }
-                catch (Bitcoin.RPCServerException)
-                {
-                    var txInfo = await bitcoinClient.GetTransaction(tx.Txid);
-                    rawHex = txInfo.Hex;
-                }
+            var statuses = await Task.WhenAll(tasks);
 
-                await SaveAsync(tx, wallet, rawHex);
+            if (statuses.Any(x => x == true))
+            {
+                _memoryCache.Remove(CacheEntryName);
             }
         }
 
-        private async Task SaveAsync(Bitcoin.Models.Transaction tx, Models.HotWallet wallet, string rawHex)
+        private async Task<bool> ProcessTransactionAsync(BitcoinClient bitcoinClient, Models.HotWallet wallet, Bitcoin.Models.Transaction tx)
+        {
+            var rawHex = string.Empty;
+
+            try
+            {
+                rawHex = await bitcoinClient.GetRawTransaction(tx.Txid);
+            }
+            catch (Bitcoin.RPCServerException)
+            {
+                var txInfo = await bitcoinClient.GetTransaction(tx.Txid);
+                rawHex = txInfo.Hex;
+            }
+
+            return await SaveAsync(tx, wallet, rawHex);
+        }
+
+        private async Task<bool> SaveAsync(Bitcoin.Models.Transaction tx, Models.HotWallet wallet, string rawHex)
         {
             if (DbCon.State != System.Data.ConnectionState.Open)
                 await DbCon.OpenAsync();
@@ -72,16 +93,19 @@ namespace BTCGatewayAPI.Services
             {
                 try
                 {
+                    var isSaved = false;
                     if (tx.IsReceive())
                     {
-                        await ProcessReceiveTxAsync(dbtx, wallet.Id, tx, rawHex);
+                        isSaved = await ProcessReceiveTxAsync(dbtx, wallet.Id, tx, rawHex);
                     }
                     else if (tx.IsSend())
                     {
-                        await ProcessSendTxAsync(dbtx, wallet.Id, tx, rawHex);
+                        isSaved = await ProcessSendTxAsync(dbtx, wallet.Id, tx, rawHex);
                     }
 
                     dbtx.Commit();
+
+                    return isSaved;
                 }
                 catch (Exception)
                 {
@@ -91,7 +115,7 @@ namespace BTCGatewayAPI.Services
             }
         }
 
-        private async Task ProcessSendTxAsync(DbTransaction dbtx, int walletId, Bitcoin.Models.Transaction tx, string rawHex)
+        private async Task<bool> ProcessSendTxAsync(DbTransaction dbtx, int walletId, Bitcoin.Models.Transaction tx, string rawHex)
         {
             var outcomeTx = await DbCon.FindSendTransactionByTxidAndAddressAsync(dbtx, tx.Txid, tx.Address);
 
@@ -111,6 +135,7 @@ namespace BTCGatewayAPI.Services
                     WalletId = walletId,
                     UpdatedAt = null
                 });
+                return true;
             }
             else if (outcomeTx.Confirmations <= _сonf.MinimalConfirmations)
             {
@@ -118,10 +143,12 @@ namespace BTCGatewayAPI.Services
                 outcomeTx.UpdatedAt = DateTime.Now;
 
                 await DbCon.UpdateSendTransactionAsync(dbtx, outcomeTx);
+                return true;
             }
+            return false;
         }
 
-        private async Task ProcessReceiveTxAsync(DbTransaction dbtx, int walletId, Bitcoin.Models.Transaction tx, string rawHex)
+        private async Task<bool> ProcessReceiveTxAsync(DbTransaction dbtx, int walletId, Bitcoin.Models.Transaction tx, string rawHex)
         {
             var reciveTx = await DbCon.FindReceiveTxIdByTxidAndAddressAsync(dbtx, tx.Txid, tx.Address);
 
@@ -140,6 +167,7 @@ namespace BTCGatewayAPI.Services
                     ViewCount = 0,
                     UpdatedAt = null
                 });
+                return true;
             }
             else if (reciveTx.Confirmations <= _сonf.MinimalConfirmations)
             {
@@ -147,7 +175,9 @@ namespace BTCGatewayAPI.Services
                 reciveTx.UpdatedAt = DateTime.Now;
 
                 await DbCon.UpdateReceiveTransactionAsync(dbtx, reciveTx);
+                return true;
             }
+            return false;
         }
     }
 }

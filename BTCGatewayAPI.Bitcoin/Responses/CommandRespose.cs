@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Responses
 {
     public class CommandResponse<T>
     {
-        [JsonProperty("result", Order = 0)]
+        [DataMember(Name = "result", Order = 0)]
         public T Result { get; set; }
 
-        [JsonProperty("error", Order = 1)]
+        [DataMember(Name = "error", Order = 1)]
         public CommandResponseError Error { get; set; }
 
-        [JsonProperty("id", Order = 2)]
+        [DataMember(Name = "id", Order = 2)]
         public string Id { get; set; }
     }
 }

@@ -1,20 +1,20 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Models.DTO
 {
     public class LastTransactionDTO
     {
-        [JsonProperty("date")]
+        [DataMember(Name = "date")]
         public DateTime Date { get; set; }
 
-        [JsonProperty("address")]
+        [DataMember(Name = "address")]
         public string Address { get; set; }
 
-        [JsonProperty("amount")]
+        [DataMember(Name = "amount")]
         public decimal Amount { get; set; }
 
-        [JsonProperty("confirmation")]
+        [DataMember(Name = "confirmation")]
         public int Confirmation { get; set; }
     }
 }

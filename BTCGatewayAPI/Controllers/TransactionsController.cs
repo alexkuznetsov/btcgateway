@@ -11,7 +11,7 @@ namespace BTCGatewayAPI.Controllers
 
         public TransactionsController(TransactionsService transactionsService)
         {
-            this._transactionsService = transactionsService;
+            _transactionsService = transactionsService;
         }
 
         protected override void Dispose(bool disposing)
