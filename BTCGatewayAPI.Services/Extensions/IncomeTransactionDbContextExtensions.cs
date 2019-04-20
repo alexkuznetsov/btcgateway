@@ -15,7 +15,7 @@ namespace BTCGatewayAPI.Services.Extensions
   , i.updated_at UpdatedAt
   , i.wallet_id WalletId
   , i.tx_hash TxHash
-  , i.[address]  [Address]
+  , i.address  Address
   , i.amount Amount
   , i.confirmation Confirmations
   , i.view_cnt ViewCount
@@ -32,7 +32,7 @@ left join income_tx_hist ih on i.id = ih.income_tx_id where ih.id is null";
   , i.updated_at UpdatedAt
   , i.wallet_id WalletId
   , i.tx_hash TxHash
-  , i.[address]  [Address]
+  , i.address  Address
   , i.amount Amount
   , i.confirmation Confirmations
   , i.view_cnt ViewCount
@@ -40,7 +40,7 @@ left join income_tx_hist ih on i.id = ih.income_tx_id where ih.id is null";
 from income_tx i 
 where tx_id=@tx_hash and address=@address";
 
-        private static readonly string UpdateReceiveTransactionSQL = @"UPDATE [dbo].[income_tx]
+        private static readonly string UpdateReceiveTransactionSQL = @"UPDATE income_tx
    SET created_at = @CreatedAt
       ,updated_at = @UpdatedAt
       ,wallet_id = @WalletId
@@ -52,16 +52,16 @@ where tx_id=@tx_hash and address=@address";
       ,tx_id = @Txid
  WHERE id = @Id";
 
-        private static readonly string AddReceiveTransactionSQL = @"INSERT INTO [dbo].[income_tx]
-           ([created_at]
-           ,[updated_at]
-           ,[wallet_id]
-           ,[tx_hash]
-           ,[address]
-           ,[amount]
-           ,[confirmation]
-           ,[view_cnt]
-           ,[tx_id])
+        private static readonly string AddReceiveTransactionSQL = @"INSERT INTO income_tx
+           ( created_at
+           , updated_at
+           , wallet_id
+           , tx_hash
+           , address
+           , amount
+           , confirmation
+           , view_cnt
+           , tx_id)
      VALUES
            (@CreatedAt
            ,@UpdatedAt
@@ -72,7 +72,6 @@ where tx_id=@tx_hash and address=@address";
            ,@Confirmations
            ,@ViewCount
            ,@Txid); SELECT CAST(SCOPE_IDENTITY() as int)";
-
 
         public static Task<IEnumerable<LastTransactionDTO>> GetNewIncomeTransactionsAsync(this DbConnection dbConetx, DbTransaction dbtx, int maxCnt)
             => dbConetx.QueryAsync<IncomeTransaction>(GetNewIncomeTransactionsSQL, new { max_cnt = maxCnt }, dbtx)

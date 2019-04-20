@@ -31,18 +31,19 @@ where amount>=@amount and rpc_address is not null and len(rpc_address)>1";
   , rpc_username RPCUsername
   , rpc_password RPCPassword
   , passphrase Passphrase
-  , tx_count TxCount from hot_wallets";
+  , tx_count TxCount 
+from hot_wallets";
 
         private const string UpdateWalletSQL = @"UPDATE hot_wallets
-   SET [created_at] = @CreatedAt
-      ,[updated_at] = @UpdatedAt
-      ,[address] = @Address
-      ,[amount] = @Amount
-      ,[rpc_address] = @RPCAddress
-      ,[rpc_username] = @RPCUsername
-      ,[rpc_password] = @RPCPassword
-      ,[passphrase] = @Passphrase
-      ,[tx_count] = @TxCount
+   SET  created_at = @CreatedAt
+      , updated_at = @UpdatedAt
+      , address = @Address
+      , amount = @Amount
+      , rpc_address = @RPCAddress
+      , rpc_username = @RPCUsername
+      , rpc_password = @RPCPassword
+      , passphrase = @Passphrase
+      , tx_count = @TxCount
  WHERE id = @Id";
 
         public static Task<HotWallet> GetFirstWithBalanceMoreThanAsync(this DbConnection dBContext, decimal balance)
