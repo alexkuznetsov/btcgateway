@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Models.DTO
 {
+    [DataContract]
     public class LastTransactionDTO
     {
         [DataMember(Name = "date")]

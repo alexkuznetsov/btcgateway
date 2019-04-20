@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Models.DTO
 {
+    [DataContract]
     public class HotWalletDTO
     {
         [DataMember(Name = "id")]
