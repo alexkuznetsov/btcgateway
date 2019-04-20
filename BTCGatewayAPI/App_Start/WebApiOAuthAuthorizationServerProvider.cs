@@ -8,6 +8,7 @@ namespace BTCGatewayAPI
     public class WebApiOAuthAuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
         private readonly CheckClientService checkClientService;
+        private static readonly string InvalidGrant = "invalid_grant";
 
         public WebApiOAuthAuthorizationServerProvider(CheckClientService checkClientService)
         {
@@ -27,13 +28,13 @@ namespace BTCGatewayAPI
 
             if (string.IsNullOrEmpty(context.UserName))
             {
-                context.SetError("invalid_grant", Resources.Messages.InvalidGrantUserNameIsEmpty);
+                context.SetError(InvalidGrant, Resources.Messages.InvalidGrantUserNameIsEmpty);
                 return;
             }
 
             if (string.IsNullOrEmpty(context.Password))
             {
-                context.SetError("invalid_grant", Resources.Messages.InvalidGrantPasswordIsEmpty);
+                context.SetError(InvalidGrant, Resources.Messages.InvalidGrantPasswordIsEmpty);
                 return;
             }
 
@@ -41,7 +42,7 @@ namespace BTCGatewayAPI
 
             if (!res)
             {
-                context.SetError("invalid_grant", Resources.Messages.InvalidGrantUserNameOrPasswordNotFound);
+                context.SetError(InvalidGrant, Resources.Messages.InvalidGrantUserNameOrPasswordNotFound);
                 return;
             }
 
