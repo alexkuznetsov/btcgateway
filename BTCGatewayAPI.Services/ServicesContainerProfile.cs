@@ -1,5 +1,4 @@
-﻿using BTCGatewayAPI.Bitcoin;
-using BTCGatewayAPI.Infrastructure.Container;
+﻿using BTCGatewayAPI.Infrastructure.Container;
 using System.Data.Common;
 
 namespace BTCGatewayAPI.Services

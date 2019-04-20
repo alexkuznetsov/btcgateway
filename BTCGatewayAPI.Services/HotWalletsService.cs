@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
-    public class HotWalletsService : BaseService
+    public sealed class HotWalletsService : BaseService
     {
         private readonly BitcoinClientFactory _clientFactory;
         private readonly Infrastructure.GlobalConf _conf;
@@ -43,15 +43,14 @@ namespace BTCGatewayAPI.Services
 
             foreach (var wallet in allHotWallets)
             {
-                tasks.Add(PropessHotWallet(wallet));
+                tasks.Add(ProcessHotWallet(wallet));
             }
 
             await Task.WhenAll(tasks);
         }
 
-        private async Task PropessHotWallet(Models.HotWallet wallet)
+        private async Task ProcessHotWallet(Models.HotWallet wallet)
         {
-
             var result = false;
             var bitcoinClient = _clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
             var walletInfo = await bitcoinClient.GetWalletInfoAsync();

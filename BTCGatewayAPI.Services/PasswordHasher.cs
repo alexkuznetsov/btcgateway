@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BTCGatewayAPI.Services
 {
-    public class PasswordHasher : IPasswordHasher
+    public sealed class PasswordHasher : IPasswordHasher
     {
         private const int PBKDF2IterCount = 1000; // default for Rfc2898DeriveBytes
         private const int PBKDF2SubkeyLength = 256 / 8; // 256 bits

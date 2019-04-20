@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
-    public class ManualFundTransactionStrategy : FundTransactionStrategy
+    public sealed class ManualFundTransactionStrategy : FundTransactionStrategy
     {
         public ManualFundTransactionStrategy(BitcoinClient bitcoinClient, GlobalConf conf) : base(bitcoinClient, conf)
         {
@@ -25,7 +25,7 @@ namespace BTCGatewayAPI.Services
             var unspent = await GetUnspentTransactionOutputsAsync(address, sendBtcRequest.Amount + fee.Feerate);
             var parameters = CreateInputsAndOutputs(fee.Feerate, hotWallet.Address, unspent, sendBtcRequest);
             var rawTx = await BitcoinClient.CreateRawtransactionAsync(parameters.Item1, parameters.Item2);
-            var signed = await BitcoinClient.SignRawTransactionWithKeyAsync(new Bitcoin.Models.Unspent[] { }
+            var signed = await BitcoinClient.SignRawTransactionWithKeyAsync(new Unspent[] { }
                 , new string[] { privateKey }
                 , rawTx);
             var txInfo = await BitcoinClient.DecodeRawTransaction((string)signed.Hex);

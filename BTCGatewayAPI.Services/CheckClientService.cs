@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
-    public class CheckClientService : BaseService
+    public sealed class CheckClientService : BaseService
     {
         private readonly IPasswordHasher _hasher;
 

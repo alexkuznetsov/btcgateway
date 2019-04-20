@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
-    public class AutoFundTransactionStrategy : FundTransactionStrategy
+    public sealed class AutoFundTransactionStrategy : FundTransactionStrategy
     {
         public AutoFundTransactionStrategy(BitcoinClient bitcoinClient, GlobalConf conf) : base(bitcoinClient, conf)
         {
