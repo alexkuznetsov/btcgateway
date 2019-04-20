@@ -4,7 +4,7 @@ using System.Web.Http.ExceptionHandling;
 
 namespace BTCGatewayAPI.Infrastructure
 {
-    public class UnhandledExceptionLogger : ExceptionLogger
+    public sealed class UnhandledExceptionLogger : ExceptionLogger
     {
         private static readonly Lazy<Logging.ILogger> loggerLazy =
             new Lazy<Logging.ILogger>(Logging.LoggerFactory.GetLogger);

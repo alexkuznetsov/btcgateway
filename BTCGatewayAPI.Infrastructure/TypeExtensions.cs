@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BTCGatewayAPI.Infrastructure
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         public static System.Reflection.ConstructorInfo GetFirstConstructor(this Type type)
         {

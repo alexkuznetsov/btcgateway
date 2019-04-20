@@ -7,7 +7,7 @@ using System.Web.Http.Dispatcher;
 
 namespace BTCGatewayAPI.Infrastructure
 {
-    public class ServiceActivator : IHttpControllerActivator
+    public sealed class ServiceActivator : IHttpControllerActivator
     {
         private readonly HttpConfiguration configuration;
         private readonly ObjectFactory oFactory;

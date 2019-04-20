@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace BTCGatewayAPI.Infrastructure
 {
-    public class InfrastructureContainerProfile : ContainerProfile
+    public sealed class InfrastructureContainerProfile : ContainerProfile
     {
         public InfrastructureContainerProfile()
         {

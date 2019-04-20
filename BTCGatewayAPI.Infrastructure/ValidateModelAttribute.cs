@@ -5,7 +5,7 @@ using System.Web.Http.Filters;
 
 namespace BTCGatewayAPI.Infrastructure
 {
-    public class ValidateModelAttribute : ActionFilterAttribute
+    public sealed class ValidateModelAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
