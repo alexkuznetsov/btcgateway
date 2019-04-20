@@ -1,6 +1,6 @@
 ﻿namespace BTCGatewayAPI.Bitcoin.Models
 {
-    public class SigHash
+    public static class SigHash
     {
         public const string ALL = nameof(ALL);
         public const string NONE = nameof(NONE);

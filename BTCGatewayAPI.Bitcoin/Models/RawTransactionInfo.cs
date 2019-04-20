@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class RawTransactionInfo
     {
         [DataMember(Name = "txid")]
@@ -32,6 +33,7 @@ namespace BTCGatewayAPI.Bitcoin.Models
         public VOut[] VOut { get; set; }
     }
 
+    [DataContract]
     public class VOut
     {
         [DataMember(Name = "value")]
@@ -44,6 +46,7 @@ namespace BTCGatewayAPI.Bitcoin.Models
         public ScriptPubKey ScriptPubKey { get; set; }
     }
 
+    [DataContract]
     public class ScriptPubKey
     {
         [DataMember(Name = "asm")]
@@ -62,6 +65,7 @@ namespace BTCGatewayAPI.Bitcoin.Models
         public string[] Addresses { get; set; }
     }
 
+    [DataContract]
     public class VIn
     {
         [DataMember(Name = "txid")]
@@ -74,6 +78,7 @@ namespace BTCGatewayAPI.Bitcoin.Models
         public ScriptSig ScriptSig { get; set; }
     }
 
+    [DataContract]
     public class ScriptSig
     {
         [DataMember(Name = "asm")]

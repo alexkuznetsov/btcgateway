@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class SignTransactionResult
     {
         [DataMember(Name = "hex")]

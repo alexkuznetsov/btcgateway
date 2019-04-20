@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class EstimateSmartFee
     {
         [DataMember(Name = "feerate", Order = 0)]

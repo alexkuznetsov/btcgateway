@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class Unspent : TxOutput
     {
         [DataMember(Name = "address", Order = 2)]

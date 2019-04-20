@@ -2,6 +2,7 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class WalletTransaction
     {
         [DataMember(Name = "amount")]
@@ -41,6 +42,7 @@ namespace BTCGatewayAPI.Bitcoin.Models
         public string Hex { get; set; }
     }
 
+    [DataContract]
     public class WalletTransactionDetails
     {
         [DataMember(Name = "address")]

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
+    [DataContract]
     public class WalletInfoResult
     {
         /// <summary>
