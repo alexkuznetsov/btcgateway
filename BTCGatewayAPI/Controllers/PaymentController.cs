@@ -6,40 +6,27 @@ using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
-    [Authorize]
-    public class PaymentController : ApiController
+    public class PaymentController : ServicedApiController<PaymentService>
     {
-        private readonly PaymentService paymentService;
-        private readonly Infrastructure.GlobalConf conf;
+        private Infrastructure.GlobalConf Conf { get; }
 
         public PaymentController(PaymentService paymentService, Infrastructure.GlobalConf conf)
+            : base(paymentService)
         {
-            this.paymentService = paymentService;
-            this.conf = conf;
+            Conf = conf;
         }
 
         [HttpPost]
         [Route("SendBtc")]
         public async Task<IHttpActionResult> SendBtc(SendBtcRequest sendBtcRequest)
         {
-            if (!sendBtcRequest.IsValid(conf.IsTestNet))
+            if (!sendBtcRequest.IsValid(Conf.IsTestNet))
             {
                 throw new ValidationException(Resources.Messages.InvalidRecieverAddress);
             }
-            await paymentService.SendAsync(sendBtcRequest);
+            await Service.SendAsync(sendBtcRequest);
 
             return Ok(new { status = true });
-        }
-
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing)
-            {
-                paymentService.Dispose();
-            }
         }
     }
 }

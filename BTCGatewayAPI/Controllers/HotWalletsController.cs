@@ -10,31 +10,18 @@ using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
-    [Authorize]
-    public class HotWalletsController : ApiController
+    public class HotWalletsController : ServicedApiController<HotWalletsService>
     {
-        private readonly HotWalletsService _hotWalletsService;
-
-        public HotWalletsController(HotWalletsService hotWalletsService)
+        public HotWalletsController(HotWalletsService hotWalletsService):base(hotWalletsService)
         {
-            this._hotWalletsService = hotWalletsService;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _hotWalletsService.Dispose();
-            }
-
-            base.Dispose(disposing);
+     
         }
 
         [HttpGet]
         [Route("getwallets")]
         public async Task<IHttpActionResult> GetWallets()
         {
-            var wallets = await _hotWalletsService.GetAllWalletsAsync();
+            var wallets = await Service.GetAllWalletsAsync();
 
             return Json(wallets.ToArray());
         }
