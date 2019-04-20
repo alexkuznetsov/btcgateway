@@ -10,14 +10,8 @@ namespace BTCGatewayAPI.Infrastructure.Container
         {
         }
 
-        public TransientRegistryObject(Func<ObjectRegistry, object> func)
-        {
-            builder = func;
-        }
+        public TransientRegistryObject(Func<ObjectRegistry, object> func) => builder = func;
 
-        public override object Instantiate(ObjectRegistry registry)
-        {
-            return builder(registry);
-        }
+        public override object Instantiate(ObjectRegistry registry) => builder(registry);
     }
 }

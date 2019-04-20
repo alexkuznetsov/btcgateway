@@ -52,9 +52,9 @@ namespace BTCGatewayAPI.Infrastructure.Container
 
         public object GetService(Type service)
         {
-            if (_mapping.TryGetValue(service, out var buildFunc))
+            if (_mapping.TryGetValue(service, out var ro))
             {
-                return buildFunc.Instantiate(this);
+                return ro.Instantiate(this);
             }
 
             return this.CreateInstance(service);

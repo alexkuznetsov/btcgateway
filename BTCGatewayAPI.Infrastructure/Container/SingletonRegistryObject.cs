@@ -4,17 +4,11 @@ namespace BTCGatewayAPI.Infrastructure.Container
 {
     internal class SingletonRegistryObject : RegistryObject
     {
-        private readonly object instance;
+        private readonly object _instance;
 
-        public SingletonRegistryObject(object instance)
-        {
-            this.instance = instance;
-        }
+        public SingletonRegistryObject(object instance) => _instance = instance;
 
-        public override object Instantiate(ObjectRegistry registry)
-        {
-            return instance;
-        }
+        public override object Instantiate(ObjectRegistry registry) => _instance;
 
         protected override void Dispose(bool disposing)
         {
@@ -23,7 +17,7 @@ namespace BTCGatewayAPI.Infrastructure.Container
 
             if (disposing)
             {
-                if (instance is IDisposable d)
+                if (_instance is IDisposable d)
                 {
                     d.Dispose();
                 }
