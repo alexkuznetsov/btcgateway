@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace BTCGatewayAPI.Infrastructure.Logging.Impl
@@ -16,34 +17,22 @@ namespace BTCGatewayAPI.Infrastructure.Logging.Impl
         public string SourceName { get; }
 
         public void SetParam(string name, string value)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
 
         public void Write(string ASource, string AMessage, Exception exc, LogEntryTypeLevel level)
-        {
-            WriteA(ASource, AMessage, exc, level, null);
-        }
+            => WriteA(ASource, AMessage, exc, level, null);
 
         public void Write(string ASource, string AMessage, Exception exc, LogEntryTypeLevel level, object arg1)
-        {
-            WriteA(ASource, AMessage, exc, level, new[] { arg1 });
-        }
+            => WriteA(ASource, AMessage, exc, level, new[] { arg1 });
 
         public void Write(string ASource, string AMessage, Exception exc, LogEntryTypeLevel level, object arg1, object arg2)
-        {
-            WriteA(ASource, AMessage, exc, level, new[] { arg1, arg2 });
-        }
+            => WriteA(ASource, AMessage, exc, level, new[] { arg1, arg2 });
 
         public void Write(string ASource, string AMessage, Exception exc, LogEntryTypeLevel level, params object[] parameters)
-        {
-            WriteA(ASource, AMessage, exc, level, parameters);
-        }
+            => WriteA(ASource, AMessage, exc, level, parameters);
 
         private void WriteA(string ASource, string AMessage, Exception exc, LogEntryTypeLevel level, object[] parameters)
-        {
-            System.Diagnostics.Trace.WriteLine(FormatMessage(ASource, AMessage, exc, parameters), level.ToString());
-        }
+            => Trace.WriteLine(FormatMessage(ASource, AMessage, exc, parameters), level.ToString());
 
         private StringBuilder FormatMessage(string aSource, string aMessage, Exception exception, object[] parameters)
         {

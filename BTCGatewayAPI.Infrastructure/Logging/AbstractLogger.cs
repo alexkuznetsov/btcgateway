@@ -20,45 +20,21 @@ namespace BTCGatewayAPI.Infrastructure.Logging
 
         #region Debug
 
-        public void Debug(string message)
-        {
-            Write(SourceName, message, null, LogEntryTypeLevel.Debug);
-        }
+        public void Debug(string message) => Write(SourceName, message, null, LogEntryTypeLevel.Debug);
 
-        public void Debug(string message, object arg1)
-        {
-            Write(SourceName, message, null, LogEntryTypeLevel.Debug, arg1);
-        }
+        public void Debug(string message, object arg1) => Write(SourceName, message, null, LogEntryTypeLevel.Debug, arg1);
 
-        public void Debug(string message, object arg1, object arg2)
-        {
-            Write(SourceName, message, null, LogEntryTypeLevel.Debug, arg1, arg2);
-        }
+        public void Debug(string message, object arg1, object arg2) => Write(SourceName, message, null, LogEntryTypeLevel.Debug, arg1, arg2);
 
-        public void Debug(string message, params object[] arguments)
-        {
-            Write(SourceName, message, null, LogEntryTypeLevel.Debug, arguments);
-        }
+        public void Debug(string message, params object[] arguments) => Write(SourceName, message, null, LogEntryTypeLevel.Debug, arguments);
 
-        public void DebugSource(string sourceName, string message)
-        {
-            Write(sourceName, message, null, LogEntryTypeLevel.Debug);
-        }
+        public void DebugSource(string sourceName, string message) => Write(sourceName, message, null, LogEntryTypeLevel.Debug);
 
-        public void DebugSource(string sourceName, string message, object arg1)
-        {
-            Write(sourceName, message, null, LogEntryTypeLevel.Debug, arg1);
-        }
+        public void DebugSource(string sourceName, string message, object arg1) => Write(sourceName, message, null, LogEntryTypeLevel.Debug, arg1);
 
-        public void DebugSource(string sourceName, string message, object arg1, object arg2)
-        {
-            Write(sourceName, message, null, LogEntryTypeLevel.Debug, arg1, arg2);
-        }
+        public void DebugSource(string sourceName, string message, object arg1, object arg2) => Write(sourceName, message, null, LogEntryTypeLevel.Debug, arg1, arg2);
 
-        public void DebugSource(string sourceName, string message, params object[] arguments)
-        {
-            Write(sourceName, message, null, LogEntryTypeLevel.Debug, arguments);
-        }
+        public void DebugSource(string sourceName, string message, params object[] arguments) => Write(sourceName, message, null, LogEntryTypeLevel.Debug, arguments);
 
         #endregion
 
