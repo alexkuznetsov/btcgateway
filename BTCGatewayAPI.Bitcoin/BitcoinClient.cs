@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Bitcoin
@@ -40,7 +39,12 @@ namespace BTCGatewayAPI.Bitcoin
             return SignRawTransactionWithKeyAsync(rawTxHash, privateKeys, outputs.ToArray());
         }
 
-        public async Task<string> LoadWalletPrivateKeysAsync(string address, string passphrase, int seconds = 10)
+        public Task<string> LoadWalletPrivateKeysAsync(string address, string passphrase)
+        {
+            return LoadWalletPrivateKeysAsync(address, passphrase, _conf.DefaultWalletUnlockTime);
+        }
+
+        public async Task<string> LoadWalletPrivateKeysAsync(string address, string passphrase, int seconds)
         {
             await WalletPassphraseAsync(passphrase, seconds);
 
