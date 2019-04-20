@@ -14,8 +14,9 @@ namespace BTCGatewayAPI.Infrastructure
         private readonly Func<string, string> _accessor;
         private readonly Func<string, CSSettings> _connStrAccessor;
 
-        private int _ConfTargetForEstimateSmartFee = -1;
         private CSSettings _ConnectionString;
+
+        private int _ConfTargetForEstimateSmartFee = -1;
         private int _MinimalConfirmations = -1;
         private int _TXUpdateTimerInterval = -1;
         private int _LogSQL = -1;
@@ -24,14 +25,13 @@ namespace BTCGatewayAPI.Infrastructure
         private int _UseFundRawTransaction = -1;
         private int _RetryActionCnt = -1;
         private int _IsTestNet = -1;
+        private int _DefaultWalletUnlockTime = -1;
 
         public GlobalConf(Func<string, string> settingAccessor, Func<string, CSSettings> connStrAccessor)
         {
             _accessor = settingAccessor;
             _connStrAccessor = connStrAccessor;
         }
-
-        public string DefaultSQLCS => "DefaultSQL";
 
         public CSSettings ConnectionString
         {
@@ -45,6 +45,10 @@ namespace BTCGatewayAPI.Infrastructure
                 return _ConnectionString;
             }
         }
+
+        public string DefaultSQLCS => "DefaultSQL";
+
+        public int DefaultWalletUnlockTime => GetValueAndSetIfNotSet(ref _DefaultWalletUnlockTime, 10);
 
         public int ConfTargetForEstimateSmartFee => GetValueAndSetIfNotSet(ref _ConfTargetForEstimateSmartFee, 6);
 
