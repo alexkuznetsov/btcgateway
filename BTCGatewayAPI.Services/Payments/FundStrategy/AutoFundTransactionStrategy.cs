@@ -5,9 +5,9 @@ using BTCGatewayAPI.Models.Requests;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Payments.FundStrategy
 {
-    public sealed class AutoFundTransactionStrategy : FundTransactionStrategy
+    internal sealed class AutoFundTransactionStrategy : FundTransactionStrategy
     {
         public AutoFundTransactionStrategy(BitcoinClient bitcoinClient, GlobalConf conf) : base(bitcoinClient, conf)
         {

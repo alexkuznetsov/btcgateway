@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Threading.Tasks;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Accounts
 {
     public sealed class CheckClientService : BaseService
     {

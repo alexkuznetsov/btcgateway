@@ -1,4 +1,4 @@
-﻿namespace BTCGatewayAPI.Services
+﻿namespace BTCGatewayAPI.Services.Accounts
 {
     public interface IPasswordHasher
     {

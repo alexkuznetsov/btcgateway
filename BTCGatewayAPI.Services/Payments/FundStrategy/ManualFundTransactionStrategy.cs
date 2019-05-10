@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Payments.FundStrategy
 {
-    public sealed class ManualFundTransactionStrategy : FundTransactionStrategy
+    internal sealed class ManualFundTransactionStrategy : FundTransactionStrategy
     {
         public ManualFundTransactionStrategy(BitcoinClient bitcoinClient, GlobalConf conf) : base(bitcoinClient, conf)
         {

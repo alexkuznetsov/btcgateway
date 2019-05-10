@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Accounts
 {
     public sealed class PasswordHasher : IPasswordHasher
     {

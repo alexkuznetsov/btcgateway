@@ -6,9 +6,9 @@ using System;
 using System.Data.Common;
 using System.Threading.Tasks;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Payments
 {
-    public class PaymentService : BaseService, IPaymentService
+    public class PaymentServiceV2 : BaseService, IPaymentService
     {
         private readonly BitcoinClientFactory _clientFactory;
         private readonly Common.GlobalConf _conf;
@@ -17,7 +17,7 @@ namespace BTCGatewayAPI.Services
 
         private static ILogger Logger => LoggerLazy.Value;
 
-        public PaymentService(DbConnection dBContext, BitcoinClientFactory clientFactory, Common.GlobalConf conf) : base(dBContext)
+        public PaymentServiceV2(DbConnection dBContext, BitcoinClientFactory clientFactory, Common.GlobalConf conf) : base(dBContext)
         {
             _clientFactory = clientFactory;
             _conf = conf;
@@ -30,53 +30,20 @@ namespace BTCGatewayAPI.Services
 
             var wallet = await DbCon.GetFirstWithBalanceMoreThanAsync(sendBtcRequest.Amount);
             var bitcoinClient = _clientFactory.Create(new Uri(wallet.RPCAddress), wallet.RPCUsername, wallet.RPCPassword);
-            var txInfo = await CreateTransactionAsync(bitcoinClient, wallet, sendBtcRequest);
 
-            (var isSuccess, var payment) = await SaveWalletAndPaymentAsync(sendBtcRequest, txInfo, wallet
-                , onSuccess: (s) => bitcoinClient.SendRawTransactionAsync(s)
-                , onError: (s) => bitcoinClient.RemovePrunedFundsAsync(s));
+            await bitcoinClient.WalletPassphraseAsync(wallet.Passphrase, _conf.DefaultWalletUnlockTime);
 
-            if (isSuccess)
-            {
-                await ChangePaymentStatusAsync(payment);
-            }
+            var txId = await bitcoinClient.SendToAddressAsync(sendBtcRequest.Account, sendBtcRequest.Amount);
+            var txHash = await bitcoinClient.GetRawTransaction(txId);
+
+            await SaveWalletAndPaymentAsync(sendBtcRequest, txId, txHash, wallet);
         }
 
-        private async Task ChangePaymentStatusAsync(Models.OutcomeTransaction payment)
-        {
-            var isSuccess = false;
-
-            using (var tx = DbCon.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
-            {
-                try
-                {
-                    payment.State = Models.OutcomeTransaction.CompleteState;
-
-                    (isSuccess, _) = await TryToPerformAsync(
-                        action: () => DbCon.UpdateSendTransactionAsync(tx, payment),
-                        onError: (ex) => Logger.Error(ex, Messages.ErrExceptionWhenUpdateOutputTx, payment.Id),
-                        triesCount: _conf.RetryActionCnt);
-
-                    if (!isSuccess)
-                    {
-                        Logger.Error(Messages.ErrExceptionWhenChangingStateForOutputTx, payment.Id);
-                        throw new InvalidOperationException(string.Format(Messages.ErrExceptionWhenChangingStateForOutputTx, payment.Id));
-                    }
-                }
-                catch (Exception)
-                {
-                    tx.Rollback();
-                    throw;
-                }
-            }
-        }
-
-        public async Task<(bool, Models.OutcomeTransaction)> SaveWalletAndPaymentAsync(
+        public async Task SaveWalletAndPaymentAsync(
             SendBtcRequest sendBtcRequest,
-            FundTransactionStrategy.FundTransactionStrategyResult txInfo,
-            Models.HotWallet wallet,
-            Func<string, Task> onSuccess,
-            Func<string, Task> onError)
+            string txid,
+            string txhash,
+            Models.HotWallet wallet)
         {
             var isSuccess = false;
 
@@ -86,10 +53,10 @@ namespace BTCGatewayAPI.Services
                 Amount = sendBtcRequest.Amount,
                 Address = sendBtcRequest.Account,
                 WalletId = wallet.Id,
-                TxHash = txInfo.Hex,
-                Txid = txInfo.Txid,
+                TxHash = txhash,
+                Txid = txid,
                 State = Models.OutcomeTransaction.WithdrawState,
-                Fee = txInfo.Fee/*.Feerate*/,
+                Fee = 0/*.Feerate*/,
                 CreatedAt = DateTime.Now,
                 Confirmations = 0,
                 Id = 0,
@@ -105,8 +72,8 @@ namespace BTCGatewayAPI.Services
                 {
                     int paymentId = 0;
                     //Снимается сумма + комиссия
-                    Logger.Debug("Try to withdraw: {0}, exists: {1}", sendBtcRequest.Amount + txInfo.Fee, wallet.Amount);
-                    wallet.Withdraw(sendBtcRequest.Amount + txInfo.Fee/*.Feerate*/);
+                    Logger.Debug("Try to withdraw: {0}, exists: {1}", sendBtcRequest.Amount, wallet.Amount);
+                    wallet.Withdraw(sendBtcRequest.Amount/*.Feerate*/);
 
                     (isSuccess, _) = await TryToPerformAsync(
                         action: () => DbCon.UpdateWalletAsync(tx, wallet),
@@ -135,15 +102,6 @@ namespace BTCGatewayAPI.Services
                     }
 
                     tx.Commit();
-
-                    await onSuccess(txInfo.Hex);
-
-                    return (isSuccess, payment);
-                }
-                catch (RPCServerException)
-                {
-                    await onError(txInfo.Hex);
-                    throw;
                 }
                 catch (Exception)
                 {
@@ -151,22 +109,6 @@ namespace BTCGatewayAPI.Services
                     throw;
                 }
             }
-        }
-
-        public Task<FundTransactionStrategy.FundTransactionStrategyResult> CreateTransactionAsync(BitcoinClient bitcoinClient, Models.HotWallet hotWallet, SendBtcRequest sendBtcRequest)
-        {
-            FundTransactionStrategy strategy;
-
-            if (_conf.UseFundRawTransaction)
-            {
-                strategy = new AutoFundTransactionStrategy(bitcoinClient, _conf);
-            }
-            else
-            {
-                strategy = new ManualFundTransactionStrategy(bitcoinClient, _conf);
-            }
-
-            return strategy.CreateAndSignTransactionAsync(hotWallet, sendBtcRequest);
         }
     }
 }

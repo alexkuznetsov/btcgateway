@@ -1,6 +1,7 @@
 ﻿using BTCGatewayAPI.Common.Authentication;
 using BTCGatewayAPI.Models.Requests;
 using BTCGatewayAPI.Services;
+using BTCGatewayAPI.Services.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;

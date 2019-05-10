@@ -88,6 +88,7 @@ namespace BTCGatewayAPI.Common.Authentication
         {
             _jwtSecurityTokenHandler.ValidateToken(accessToken, _tokenValidationParameters,
                 out var validatedSecurityToken);
+
             if (!(validatedSecurityToken is JwtSecurityToken jwt))
             {
                 return null;

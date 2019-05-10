@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Background
 {
     public class UpdatorService : IHostedService, IDisposable
     {

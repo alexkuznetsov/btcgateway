@@ -4,24 +4,10 @@ using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;
 using System.Threading.Tasks;
 
-namespace BTCGatewayAPI.Services
+namespace BTCGatewayAPI.Services.Payments.FundStrategy
 {
-    public abstract class FundTransactionStrategy
+    internal abstract class FundTransactionStrategy
     {
-        public class FundTransactionStrategyResult
-        {
-            public FundTransactionStrategyResult(string hex, decimal fee, string txid)
-            {
-                Hex = hex;
-                Fee = fee;
-                Txid = txid;
-            }
-
-            public string Hex { get; set; }
-            public string Txid { get; set; }
-            public decimal Fee { get; set; }
-        }
-
         protected BitcoinClient BitcoinClient { get; }
 
         protected GlobalConf Conf { get; }

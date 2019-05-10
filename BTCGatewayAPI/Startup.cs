@@ -20,6 +20,9 @@ using System.Data.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using IBackgroundService = Microsoft.Extensions.Hosting.IHostedService;
+using BTCGatewayAPI.Services.Accounts;
+using BTCGatewayAPI.Services.Payments;
+using BTCGatewayAPI.Services.Background;
 
 namespace BTCGatewayAPI
 {

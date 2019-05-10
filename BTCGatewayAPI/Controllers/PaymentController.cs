@@ -1,6 +1,6 @@
 ﻿using BTCGatewayAPI.Common;
 using BTCGatewayAPI.Models.Requests;
-using BTCGatewayAPI.Services;
+using BTCGatewayAPI.Services.Payments;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
