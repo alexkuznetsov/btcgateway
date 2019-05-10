@@ -16,5 +16,6 @@
         public const string getrawtransaction = nameof(getrawtransaction);
         public const string decoderawtransaction = nameof(decoderawtransaction);
         public const string gettransaction = nameof(gettransaction);
+        public const string sendtoaddress = nameof(sendtoaddress);
     }
 }

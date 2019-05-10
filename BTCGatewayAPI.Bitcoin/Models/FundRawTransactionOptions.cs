@@ -2,23 +2,17 @@
 
 namespace BTCGatewayAPI.Bitcoin.Models
 {
-    public static class ChangeType
-    {
-        public const string Legacy = "legacy";
-        public const string P2SHSegwit = "p2sh-segwit";
-        public const string Bech32 = "bech32";
-    }
-
-    public static class EstimateMode
-    {
-        public const string Unset = "UNSET";
-        public const string Economical = "ECONOMICAL";
-        public const string Conservative = "CONSERVATIVE";
-    }
-
     [DataContract]
     public class FundRawTransactionOptions
     {
+        public const string ChangeTypeLegacy = "legacy";
+        public const string ChangeTypeP2SHSegwit = "p2sh-segwit";
+        public const string ChangeTypeBech32 = "bech32";
+
+        public const string EstimateModeUnset = "UNSET";
+        public const string EstimateModeEconomical = "ECONOMICAL";
+        public const string EstimateModeConservative = "CONSERVATIVE";
+
         [DataMember(Name = "changeAddress", IsRequired = false, EmitDefaultValue = false)]
         public string ChangeAddress { get; set; }
 

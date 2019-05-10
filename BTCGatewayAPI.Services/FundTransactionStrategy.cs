@@ -1,5 +1,5 @@
 ﻿using BTCGatewayAPI.Bitcoin;
-using BTCGatewayAPI.Infrastructure;
+using BTCGatewayAPI.Common;
 using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace BTCGatewayAPI.Services
 
         protected GlobalConf Conf { get; }
 
-        protected FundTransactionStrategy(BitcoinClient bitcoinClient, Infrastructure.GlobalConf conf)
+        protected FundTransactionStrategy(BitcoinClient bitcoinClient, Common.GlobalConf conf)
         {
             BitcoinClient = bitcoinClient;
             Conf = conf;

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 
 namespace BTCGatewayAPI.Bitcoin
 {
     public class BitcoinClientFactory
     {
-        private readonly Infrastructure.GlobalConf _conf;
+        private readonly BitcoinClientOptions _conf;
         private readonly DelegatingHandler _sharedHadler;
 
-        public BitcoinClientFactory(Infrastructure.GlobalConf conf, DelegatingHandler sharedHadler)
+        public BitcoinClientFactory(DelegatingHandler sharedHadler, BitcoinClientOptions conf)
         {
             _conf = conf;
             _sharedHadler = sharedHadler;

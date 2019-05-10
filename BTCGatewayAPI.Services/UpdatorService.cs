@@ -1,12 +1,14 @@
-﻿using BTCGatewayAPI.Infrastructure;
-using BTCGatewayAPI.Infrastructure.Logging;
+﻿using BTCGatewayAPI.Common;
+using BTCGatewayAPI.Common.Logging;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
-    public class UpdatorService : IDisposable
+    public class UpdatorService : IHostedService, IDisposable
     {
         private bool _disposed;
         private readonly GlobalConf _conf;
@@ -27,8 +29,6 @@ namespace BTCGatewayAPI.Services
             _hotWalletInfoSync = hotWalletsService;
 
             _timer = new Timer(OnTimerCallbackAsync);
-
-            StartTimer();
         }
 
         #region descruct and idisposable
@@ -97,6 +97,20 @@ namespace BTCGatewayAPI.Services
         private void StartTimer()
         {
             _timer.Change(_conf.TXUpdateTimerInterval, _conf.TXUpdateTimerInterval);
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            StartTimer();
+
+            return Task.FromResult(0);
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            StopTimer();
+
+            await Task.Delay(60);
         }
     }
 }

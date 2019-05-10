@@ -8,9 +8,9 @@ namespace BTCGatewayAPI.Bitcoin
 {
     public class BitcoinClient : RPCServer
     {
-        private readonly Infrastructure.GlobalConf _conf;
+        private readonly BitcoinClientOptions _conf;
 
-        public BitcoinClient(DelegatingHandler sharedHandler, Infrastructure.GlobalConf conf, Uri address, string username, string password)
+        public BitcoinClient(DelegatingHandler sharedHandler, BitcoinClientOptions conf, Uri address, string username, string password)
             : base(sharedHandler, address, username, password)
         {
             _conf = conf;

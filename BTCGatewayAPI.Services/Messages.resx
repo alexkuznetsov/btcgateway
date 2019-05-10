@@ -121,10 +121,10 @@
     <value>Ошибка добавления транзакции на отправку монет. Запрос: {0}</value>
   </data>
   <data name="ErrExceptionWhenChangingStateForOutputTx" xml:space="preserve">
-    <value>Ошибка обновления транзакции на отправку с id {0}.  Установка состояния "Выполнено" провалилась.</value>
+    <value>Ошибка обновления транзакции на отправку с id {0}.  Установка состояния "Выполнено" провалилась.</value>
   </data>
   <data name="ErrExceptionWhenUpdateOutputTx" xml:space="preserve">
-    <value>Ошибка обновления транзакции на отправку с id {0}.  Переводим в состояние "Выполнено"...</value>
+    <value>Ошибка обновления транзакции на отправку с id {0}.  Переводим в состояние "Выполнено"...</value>
   </data>
   <data name="ErrFailedToProcessIncomeTransactions" xml:space="preserve">
     <value>Ошибка обработки транзакции на получение монет.</value>
@@ -137,6 +137,12 @@
   </data>
   <data name="ErrFailedToProcessOutputTransactionWithTxId" xml:space="preserve">
     <value>Ошибка обработки транзакции на отправку с txid {0}</value>
+  </data>
+  <data name="ErrGetLastUpdatesGeneralFail" xml:space="preserve">
+    <value>Ошибка получения последних обновлений.</value>
+  </data>
+  <data name="ErrGetLastUpdatesRetryAgain" xml:space="preserve">
+    <value>Ошибка получения последних обновлений, пробуем еще раз...</value>
   </data>
   <data name="ErrNetworkingExceptionOccurs" xml:space="preserve">
     <value>Сетевая ошибка</value>
@@ -161,11 +167,5 @@
   </data>
   <data name="ErrUpdateWalletInformation" xml:space="preserve">
     <value>Ошибка обновления информации по кошельку, пробуем еще раз. Запрос: {0}</value>
-  </data>
-  <data name="ErrGetLastUpdatesGeneralFail" xml:space="preserve">
-    <value>Ошибка получения последних обновлений.</value>
-  </data>
-  <data name="ErrGetLastUpdatesRetryAgain" xml:space="preserve">
-    <value>Ошибка получения последних обновлений, пробуем еще раз...</value>
   </data>
 </root>

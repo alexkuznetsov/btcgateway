@@ -1,5 +1,5 @@
 ﻿using BTCGatewayAPI.Bitcoin;
-using BTCGatewayAPI.Infrastructure.Logging;
+using BTCGatewayAPI.Common.Logging;
 using BTCGatewayAPI.Models.Requests;
 using BTCGatewayAPI.Services.Extensions;
 using System;
@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
-    public class PaymentService : BaseService
+    public class PaymentService : BaseService, IPaymentService
     {
         private readonly BitcoinClientFactory _clientFactory;
-        private readonly Infrastructure.GlobalConf _conf;
+        private readonly Common.GlobalConf _conf;
 
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
 
         private static ILogger Logger => LoggerLazy.Value;
 
-        public PaymentService(DbConnection dBContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dBContext)
+        public PaymentService(DbConnection dBContext, BitcoinClientFactory clientFactory, Common.GlobalConf conf) : base(dBContext)
         {
             _clientFactory = clientFactory;
             _conf = conf;

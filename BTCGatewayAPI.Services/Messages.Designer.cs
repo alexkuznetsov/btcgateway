@@ -19,7 +19,7 @@ namespace BTCGatewayAPI.Services {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Messages {
@@ -70,7 +70,7 @@ namespace BTCGatewayAPI.Services {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ошибка обновления транзакции на отправку с id {0}.  Установка состояния &quot;Выполнено&quot; провалилась..
+        ///   Looks up a localized string similar to Ошибка обновления транзакции на отправку с id {0}.  Установка состояния &quot;Выполнено&quot; провалилась..
         /// </summary>
         internal static string ErrExceptionWhenChangingStateForOutputTx {
             get {
@@ -79,7 +79,7 @@ namespace BTCGatewayAPI.Services {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ошибка обновления транзакции на отправку с id {0}.  Переводим в состояние &quot;Выполнено&quot;....
+        ///   Looks up a localized string similar to Ошибка обновления транзакции на отправку с id {0}.  Переводим в состояние &quot;Выполнено&quot;....
         /// </summary>
         internal static string ErrExceptionWhenUpdateOutputTx {
             get {

@@ -2,19 +2,24 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace BTCGatewayAPI.Infrastructure.Logging.Impl
+namespace BTCGatewayAPI.Common.Logging.Impl
 {
     class TraceLoggingBackend : ILoggingBackend
     {
-        private readonly string _sourceMethodName;
+        internal static LoggingBackendBuilder Builder => new LoggingBackendBuilder((a, b) => new TraceLoggingBackend(a, b));
 
-        public TraceLoggingBackend(string sourceName, string sourceMethod)
+        internal TraceLoggingBackend(string sourceName, string sourceMethod)
         {
             SourceName = sourceName;
-            _sourceMethodName = sourceMethod;
+            SourceMethodName = sourceMethod;
+            LogLevel = LogEntryTypeLevel.Trace;
         }
 
+        public LogEntryTypeLevel LogLevel { get; }
+
         public string SourceName { get; }
+
+        public string SourceMethodName { get; }
 
         public void SetParam(string name, string value)
             => throw new NotImplementedException();

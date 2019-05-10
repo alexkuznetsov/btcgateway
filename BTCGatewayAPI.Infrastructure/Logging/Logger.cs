@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BTCGatewayAPI.Infrastructure.Logging
+namespace BTCGatewayAPI.Common.Logging
 {
     /// <summary>
     /// Логгер
@@ -9,46 +9,23 @@ namespace BTCGatewayAPI.Infrastructure.Logging
     {
         #region privates
 
-        private const string AppSettingLoggingKey = "Logging:Level";
-
         private readonly ILoggingBackend _backend;
-        private readonly LogEntryTypeLevel _logLevel;
 
         #endregion
 
         public Logger(ILoggingBackend backend)
         {
             _backend = backend;
-            _logLevel = ParseLogLevel();
         }
 
-        /// <summary>
-        /// Вообще, это должно быть у backend, но для такой реализации пусть будет тут.
-        /// </summary>
-        /// <returns></returns>
-        private LogEntryTypeLevel ParseLogLevel()
-        {
-            var temp = System.Configuration.ConfigurationManager.AppSettings[AppSettingLoggingKey] ?? LogEntryTypeLevel.Warn.ToString();
-
-            if (Enum.TryParse<LogEntryTypeLevel>(temp, out var logLevel))
-            {
-                return logLevel;
-            }
-
-            return LogEntryTypeLevel.Warn;
-        }
-
-        public override bool CanLog(LogEntryTypeLevel level) => level <= _logLevel;
+        public override bool CanLog(LogEntryTypeLevel level) => level <= _backend.LogLevel;
 
         #region ILog implementation
 
         /// <summary>
         /// Имя
         /// </summary>
-        public override string SourceName
-        {
-            get { return _backend.SourceName; }
-        }
+        public override string SourceName => _backend.SourceName;
 
         /// <summary>
         /// Параметры

@@ -1,10 +1,8 @@
 ﻿using BTCGatewayAPI.Bitcoin;
-using BTCGatewayAPI.Infrastructure.Logging;
 using BTCGatewayAPI.Services.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
@@ -17,18 +15,13 @@ namespace BTCGatewayAPI.Services
     public class SyncBTCTransactinsService : BaseService
     {
         private readonly BitcoinClientFactory _clientFactory;
-        private readonly Infrastructure.GlobalConf _сonf;
-        private readonly System.Runtime.Caching.MemoryCache _memoryCache;
-
-        private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
-        private static readonly string CacheEntryName = "lasttx";
-
-        private static ILogger Logger => LoggerLazy.Value;
+        private readonly Common.GlobalConf _сonf;
+        private readonly IMemoryCache _memoryCache;
 
         public SyncBTCTransactinsService(DbConnection dbContext
             , BitcoinClientFactory clientFactory
-            , Infrastructure.GlobalConf globalConf
-            , System.Runtime.Caching.MemoryCache memoryCache) : base(dbContext)
+            , Common.GlobalConf globalConf
+            , IMemoryCache memoryCache) : base(dbContext)
         {
             _clientFactory = clientFactory;
             _сonf = globalConf;
@@ -38,7 +31,6 @@ namespace BTCGatewayAPI.Services
         public async Task DownloadAsync()
         {
             var allHotWallets = await DbCon.GetAllHotWalletsAsync();
-            var tasks = new List<Task>();
             var status = false;
 
             foreach (var wallet in allHotWallets)
@@ -54,15 +46,14 @@ namespace BTCGatewayAPI.Services
 
                 if (status)
                 {
-                    _memoryCache.Remove(CacheEntryName);
+                    _memoryCache.Remove(CacheKeys.LastTransactions);
                 }
             }
         }
 
         private async Task<bool> ProcessTransactionAsync(BitcoinClient bitcoinClient, Models.HotWallet wallet, Bitcoin.Models.Transaction tx)
         {
-            var rawHex = string.Empty;
-
+            string rawHex;
             try
             {
                 rawHex = await bitcoinClient.GetRawTransaction(tx.Txid);

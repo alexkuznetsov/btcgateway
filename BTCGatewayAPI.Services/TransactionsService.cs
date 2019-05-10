@@ -1,34 +1,34 @@
-﻿using BTCGatewayAPI.Infrastructure.Logging;
+﻿using BTCGatewayAPI.Common.Logging;
 using BTCGatewayAPI.Models.DTO;
 using BTCGatewayAPI.Services.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Runtime.Caching;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BTCGatewayAPI.Services
 {
     public class TransactionsService : BaseService
     {
-        private readonly Infrastructure.GlobalConf _conf;
-        private readonly MemoryCache _memoryCache;
+        private readonly Common.GlobalConf _conf;
+        private readonly IMemoryCache _cache;
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
-        private static readonly string CacheEntryName = "lasttx";
 
         private static ILogger Logger => LoggerLazy.Value;
 
-        public TransactionsService(DbConnection dBContext, Infrastructure.GlobalConf conf, MemoryCache memoryCache) : base(dBContext)
+        public TransactionsService(DbConnection dBContext, Common.GlobalConf conf, IMemoryCache cache) : base(dBContext)
         {
             _conf = conf;
-            _memoryCache = memoryCache;
+            _cache = cache;
         }
 
         public async Task<IEnumerable<LastTransactionDTO>> GetLastTransactionsAsync()
         {
-            if (_memoryCache.Contains(CacheEntryName))
+            if (_cache.TryGetValue(CacheKeys.LastTransactions, out LastTransactionDTO[] cacheEntry))
             {
-                return (IEnumerable<LastTransactionDTO>)_memoryCache.Get(CacheEntryName);
+                return cacheEntry;
             }
 
             if (DbCon.State != System.Data.ConnectionState.Open)
@@ -49,10 +49,10 @@ namespace BTCGatewayAPI.Services
 
                 tx.Commit();
 
-                _memoryCache.Add(new CacheItem(CacheEntryName, result), new CacheItemPolicy
-                {
-                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now, TimeSpan.FromSeconds(5))
-                });
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(5));
+
+                _cache.Set(CacheKeys.LastTransactions, result.ToArray(), cacheEntryOptions);
 
                 return result;
             }

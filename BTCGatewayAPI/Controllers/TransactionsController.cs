@@ -1,18 +1,19 @@
 ﻿using BTCGatewayAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
+    [Route("GetLast")]
     public class TransactionsController : ServicedApiController<TransactionsService>
     {
-        public TransactionsController(TransactionsService transactionsService) : base(transactionsService)
+        public TransactionsController(TransactionsService transactionsService) :
+            base(transactionsService)
         {
         }
 
         [HttpGet]
-        [Route("GetLast")]
-        public async Task<IHttpActionResult> GetLast()
+        public async Task<IActionResult> Get()
         {
             var last = await Service.GetLastTransactionsAsync();
 

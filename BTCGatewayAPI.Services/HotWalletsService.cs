@@ -1,5 +1,5 @@
 ﻿using BTCGatewayAPI.Bitcoin;
-using BTCGatewayAPI.Infrastructure.Logging;
+using BTCGatewayAPI.Common.Logging;
 using BTCGatewayAPI.Models.DTO;
 using BTCGatewayAPI.Services.Extensions;
 using System;
@@ -12,14 +12,14 @@ namespace BTCGatewayAPI.Services
     public sealed class HotWalletsService : BaseService
     {
         private readonly BitcoinClientFactory _clientFactory;
-        private readonly Infrastructure.GlobalConf _conf;
+        private readonly Common.GlobalConf _conf;
 
         private static readonly Lazy<ILogger> LoggerLazy = new Lazy<ILogger>(LoggerFactory.GetLogger);
         private static readonly decimal Delta = 0.00000001M;
 
         private static ILogger Logger => LoggerLazy.Value;
 
-        public HotWalletsService(DbConnection dbContext, BitcoinClientFactory clientFactory, Infrastructure.GlobalConf conf) : base(dbContext)
+        public HotWalletsService(DbConnection dbContext, BitcoinClientFactory clientFactory, Common.GlobalConf conf) : base(dbContext)
         {
             _clientFactory = clientFactory;
             _conf = conf;

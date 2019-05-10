@@ -1,4 +1,4 @@
-﻿namespace BTCGatewayAPI.Infrastructure.Logging
+﻿namespace BTCGatewayAPI.Common.Logging
 {
     using System;
 

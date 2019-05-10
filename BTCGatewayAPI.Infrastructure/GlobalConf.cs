@@ -1,97 +1,32 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-
-namespace BTCGatewayAPI.Infrastructure
+﻿namespace BTCGatewayAPI.Common
 {
     public class GlobalConf
     {
         public class CSSettings
         {
             public string ProviderName { get; set; }
+
             public string ConnectionString { get; set; }
         }
 
-        private readonly Func<string, string> _accessor;
-        private readonly Func<string, CSSettings> _connStrAccessor;
+        public CSSettings ConnectionString { get; set; }
 
-        private CSSettings _ConnectionString;
+        public int DefaultWalletUnlockTime { get; set; } = 10;
 
-        private int _ConfTargetForEstimateSmartFee = -1;
-        private int _MinimalConfirmations = -1;
-        private int _TXUpdateTimerInterval = -1;
-        private int _LogSQL = -1;
-        private int _LastTXMinimalConfirmations = -1;
-        private int _WalletUnlockTime = -1;
-        private int _UseFundRawTransaction = -1;
-        private int _RetryActionCnt = -1;
-        private int _IsTestNet = -1;
-        private int _DefaultWalletUnlockTime = -1;
+        public int ConfTargetForEstimateSmartFee { get; set; } = 6;
 
-        public GlobalConf(Func<string, string> settingAccessor, Func<string, CSSettings> connStrAccessor)
-        {
-            _accessor = settingAccessor;
-            _connStrAccessor = connStrAccessor;
-        }
+        public int MinimalConfirmations { get; set; } = 6;
 
-        public CSSettings ConnectionString
-        {
-            get
-            {
-                if (_ConnectionString == null)
-                {
-                    _ConnectionString = _connStrAccessor(DefaultSQLCS);
-                }
+        public int LastTXMinimalConfirmations { get; set; } = 3;
 
-                return _ConnectionString;
-            }
-        }
+        public int TXUpdateTimerInterval { get; set; } = 60000;
 
-        public string DefaultSQLCS => "DefaultSQL";
+        public int WalletUnlockTime { get; set; } = 60;
 
-        public int DefaultWalletUnlockTime => GetValueAndSetIfNotSet(ref _DefaultWalletUnlockTime, 10);
+        public bool UseFundRawTransaction { get; set; } = true;
 
-        public int ConfTargetForEstimateSmartFee => GetValueAndSetIfNotSet(ref _ConfTargetForEstimateSmartFee, 6);
+        public int RetryActionCnt { get; set; } = 3;
 
-        public int MinimalConfirmations => GetValueAndSetIfNotSet(ref _MinimalConfirmations, 6);
-
-        public int LastTXMinimalConfirmations => GetValueAndSetIfNotSet(ref _LastTXMinimalConfirmations, 3);
-
-        public int TXUpdateTimerInterval => GetValueAndSetIfNotSet(ref _TXUpdateTimerInterval, 60000);
-
-        public bool LogSQL => GetValueAndSetIfNotSet(ref _LogSQL, true);
-
-        public int WalletUnlockTime => GetValueAndSetIfNotSet(ref _WalletUnlockTime, 60);
-
-        public bool UseFundRawTransaction => GetValueAndSetIfNotSet(ref _UseFundRawTransaction, true);
-
-        public int RetryActionCnt => GetValueAndSetIfNotSet(ref _RetryActionCnt, 3);
-
-        public bool IsTestNet => GetValueAndSetIfNotSet(ref _IsTestNet, true);
-
-        private bool GetValueAndSetIfNotSet(ref int target, bool defaultVal, [CallerMemberName]string propName = "")
-        {
-            if (target == -1)
-            {
-                if (int.TryParse(_accessor(propName), out var temp))
-                    target = temp;
-                else
-                    target = defaultVal ? 1 : 0;
-            }
-
-            return target == 1;
-        }
-
-        private int GetValueAndSetIfNotSet(ref int target, int defaultVal, [CallerMemberName]string propName = "")
-        {
-            if (target == -1)
-            {
-                if (int.TryParse(_accessor(propName), out var temp))
-                    target = temp;
-                else
-                    target = defaultVal;
-            }
-
-            return target;
-        }
+        public bool IsTestNet { get; set; } = true;
     }
 }

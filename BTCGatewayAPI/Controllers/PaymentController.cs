@@ -1,29 +1,31 @@
-﻿using BTCGatewayAPI.Models.Requests;
+﻿using BTCGatewayAPI.Common;
+using BTCGatewayAPI.Models.Requests;
 using BTCGatewayAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
-    public class PaymentController : ServicedApiController<PaymentService>
-    {
-        private Infrastructure.GlobalConf Conf { get; }
 
-        public PaymentController(PaymentService paymentService, Infrastructure.GlobalConf conf)
-            : base(paymentService)
+    [Route("SendBtc")]
+    public class PaymentController : ServicedApiController<IPaymentService>
+    {
+        private readonly GlobalConf conf;
+
+        public PaymentController(IPaymentService paymentService, GlobalConf conf) : base(paymentService)
         {
-            Conf = conf;
+            this.conf = conf;
         }
 
         [HttpPost]
-        [Route("SendBtc")]
-        public async Task<IHttpActionResult> SendBtc(SendBtcRequest sendBtcRequest)
+        public async Task<IActionResult> Post(SendBtcRequest sendBtcRequest)
         {
-            if (!sendBtcRequest.IsValid(Conf.IsTestNet))
+            if (!sendBtcRequest.IsValid(conf.IsTestNet))
             {
-                throw new ValidationException(Resources.Messages.InvalidRecieverAddress);
+                throw new ValidationException("InvalidRecieverAddress");
             }
+
             await Service.SendAsync(sendBtcRequest);
 
             return Ok(new { status = true });

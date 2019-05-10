@@ -7,16 +7,13 @@ namespace BTCGatewayAPI.Bitcoin
 {
     public class LoggingHandler : DelegatingHandler
     {
-        private readonly Infrastructure.GlobalConf conf;
+        private static readonly Lazy<Common.Logging.ILogger> LoggerLazy = new Lazy<Common.Logging.ILogger>(Common.Logging.LoggerFactory.GetLogger);
 
-        private static readonly Lazy<Infrastructure.Logging.ILogger> LoggerLazy = new Lazy<Infrastructure.Logging.ILogger>(Infrastructure.Logging.LoggerFactory.GetLogger);
+        private static Common.Logging.ILogger Logger => LoggerLazy.Value;
 
-        private static Infrastructure.Logging.ILogger Logger => LoggerLazy.Value;
-
-        public LoggingHandler(HttpMessageHandler innerHandler, Infrastructure.GlobalConf conf)
+        public LoggingHandler(HttpMessageHandler innerHandler)
             : base(innerHandler)
         {
-            this.conf = conf;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

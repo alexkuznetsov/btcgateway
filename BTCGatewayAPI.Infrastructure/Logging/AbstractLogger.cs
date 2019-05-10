@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BTCGatewayAPI.Infrastructure.Logging
+namespace BTCGatewayAPI.Common.Logging
 {
     /// <summary>
     /// Абстрактное тело логгера

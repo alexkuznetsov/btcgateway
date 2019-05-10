@@ -13,16 +13,24 @@ namespace BTCGatewayAPI.Services
             _hasher = hasher;
         }
 
+        public Task<Models.Client> GetClientByName(string username)
+            => DbCon.FindClientByUserNameAsync(username);
+
         public async Task<bool> AuthenticateAsync(string username, string password)
         {
-            var user = await DbCon.FindClientByUserNameAsync(username);
+            var user = await GetClientByName(username);
 
-            if (user != null)
+            return Authenticate(user, password);
+        }
+
+        public bool Authenticate(Models.Client user, string password)
+        {
+            if (user == null)
             {
-                return _hasher.VerifyHashedPassword(user.Passwhash, password);
+                throw new System.ArgumentNullException(nameof(user));
             }
 
-            return false;
+            return _hasher.VerifyHashedPassword(user.Passwhash, password);
         }
     }
 }

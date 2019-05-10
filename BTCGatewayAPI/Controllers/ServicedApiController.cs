@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Web.Http;
 
 namespace BTCGatewayAPI.Controllers
 {
-    [Authorize]
-    public abstract class ServicedApiController<TService> : ApiController
-        where TService : IDisposable
+    public abstract class ServicedApiController<TService> : DefaultApiController
     {
-        protected TService Service { get; }
-
         protected ServicedApiController(TService service)
         {
             Service = service;
         }
 
+        public TService Service { get; }
+
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
-
             if (disposing)
             {
-                Service.Dispose();
+                if (Service is IDisposable d)
+                {
+                    d.Dispose();
+                }
             }
+
+            base.Dispose(disposing);
         }
     }
 }

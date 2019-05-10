@@ -1,5 +1,5 @@
 ﻿using BTCGatewayAPI.Bitcoin;
-using BTCGatewayAPI.Infrastructure;
+using BTCGatewayAPI.Common;
 using BTCGatewayAPI.Models;
 using BTCGatewayAPI.Models.Requests;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace BTCGatewayAPI.Infrastructure.Logging
+namespace BTCGatewayAPI.Common.Logging
 {
     public class LoggerFactory
     {

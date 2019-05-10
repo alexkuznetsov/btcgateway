@@ -108,6 +108,13 @@ namespace BTCGatewayAPI.Bitcoin
                 new DecodeRawTransactionRequest(txhash, iswitness));
         }
 
+        public Task<string> SendToAddressAsync(string address, decimal amount, string commentFrom = null, string commentTo = null,
+            bool? subtractfeefromamount = null, bool? replaceable = null, int? conf_target = null, string estimate_mode = null)
+        {
+            return ExecuteRequestAsync<SendToAddressRequest, SendToAddressResponse, string>(
+                new SendToAddressRequest(address, amount, commentFrom, commentTo, subtractfeefromamount, replaceable, conf_target, estimate_mode));
+        }
+
         private async Task<TResponse> ExecuteRequestRawAsync<TRequest, TResponse>(TRequest command)
         {
             using (var client = GetClient())
